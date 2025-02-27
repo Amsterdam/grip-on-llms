@@ -1,0 +1,9 @@
+[tool.poetry]
+name = "llm_eval"
+version = "0.0.1"
+description = "LLM evaluation for municipal use cases"
+authors = ["Grip on LLMs, City of Amsterdam"]
+packages = [{ include = "llm_eval" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"

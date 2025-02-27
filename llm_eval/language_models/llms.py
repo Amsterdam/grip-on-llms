@@ -11,8 +11,8 @@ import torch
 from openai import AzureOpenAI
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from language_models.llm_config import MODEL_MAPPING
-from language_models.llm_templates import format_prompt
+from llm_eval.language_models.llm_config import MODEL_MAPPING
+from llm_eval.language_models.llm_templates import format_prompt
 
 
 class UnsupportedModelError(Exception):
@@ -246,8 +246,8 @@ if __name__ == "__main__":
         api_version=os.environ["API_VERSION"],
         params=gpt_params,
     )
-    print(f"GPT Response to {test}!: {model.prompt(test)}")
-    print(f"Second attempt {model(test)}")
+    # print(f"GPT Response to {test}!: {model.prompt(test)}")
+    # print(f"Second attempt {model(test)}")
 
     # Test HF Model
     model = LLMRouter.get_model(
