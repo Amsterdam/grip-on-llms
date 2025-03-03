@@ -1,6 +1,6 @@
+"""Basic tests to test whether LLMs are working as expected"""
 import os
 
-from llm_eval.benchmarks import MMLU_NL
 from llm_eval.language_models import LLMRouter
 
 
@@ -20,7 +20,7 @@ def test_gpt(test_prompt):
         api_version=os.environ["API_VERSION"],
         params=gpt_params,
     )
-    print(f"GPT Response to {test}!: {model.prompt(test_prompt)}")
+    print(f"GPT Response to {test_prompt}!: {model.prompt(test_prompt)}")
     print(f"Second attempt {model(test_prompt)}")
 
 
@@ -40,11 +40,11 @@ def test_hf(test_prompt):
         provider="huggingface",
         model_name="tiny-llama1231",
         hf_token=os.environ["HF_TOKEN"],
-#        hf_cache=os.environ["HF_CACHE"],
+        #        hf_cache=os.environ["HF_CACHE"],
         hf_cache=None,
         params=hf_params,
     )
-    print(f"HF Response to {test}!: {model.prompt(test_prompt)}")
+    print(f"HF Response to {test_prompt}!: {model.prompt(test_prompt)}")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
+"""Basic tests to check whether a benchmark works as expected"""
 import os
 
-from llm_eval.benchmarks import MMLU_NL
+from llm_eval.benchmarks import MMLU
 from llm_eval.language_models import LLMRouter
 
 
@@ -23,14 +24,12 @@ def test_mmlu_nl():
 
     source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
     data_folder = "./data"
-    MMLU_NL_Bench = MMLU_NL(source, data_folder)
+    mmlu_nl_bench = MMLU(source, data_folder)
 
-    MMLU_NL_Bench.run(gpt)
+    mmlu_nl_bench.run(gpt)
 
 
 if __name__ == "__main__":
-
-
     # test = "Test!"
     test_prompt = "Hoe maak ik een melding in Amsterdam?"
 

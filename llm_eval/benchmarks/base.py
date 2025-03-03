@@ -10,8 +10,6 @@ class BaseBenchmark:
     """Base LLM class"""
 
     @abstractmethod
-    def run(self, LLM):
+    def run(self, llm):
         """Run benchmark for a certain model"""
         raise NotImplementedError("Implement run function")
-
-

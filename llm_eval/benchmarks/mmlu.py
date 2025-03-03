@@ -1,20 +1,50 @@
 """
-The MMLU benchmark ....
+Implementation of the MMLU benchmark which contains 57 tasks and
+aims to measure world knowledge and problem solving ability [1]
+
+There are many different ways of implementing MMLU
+(see https://huggingface.co/blog/open-llm-leaderboard-mmlu).
+
+We choose for a pagmatic user-centered approach which allows us
+to compare diverse models (including closed source models)
+in a setup relevant to the use of models in a municipal context.
+
+Thus we choose to:
+1. generate an answer and compare to the correct answer as opposed to
+comparing the corresponding probabilities more closely mimicing direct
+user interaction with the model.
+2. perform a single pass
+3. employ a zero-shot setup as opposed to the commonly used 5-shot setup
 
 References:
-Hendrycks, Dan, et al. "Measuring massive multitask language understanding." arXiv preprint arXiv:2009.03300 (2020).
+[1] Hendrycks, Dan, et al. "Measuring massive multitask language understanding."
+arXiv preprint arXiv:2009.03300 (2020).
 """
 import json
 from pathlib import Path
 from pprint import pprint
+
 import requests
 
 from llm_eval.benchmarks.base import BaseBenchmark
 
 
-class MMLU_NL(BaseBenchmark):
+class MMLU(BaseBenchmark):
     """
+    The MMLU benchmark currently expects a source json file
+    with tasks such as:
+    {
+        "instruction": "Welke van de volgende wordt beschouwd als een zuuranhydride?",
+        "option_a": "HCl",
+        "option_b": "H2SO3",
+        "option_c": "SO2",
+        "option_d": "Al(NO3)3",
+        "answer": "C",
+        "id": "high_school_chemistry/dev/0"
+    }
+
     """
+
     def __init__(self, source_url, data_dir):
         self.name = "MMLU-NL"
         self.source_url = source_url
@@ -40,12 +70,12 @@ class MMLU_NL(BaseBenchmark):
     def _load_data(self):
         self.data = json.load(open(self.data_path, "rb"))
         # pprint(self.data)
- 
+
     def run(self, llm):
         """Run the MMLU benchmark using the provided LLM."""
         if self.data is None:
             raise ValueError("Benchmark data is not loaded.")
-        
+
         results = []
         for entry in self.data:
             prompt = (
@@ -65,7 +95,7 @@ class MMLU_NL(BaseBenchmark):
                 "prompt": prompt,
                 "expected": expected_answer,
                 "response": llm_response,
-                "correct": llm_response.strip().lower() == expected_answer.strip().lower()
+                "correct": llm_response.strip().lower() == expected_answer.strip().lower(),
             }
             results.append(result)
             if len(results) > 2:
