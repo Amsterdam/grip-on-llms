@@ -24,9 +24,9 @@ def test_mmlu_nl():
 
     source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
     data_folder = "./data"
-    mmlu_nl_bench = MMLU(source, data_folder)
+    mmlu_nl_bench = MMLU(source, data_folder, categories=["moral_disputes"])
 
-    mmlu_nl_bench.run(gpt)
+    mmlu_nl_bench.eval(gpt, "gpt_results")
 
 
 if __name__ == "__main__":

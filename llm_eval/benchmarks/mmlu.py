@@ -22,9 +22,9 @@ arXiv preprint arXiv:2009.03300 (2020).
 """
 import json
 from pathlib import Path
-from pprint import pprint
 
 import requests
+from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
 
@@ -45,12 +45,14 @@ class MMLU(BaseBenchmark):
 
     """
 
-    def __init__(self, source_url, data_dir):
+    def __init__(self, source_url, data_dir, categories=None):
         self.name = "MMLU-NL"
         self.source_url = source_url
         self.data_dir = Path(data_dir) / self.name
         self.data_path = self.data_dir / "data.json"
+        self.categories = categories
         self.data = None
+        self.results = {}
 
         self._prep_data()
 
@@ -69,17 +71,22 @@ class MMLU(BaseBenchmark):
 
     def _load_data(self):
         self.data = json.load(open(self.data_path, "rb"))
-        # pprint(self.data)
+        if self.categories:
+            self.data = [
+                entry for entry in self.data if any(cat in entry["id"] for cat in self.categories)
+            ]
 
-    def run(self, llm):
+    def run_task(self, llm, results_path=None):
         """Run the MMLU benchmark using the provided LLM."""
         if self.data is None:
             raise ValueError("Benchmark data is not loaded.")
 
-        results = []
-        for entry in self.data:
+        benchmark_results = []
+        for entry in tqdm(self.data):
+            question_type = entry["id"].split("/")[0].replace("/", " ")
             prompt = (
-                "Answer the following question. Only state A, B, C, D"
+                f"The following is a multiple choice question about {question_type}.\n"
+                "Only answer A, B, C or D.\n"
                 f"{entry['instruction']}\n"
                 f"A. {entry['option_a']}\n"
                 f"B. {entry['option_b']}\n"
@@ -87,7 +94,6 @@ class MMLU(BaseBenchmark):
                 f"D. {entry['option_d']}\n"
                 "Answer:"
             )
-            # pprint(prompt)
 
             expected_answer = entry["answer"]
             llm_response = llm.prompt(prompt)
@@ -97,10 +103,11 @@ class MMLU(BaseBenchmark):
                 "response": llm_response,
                 "correct": llm_response.strip().lower() == expected_answer.strip().lower(),
             }
-            results.append(result)
-            if len(results) > 2:
-                break
+            benchmark_results.append(result)
 
-        pprint(results)
+        return benchmark_results
 
-        return results
+    def calculate_metric(self, results=None):
+        """Given results, calculate desired score"""
+        score = len([entry for entry in results if entry["correct"]]) / len(results)
+        return score
