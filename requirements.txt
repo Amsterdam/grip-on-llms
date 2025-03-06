@@ -1,4 +1,0 @@
-accelerate
-openai
-torch
-transformers

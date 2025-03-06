@@ -6,4 +6,18 @@ authors = ["Grip on LLMs, City of Amsterdam"]
 packages = [{ include = "llm_eval" }]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
+accelerate = "^1.4.0"
+openai = "^1.64.0"
+torch = "^2.6.0"
+transformers = "^4.49.0"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^3.2.0"
+flake8 = "^6.0.0"
+flake8-bugbear = "^23.3.23"
+flake8-comprehensions = "^3.12.0"
+flake8-docstrings = "^1.7.0"
+flake8-fixme = "^1.1.1"
+mccabe = "^0.7.0"
+pep8-naming = "^0.13.3"
