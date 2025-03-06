@@ -4,10 +4,11 @@ For every benchmark we should be able to provide an LLM,
 generate LLM responses and evaluate them.
 """
 import json
+from abc import ABC, abstractmethod
 from datetime import datetime
 
 
-class BaseBenchmark:
+class BaseBenchmark(ABC):
     """Base LLM class"""
 
     def run(self, llm, results_path=None):
@@ -42,7 +43,7 @@ class BaseBenchmark:
         return score
 
     def eval(self, llm, results_path=None):
-        """Run benchmark and calculate correspondnig scores"""
+        """Run benchmark and calculate corresponding scores"""
         results = self.run(llm)
         score = self.score(results["benchmark_results"])
 
@@ -52,3 +53,13 @@ class BaseBenchmark:
                 json.dump(results, f)
 
         return score
+
+    @abstractmethod
+    def run_task(self, llm):
+        """Function to run a task should always be implemented"""
+        raise NotImplementedError("Implement run_task function")
+
+    @abstractmethod
+    def calculate_metric(self, results):
+        """Function to calculate a metric should always be implemented"""
+        raise NotImplementedError("Implement calculate_metric function")

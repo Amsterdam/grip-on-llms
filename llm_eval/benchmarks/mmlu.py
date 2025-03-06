@@ -28,6 +28,17 @@ from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
 
+prompt_template = (
+    "The following is a multiple choice question about {question_type}.\n"
+    "Only answer A, B, C or D.\n"
+    "{instruction}\n"
+    "A. {option_a}\n"
+    "B. {option_b}\n"
+    "C. {option_c}\n"
+    "D. {option_d}\n"
+    "Answer:"
+)
+
 
 class MMLU(BaseBenchmark):
     """
@@ -84,15 +95,14 @@ class MMLU(BaseBenchmark):
         benchmark_results = []
         for entry in tqdm(self.data):
             question_type = entry["id"].split("/")[0].replace("/", " ")
-            prompt = (
-                f"The following is a multiple choice question about {question_type}.\n"
-                "Only answer A, B, C or D.\n"
-                f"{entry['instruction']}\n"
-                f"A. {entry['option_a']}\n"
-                f"B. {entry['option_b']}\n"
-                f"C. {entry['option_c']}\n"
-                f"D. {entry['option_d']}\n"
-                "Answer:"
+
+            prompt = prompt_template.format(
+                question_type=question_type,
+                instruction=entry["instruction"],
+                option_a=entry["option_a"],
+                option_b=entry["option_b"],
+                option_c=entry["option_c"],
+                option_d=entry["option_d"],
             )
 
             expected_answer = entry["answer"]
