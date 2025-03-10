@@ -6,24 +6,27 @@ for governmental organization to automate processes and improve services for cit
 there is limited research and knowledge into the level to which
 current models reflect the ethical standards and cultural nuances of Dutch society.
 
+Our mission is to empower the City of Amsterdam and inspire the Dutch government
+to responsibly implement LLMs by creating an overview of their
+performance, environmental impact and alignment with human values.
 
-This repository contains code and methodologies related to the evaluation
-of the performance, environmental impact and alignment of Large Language Models
-with human values.
+This repository contains code and methodologies related to this evaluation.
 
 ## Background
 WIP
 
 
-## Folder Structure
+## Project Structure
 
-#TODO:
+* [`llm_eval`](./llm_eval)
+  * [`llm_eval/benchmarks`](./llm_eval/benchmarks) - 
+    contains a base benchmark class as well as the currently supported benchmarks.
+  * [`llm_eval/language_models`](./llm_eval/language_models) - 
+    enables the use of diverse language models by different providers.
+    Currently, we support Azure deployments of GPT as well as HuggingFace models.
+* [`tests`](./tests) - tests the usage of models and benchmarks.
 
-* [`notebooks`](./notebooks): Jupyter notebooks / tutorials
-* [`src`](./src): All sourcecode files specific to this project
-* ...
-
-## Installation 
+## Installation
 
 1) Clone this repository:
 
@@ -31,14 +34,19 @@ WIP
 git clone https://github.com/Amsterdam/grip-on-llms.git
 ```
 
-2) Install all dependencies:
+2) Install poetry if needed by following the [instructions](https://python-poetry.org/docs/).
+
+3) Navigate to project directory and install all dependencies:
 
 ```bash
-pip install -r requirements.txt
+poetry install
+```
+4) Set up pre-commit hooks
+```bash
+poetry run pre-commit install
 ```
 
-#TODO: The code has been tested with Python x.x on Linux/MacOS/Windows. 
-
+The code has been tested with Python 3.9 on Linux.
 
 ## Contributing
 
@@ -47,7 +55,7 @@ Feel free to help out! [Open an issue](https://github.com/Amsterdam/grip-on-llms
 
 ## Acknowledgements
 
-This repository was created by the **_Grip op LLMs_** for the City of Amsterdam.
+This repository was created by the **_Grip op LLMs_** team for the City of Amsterdam.
 
 
 ## License 

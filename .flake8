@@ -1,0 +1,30 @@
+[flake8]
+exclude =
+    .git,
+    .github,
+    .idea,
+    env/*,
+    venv/*,
+    __pycache__,
+    */.ipynb_checkpoints/*
+
+per-file-ignores =
+    # Ignore D104: missing docstrings in __init__ files
+    # Ignore F401: unused imports in __init__ files
+    */__init__.py: D104, F401
+
+extend-ignore =
+    # D103 Missing docstring in public function
+    D103,
+    # D07 Missing docstring in __init__
+    D107
+    # D205 1 blank line required between summary line and description
+    D205,
+    # D400 First line should end with a period
+    D400,
+    # D401 First line should be in imperative mood
+    D401
+
+max-complexity = 8
+max-line-length = 99
+statistics=True
