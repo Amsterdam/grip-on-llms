@@ -13,7 +13,7 @@ class BaseBenchmark(ABC):
 
     def run(self, llm, results_path=None):
         """Run the benchmark using the provided LLM."""
-        benchmark_results = self.run_task(llm)
+        benchmark_results = self._run_task(llm)
 
         results = {
             "metadata": {
@@ -38,7 +38,7 @@ class BaseBenchmark(ABC):
         if results_path:
             results = json.load(open(results_path, "r"))
 
-        score = self.calculate_metric(results)
+        score = self._calculate_metric(results)
 
         return score
 
@@ -55,11 +55,11 @@ class BaseBenchmark(ABC):
         return score
 
     @abstractmethod
-    def run_task(self, llm):
+    def _run_task(self, llm):
         """Function to run a task should always be implemented"""
-        raise NotImplementedError("Implement run_task function")
+        raise NotImplementedError("Implement _run_task function")
 
     @abstractmethod
-    def calculate_metric(self, results):
+    def _calculate_metric(self, results):
         """Function to calculate a metric should always be implemented"""
-        raise NotImplementedError("Implement calculate_metric function")
+        raise NotImplementedError("Implement _calculate_metric function")

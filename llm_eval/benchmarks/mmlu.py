@@ -87,7 +87,7 @@ class MMLU(BaseBenchmark):
                 entry for entry in self.data if any(cat in entry["id"] for cat in self.categories)
             ]
 
-    def run_task(self, llm, results_path=None):
+    def _run_task(self, llm, results_path=None):
         """Run the MMLU benchmark using the provided LLM."""
         if self.data is None:
             raise ValueError("Benchmark data is not loaded.")
@@ -117,7 +117,7 @@ class MMLU(BaseBenchmark):
 
         return benchmark_results
 
-    def calculate_metric(self, results=None):
+    def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
         score = len([entry for entry in results if entry["correct"]]) / len(results)
         return score
