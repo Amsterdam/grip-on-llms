@@ -7,6 +7,9 @@ In the future, we also expect support for other providers and models.
 
 A dedicated LLMRouter can be used to instantiate the corresponding LLMs.
 """
-from .llms import BaseLLM, HuggingFaceLLM, LLMRouter, OpenAILLM
+from .llms.base import BaseLLM
+from .llms.huggingface import HuggingFaceLLM
+from .llms.openai import OpenAILLM
+from .model_router import LLMRouter
 
 all = ["BaseLLM", "HuggingFaceLLM", "OpenAILLM", "LLMRouter"]

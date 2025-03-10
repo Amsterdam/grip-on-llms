@@ -38,7 +38,7 @@ def test_hf(test_prompt):
     # Test HF Model
     model = LLMRouter.get_model(
         provider="huggingface",
-        model_name="tiny-llama1231",
+        model_name="tiny-llama",
         hf_token=os.environ["HF_TOKEN"],
         #        hf_cache=os.environ["HF_CACHE"],
         hf_cache=None,
