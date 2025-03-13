@@ -76,7 +76,7 @@ class MMLU(BaseBenchmark):
 
     def _download_data(self):
         """Download the data"""
-        response = requests.get(self.source)
+        response = requests.get(self.source_url)
         with open(self.data_path, "wb") as f:
             f.write(response.content)
 
