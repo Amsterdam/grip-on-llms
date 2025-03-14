@@ -1,0 +1,141 @@
+"""
+Implementation of the AI2’s Reasoning Challenge (ARC) benchmark.
+
+ARC is a common sense reasoning, multiple choice question-answering
+dataset, containing questions from science exams from grade 3 to grade 9.
+The dataset is split in two partitions: Easy and Challenge, where the
+latter partition contains the more difficult questions that require
+reasoning. Most of the questions have 4 answer choices, with <1% of all
+the questions having either 3 or 5 answer choices. ARC includes a
+supporting KB of 14.3M unstructured text passages.
+
+The dataset we use is a Dutch translation of the original dataset,
+and can be obtained here:
+http://nlp.uoregon.edu/download/okapi-eval/datasets/m_arc/.
+
+We choose for a pagmatic user-centered approach which allows us
+to compare diverse models (including closed source models)
+in a setup relevant to the use of models in a municipal context.
+
+Thus we choose to:
+1. generate an answer and compare to the correct answer as opposed to
+comparing the corresponding probabilities more closely mimicing direct
+user interaction with the model.
+2. perform a single pass
+3. employ a zero-shot setup as opposed to the commonly used 5-shot setup
+"""
+
+import json
+from pathlib import Path
+
+import requests
+from tqdm import tqdm
+
+from llm_eval.benchmarks.base import BaseBenchmark
+
+prompt_template = (
+    "The following is a multiple choice question.\n"
+    "Only answer with the letter A, B, C or D\n"
+    "{instruction}\n"
+    "A. {option_a}\n"
+    "B. {option_b}\n"
+    "C. {option_c}\n"
+    "D. {option_d}\n"
+    "Answer:"
+)
+
+
+class ARC(BaseBenchmark):
+    """Evaluates LLMs using the ARC benchmark.
+
+    The ARC benchmark currently expects a source json file with tasks such as:
+
+    {
+        "id": "ARC-Challenge/train/Mercury_SC_413300",
+        "answer": "C",
+        "instruction": "De temperatuur van het water in een glas verandert
+        van 5°C naar -1°C. Hoe zal het water waarschijnlijk veranderen?",
+        "option_a": "Het zal koken.",
+        "option_b": "Het zal smelten.",
+        "option_c": "Het zal bevriezen.",
+        "option_d": "Het zal condenseren."
+    }
+
+    """
+
+    def __init__(self, source_url, data_dir, categories=None):
+        """Initialize ARC benchmark."""
+        self.name = "ARC-NL"
+        self.source_url = source_url
+        self.data_dir = Path(data_dir) / self.name
+        self.data_path = self.data_dir / "data.json"
+        self.categories = categories
+        self.data = None
+        self.results = {}
+
+        self._prep_data()
+
+    def _prep_data(self):
+        """Download the benchmark data if not available and load it."""
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        if not self.data_path.exists():
+            self._download_data()
+        self._load_data()
+
+    def _download_data(self):
+        """Download the data."""
+        response = requests.get(self.source_url)
+        with open(self.data_path, "wb") as f:
+            f.write(response.content)
+
+    def _load_data(self):
+        self.data = json.load(open(self.data_path, "rb"))
+        if self.categories:
+            # fmt: off
+            self.data = [
+                entry for entry in self.data
+                if any(cat in entry["id"] for cat in self.categories)
+            ]
+            # fmt: on
+
+    def _run_task(self, llm, results_path=None):
+        """Run the ARC benchmark using the provided LLM."""
+        if self.data is None:
+            raise ValueError("Benchmark data is not loaded.")
+
+        benchmark_results = []
+        for entry in tqdm(self.data):
+            prompt = prompt_template.format(
+                instruction=entry["instruction"],
+                option_a=entry["option_a"],
+                option_b=entry["option_b"],
+                option_c=entry["option_c"],
+                option_d=entry["option_d"],
+            )
+
+            expected_answer = entry["answer"]
+            llm_response = llm.prompt(prompt)
+            # fmt: off
+            result = {
+                "prompt": prompt,
+                "expected": expected_answer,
+                "response": llm_response,
+                "correct": (
+                    llm_response.strip().lower() ==
+                    expected_answer.strip().lower()
+                    ),
+            }
+            # fmt: on
+            benchmark_results.append(result)
+
+        return benchmark_results
+
+    def _calculate_metric(self, results=None):
+        """Given results, calculate desired score."""
+        # fmt: off
+        score = (
+            len([entry for entry in results if entry["correct"]]) /
+            len(results)
+        )
+        # fmt: on
+        return score
