@@ -1,11 +1,12 @@
-"""Basic tests to check whether a benchmark works as expected"""
+"""Basic tests to check whether a benchmark works as expected."""
 import os
 
-from llm_eval.benchmarks import MMLU
+from llm_eval.benchmarks import ARC, MMLU
 from llm_eval.language_models import LLMRouter
 
 
 def test_mmlu_nl_gpt():
+    """Test MMLU benchmark using GPT-4o model."""
     gpt_params = {
         "frequency_penalty": 0,
         "presence_penalty": 0,
@@ -30,6 +31,7 @@ def test_mmlu_nl_gpt():
 
 
 def test_mmlu_nl_hf():
+    """Test MMLU benchmark using Tiny-llama model from Hugging Face."""
     hf_params = {
         "do_sample": True,
         "temperature": 0.6,
@@ -57,6 +59,33 @@ def test_mmlu_nl_hf():
     mmlu_nl_bench.eval(tinyllama, "tinyllama_results")
 
 
+def test_arc_nl_hf():
+    """Test MMLU benchmark using Tiny llama model from Hugging Face."""
+    hf_params = {
+        "do_sample": True,
+        "temperature": 0.6,
+        "top_p": 0.65,
+        "max_new_tokens": 200,
+        "no_repeat_ngram_size": 3,
+        "num_return_sequences": 1,
+    }
+
+    # Test HF Model
+    tinyllama = LLMRouter.get_model(
+        provider="huggingface",
+        model_name="tiny-llama",
+        hf_token=os.environ["HF_TOKEN"],
+        hf_cache=None,
+        params=hf_params,
+    )
+
+    source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_arc/nl_validation.json"
+    data_folder = "./data"
+    arc_nl_bench = ARC(source, data_folder, categories=["LEAP"])
+
+    arc_nl_bench.eval(tinyllama, "tinyllama_results")
+
+
 if __name__ == "__main__":
     # test = "Test!"
     test_prompt = "Hoe maak ik een melding in Amsterdam?"
@@ -64,5 +93,7 @@ if __name__ == "__main__":
     # test_gpt(test_prompt)
     # test_hf(test_prompt)
 
-    test_mmlu_nl_gpt()
-    test_mmlu_nl_hf()
+    # test_mmlu_nl_gpt()
+    # test_mmlu_nl_hf()
+
+    test_arc_nl_hf()
