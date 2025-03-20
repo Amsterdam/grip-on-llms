@@ -63,9 +63,10 @@ class ARC(BaseBenchmark):
 
     """
 
-    def __init__(self, source_url, data_dir, categories=None):
+    def __init__(self, benchmark_name, source_url, data_dir, categories=None):
         """Initialize ARC benchmark."""
-        self.name = "ARC-NL"
+        super().__init__(benchmark_name)
+
         self.source_url = source_url
         self.data_dir = Path(data_dir) / self.name
         self.data_path = self.data_dir / "data.json"
@@ -132,10 +133,10 @@ class ARC(BaseBenchmark):
 
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score."""
-        # fmt: off
-        score = (
-            len([entry for entry in results if entry["correct"]]) /
-            len(results)
-        )
-        # fmt: on
-        return score
+        accuracy = len([entry for entry in results if entry["correct"]]) / len(results)
+        return {"acc": accuracy}
+
+    def _get_own_metadata(self):
+        """Get benchmark metadata for versioning purposes"""
+        metadata = {"source_url": self.source_url}
+        return metadata
