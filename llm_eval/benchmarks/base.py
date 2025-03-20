@@ -5,24 +5,22 @@ generate LLM responses and evaluate them.
 """
 import json
 from abc import ABC, abstractmethod
-from datetime import datetime
 
 
 class BaseBenchmark(ABC):
-    """Base LLM class"""
+    """Base benchmark class"""
+
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        """Property to get the benchmark name"""
+        return self._name
 
     def run(self, llm, results_path=None):
         """Run the benchmark using the provided LLM."""
-        benchmark_results = self._run_task(llm)
-
-        results = {
-            "metadata": {
-                "llm": llm.get_metadata(),
-                "benchmark": None,
-                "run": {"timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")},
-            },
-            "benchmark_results": benchmark_results,
-        }
+        results = self._run_task(llm)
 
         if results_path:
             with open(results_path, "w") as f:
@@ -44,15 +42,19 @@ class BaseBenchmark(ABC):
 
     def eval(self, llm, results_path=None):
         """Run benchmark and calculate corresponding scores"""
-        results = self.run(llm)
-        score = self.score(results["benchmark_results"])
+        run_output = self.run(llm)
+        score = self.score(run_output)
+
+        results = {
+            "run_output": run_output,
+            "score": score,
+        }
 
         if results_path:
-            results["score"] = score
             with open(results_path, "w") as f:
                 json.dump(results, f)
 
-        return score
+        return results
 
     @abstractmethod
     def _run_task(self, llm):
@@ -63,3 +65,16 @@ class BaseBenchmark(ABC):
     def _calculate_metric(self, results):
         """Function to calculate a metric should always be implemented"""
         raise NotImplementedError("Implement _calculate_metric function")
+
+    def get_metadata(self):
+        """Get benchmark metadata for versioning purposes"""
+        metadata = {
+            "name": self.name,
+        }
+        metadata.update(self._get_own_metadata())
+        return metadata
+
+    @abstractmethod
+    def _get_own_metadata(self):
+        """Get benchmark-specific metadata for versioning purposes"""
+        raise NotImplementedError("Implement _get_own_metadata function")
