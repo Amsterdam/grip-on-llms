@@ -53,6 +53,7 @@ class LLMRouter:
                     api_endpoint=api_endpoint,
                     api_key=api_key,
                     api_version=api_version,
+                    provider=provider,
                     params=params,
                 )
             else:
@@ -61,7 +62,11 @@ class LLMRouter:
                 )
         elif provider == "huggingface":
             return HuggingFaceLLM(
-                model_name=model_name, hf_token=hf_token, hf_cache=hf_cache, params=params
+                model_name=model_name,
+                provider=provider,
+                hf_token=hf_token,
+                hf_cache=hf_cache,
+                params=params,
             )
 
         else:

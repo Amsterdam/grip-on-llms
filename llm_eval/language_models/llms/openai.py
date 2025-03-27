@@ -12,8 +12,8 @@ class OpenAILLM(BaseLLM):
     Expects Azure deployment and corresponding endpoint, key, etc.
     """
 
-    def __init__(self, model_name, api_endpoint, api_key, api_version, params=dict):
-        super().__init__(model_name, params if params is not None else {})
+    def __init__(self, model_name, api_endpoint, api_key, api_version, provider, params=dict):
+        super().__init__(model_name, provider, params if params is not None else {})
 
         self.api_endpoint = api_endpoint
         self.api_key = api_key
@@ -29,7 +29,7 @@ class OpenAILLM(BaseLLM):
 
         return client
 
-    def prompt(self, prompt, context=None, system=None, force_format=None):
+    def _prompt(self, prompt, context=None, system=None, force_format=None):
         """Prompt model by optionally providing a custom system prompt or context"""
         if not self.client:
             self.client = self._get_client()

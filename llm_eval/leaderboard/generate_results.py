@@ -31,13 +31,12 @@ class Leaderboard:
 
         results = []
         for llm in tqdm(self.llms, desc="LLMs"):
-            # llm.start_carbon_tracking()
-
             for benchmark in tqdm(self.benchmarks, desc="Benchmarks"):
-                # llm.(re)start_carbon_tracking()
+                llm.initialize_carbon_tracking()
 
                 start_time = datetime.now()
                 benchmark_results = benchmark.eval(llm)
+
                 end_time = datetime.now()
 
                 results.append(
@@ -52,7 +51,7 @@ class Leaderboard:
                                 "time_bench_total": str(end_time - start_time),
                                 "system": get_system_metadata(),
                             },
-                            # "code_carbon": llm.get_carbon_data(),
+                            "code_carbon": llm.get_carbon_data(),
                         },
                         "benchmark_results": benchmark_results,
                     }

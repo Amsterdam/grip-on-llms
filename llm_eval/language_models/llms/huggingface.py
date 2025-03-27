@@ -18,8 +18,8 @@ class UnsupportedModelError(Exception):
 class HuggingFaceLLM(BaseLLM):
     """A class to handle self-hosted HG models"""
 
-    def __init__(self, model_name, hf_token, hf_cache=None, params=dict):
-        super().__init__(model_name, params if params is not None else {})
+    def __init__(self, model_name, hf_token, provider, hf_cache=None, params=dict):
+        super().__init__(model_name, provider, params if params is not None else {})
 
         self.hf_token = hf_token
         self.hf_cache = hf_cache
@@ -50,7 +50,7 @@ class HuggingFaceLLM(BaseLLM):
         )
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=self.hf_cache, **kwargs)
 
-    def prompt(self, prompt, context=None, system=None, force_format=None):
+    def _prompt(self, prompt, context=None, system=None, force_format=None):
         """Prompt model by optionally providing a custom system prompt or context"""
         if not self.model:
             self._load_model()
