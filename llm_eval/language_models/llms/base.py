@@ -18,11 +18,11 @@ class TrackerNotStartedError(Exception):
 class BaseLLM:
     """Base LLM class"""
 
-    def __init__(self, model_name, provider, params):
+    def __init__(self, model_name, uses_api, params):
         self._model_name = model_name
         self._params = params
-        self.provider = provider
         self.tracker = None
+        self.uses_api = uses_api
 
     def prompt(self, prompt, context=None, system=None, response_format=None):
         """Starts and stops code carbon tracker, and gets response from model."""
@@ -33,20 +33,11 @@ class BaseLLM:
             self.tracker.stop()
         return response
 
-    def initialize_carbon_tracking(self):
+    def initialize_carbon_tracking(self, codecarbon_params=dict):
         """Tracks emissions offline using code carbon."""
-        common_params = {
-            "project_name": self.model_name,
-            "country_iso_code": "SWE",
-            "region": "sweden",
-            "allow_multiple_runs": True,
-            "save_to_file": False,
-            "pue": 1.185,
-        }
-
         try:
-            if self.provider == "huggingface":
-                self.tracker = OfflineEmissionsTracker(**common_params)
+            if not self.uses_api:
+                self.tracker = OfflineEmissionsTracker(**codecarbon_params)
         except ValueError as e:
             print(f"ValueError: {e}")
             return None
