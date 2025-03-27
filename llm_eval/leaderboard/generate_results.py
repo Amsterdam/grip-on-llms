@@ -10,7 +10,7 @@ from llm_eval.utils.metadata import get_device_info, get_environment_info
 class Leaderboard:
     """Run benchmarks for a number of models and generate the data to be presented"""
 
-    def __init__(self, llms, benchmarks):
+    def __init__(self, llms, benchmarks, codecarbon_params):
         """
         Args:
             llms (list): List of LLMs.
@@ -19,6 +19,7 @@ class Leaderboard:
         """
         self.llms = llms
         self.benchmarks = benchmarks
+        self.codecarbon_params = codecarbon_params
 
     def run_comparison(self, results_path=None):
         """
@@ -32,7 +33,8 @@ class Leaderboard:
         results = []
         for llm in tqdm(self.llms, desc="LLMs"):
             for benchmark in tqdm(self.benchmarks, desc="Benchmarks"):
-                llm.initialize_carbon_tracking()
+                self.codecarbon_params["project_name"] = f"{benchmark.name}-{llm.model_name}"
+                llm.initialize_carbon_tracking(self.codecarbon_params)
 
                 start_time = datetime.now()
                 benchmark_results = benchmark.eval(llm)
