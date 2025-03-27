@@ -31,7 +31,7 @@ def test_mmlu_nl_gpt():
 
     source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
     data_folder = "./data"
-    mmlu_nl_bench = MMLU(source, data_folder, categories=["moral_disputes"])
+    mmlu_nl_bench = MMLU("MMLU-NL", source, data_folder, categories=["moral_disputes"])
 
     mmlu_nl_bench.eval(gpt, "results_gpt_mmlu")
 
@@ -64,7 +64,7 @@ def test_mmlu_nl_hf():
 
     source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
     data_folder = "./data"
-    mmlu_nl_bench = MMLU(source, data_folder, categories=["moral_disputes"])
+    mmlu_nl_bench = MMLU("MMLU-NL", source, data_folder, categories=["moral_disputes"])
 
     mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu")
 
@@ -95,7 +95,7 @@ def test_arc_nl_hf():
 
     source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_arc/nl_validation.json"
     data_folder = "./data"
-    arc_nl_bench = ARC(source, data_folder, categories=["LEAP"])
+    arc_nl_bench = ARC("ARC-NL", source, data_folder, categories=["LEAP"])
 
     arc_nl_bench.eval(tinyllama, "results_tinyllama_arc")
 
