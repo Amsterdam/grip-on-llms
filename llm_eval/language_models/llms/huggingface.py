@@ -18,8 +18,8 @@ class UnsupportedModelError(Exception):
 class HuggingFaceLLM(BaseLLM):
     """A class to handle self-hosted HG models"""
 
-    def __init__(self, model_name, hf_token, provider, hf_cache=None, params=dict):
-        super().__init__(model_name, provider, params if params is not None else {})
+    def __init__(self, model_name, hf_token, uses_api, hf_cache=None, params=dict):
+        super().__init__(model_name, uses_api, params if params is not None else {})
 
         self.hf_token = hf_token
         self.hf_cache = hf_cache
