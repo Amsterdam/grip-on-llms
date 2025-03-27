@@ -51,7 +51,7 @@ poetry run pre-commit install
 When running CodeCarbon for the first time, the output will display hardware information. Occasionally, an unknown CPU error may occur. If this happens, manually add the CPU and its TDP value, which can be found online, to the cpu_power.csv file located at: /anaconda/envs/{name environment}/lib/{python version}/site-packages/codecarbon/data/hardware/cpu_power.csv.
 
 ```bash
-vim /anaconda/envs/azureml_py310/lib/python3.10/site-packages/codecarbon/data/hardware/cpu_power.csv
+vim /anaconda/envs/{name environment}/lib/{python version}/site-packages/codecarbon/data/hardware/cpu_power.csv
 ```
 
 The code has been tested with Python 3.9 on Linux.
