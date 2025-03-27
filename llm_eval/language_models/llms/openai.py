@@ -12,8 +12,8 @@ class OpenAILLM(BaseLLM):
     Expects Azure deployment and corresponding endpoint, key, etc.
     """
 
-    def __init__(self, model_name, api_endpoint, api_key, api_version, provider, params=dict):
-        super().__init__(model_name, provider, params if params is not None else {})
+    def __init__(self, model_name, api_endpoint, api_key, api_version, uses_api, params=dict):
+        super().__init__(model_name, uses_api, params if params is not None else {})
 
         self.api_endpoint = api_endpoint
         self.api_key = api_key
