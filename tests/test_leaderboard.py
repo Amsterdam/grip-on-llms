@@ -94,22 +94,27 @@ def test_leaderboard():
             )
         )
 
-    prompt_type = "detailed"
+    simple_benches = []
     int_data_path = "./data/INT-Duidelijke-Taal/CrowdsourcingResults.csv"
-    int_simplification_bench = INT_Duidelijke_Taal(
-        benchmark_name=f"INT_Duidelijke_Taal-{prompt_type}",
-        data_path=int_data_path,
-        prompt_type=prompt_type,
-    )
-
     amsterdam_simplification_path = (
         "./data/Amsterdam-Simplification/complex-simple-v1-anonymized.csv"
     )
-    amsterdam_simplification_bench = AmsterdamSimplification(
-        benchmark_name=f"AmsterdamSimplification-{prompt_type}",
-        data_path=amsterdam_simplification_path,
-        prompt_type=prompt_type,
-    )
+    for prompt_type in ["detailed", "simple"]:
+        simple_benches.append(
+            INTDuidelijkeTaal(
+                benchmark_name=f"INT_Duidelijke_Taal-{prompt_type}",
+                data_path=int_data_path,
+                prompt_type=prompt_type,
+            )
+        )
+
+        simple_benches.append(
+            AmsterdamSimplification(
+                benchmark_name=f"AmsterdamSimplification-{prompt_type}",
+                data_path=amsterdam_simplification_path,
+                prompt_type=prompt_type,
+            )
+        )
 
     logging.info("Running comparison")
     leaderboard = Leaderboard(
