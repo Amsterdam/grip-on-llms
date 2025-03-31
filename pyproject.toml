@@ -17,6 +17,10 @@ openai = "^1.64.0"
 torch = "^2.6.0"
 transformers = "^4.49.0"
 codecarbon = "^2.8.3"
+evaluate = "^0.4.3"
+sacrebleu = "^2.5.1"
+sacremoses = "^0.1.1"
+nltk = "^3.9.1"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
