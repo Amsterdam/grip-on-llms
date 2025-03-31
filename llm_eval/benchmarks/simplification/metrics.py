@@ -1,0 +1,54 @@
+"""Implementation of simplification metrics"""
+
+import evaluate
+
+hf_sari = evaluate.load("sari")
+hf_bleu = evaluate.load("bleu")
+hf_meteor = evaluate.load("meteor")
+
+
+def sari(sources, predictions, references):
+    references = list(map(list, references))
+    sari_score = hf_sari.compute(sources=sources, predictions=predictions, references=references)
+    return sari_score
+
+
+def bleu(predictions, references):
+    bleu_score = hf_bleu.compute(predictions=predictions, references=references)
+    return bleu_score
+
+
+def meteor(predictions, references):
+    meteor_score = hf_meteor.compute(predictions=predictions, references=references)
+    return meteor_score
+
+
+if __name__ == "__main__":
+    # Example data from the INT Duidelijke Taal dataset
+    sources = [
+        "Thans gaat ongeveer 55% van de kinderen in de schoolgaande leeftijd naar "
+        "school, waarvan 48% uit meisjes bestaat.",
+        "Hoewel 47% van de beroepsbevolking in Mauritanië werkzaam is in de landbouw, "
+        "is het land niet zelfvoorzienend.",
+    ]
+    predictions = [
+        "Nu gaat ongeveer 55% van alle kinderen die naar school kunnen, ook echt naar "
+        "school. Van deze groep is 48% meisje.",
+        "In Mauritanië werkt 47% van de mensen in de landbouw. Toch kan het land niet "
+        "genoeg voedsel voor zichzelf maken.",
+    ]
+    references = [
+        "Op dit moment gaat iets meer dan de helft van de kinderen die naar school "
+        "kunnen, namelijk 55%, ook daadwerkelijk naar school. Van deze groep zijn 48% "
+        "meisjes.",
+        "In Mauritanië werkt bijna de helft van de mensen in de landbouw. Toch kan "
+        "het land niet al het voedsel produceren dat het nodig heeft.",
+    ]
+
+    sari_score = sari(sources=sources, predictions=predictions, references=references)
+    bleu_score = bleu(predictions=predictions, references=references)
+    meteor_score = meteor(predictions=predictions, references=references)
+
+    print(f"Sari: {sari_score}")
+    print(f"BLEU: {bleu_score}")
+    print(f"Meteor: {meteor_score}")
