@@ -9,6 +9,14 @@ from llm_eval.leaderboard import Leaderboard
 
 
 def test_leaderboard():
+    codecarbon_params = {
+        "country_iso_code": "SWE",
+        "region": "sweden",
+        "allow_multiple_runs": True,
+        "save_to_file": False,
+        "pue": 1.185,
+    }
+
     gpt_params = {
         "frequency_penalty": 0,
         "presence_penalty": 0,
@@ -24,6 +32,7 @@ def test_leaderboard():
         api_key=gpt_secrets["API_KEY"],
         api_version=gpt_secrets["API_VERSION"],
         params=gpt_params,
+        uses_api=True,
     )
 
     hf_secrets = get_hf_secrets()
@@ -45,6 +54,7 @@ def test_leaderboard():
         #        hf_cache=os.environ["HF_CACHE"],
         hf_cache=None,
         params=hf_params,
+        uses_api=False,
     )
 
     logging.info("Setting up benchmarks")
@@ -59,8 +69,9 @@ def test_leaderboard():
     logging.info("Running comparison")
     leaderboard = Leaderboard(
         llms=[gpt, tinyllama],
-        # llms = [tinyllama],
+        # llms=[tinyllama],
         benchmarks=[mmlu_nl_bench, arc_nl_bench],
+        codecarbon_params=codecarbon_params,
     )
     leaderboard.run_comparison(results_path="leaderboard")
 

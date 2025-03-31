@@ -46,6 +46,14 @@ poetry install
 poetry run pre-commit install
 ```
 
+5) Optional: Manually set CPU power TDP value if requested.
+
+When running CodeCarbon for the first time, the output will display hardware information. Occasionally, an unknown CPU error may occur. If this happens, manually add the CPU and its TDP value, which can be found online, to the cpu_power.csv file located at: /anaconda/envs/{name environment}/lib/{python version}/site-packages/codecarbon/data/hardware/cpu_power.csv.
+
+```bash
+vim /anaconda/envs/{name environment}/lib/{python version}/site-packages/codecarbon/data/hardware/cpu_power.csv
+```
+
 The code has been tested with Python 3.9 on Linux.
 
 ## Contributing

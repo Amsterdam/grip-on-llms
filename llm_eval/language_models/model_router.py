@@ -24,6 +24,7 @@ class LLMRouter:
         hf_token=None,
         hf_cache=None,
         params=None,
+        uses_api=False,
     ):
         """Get corresponding LLM instance based on the specified provider and model.
 
@@ -54,6 +55,7 @@ class LLMRouter:
                     api_key=api_key,
                     api_version=api_version,
                     params=params,
+                    uses_api=uses_api,
                 )
             else:
                 raise NotImplementedError(
@@ -61,7 +63,11 @@ class LLMRouter:
                 )
         elif provider == "huggingface":
             return HuggingFaceLLM(
-                model_name=model_name, hf_token=hf_token, hf_cache=hf_cache, params=params
+                model_name=model_name,
+                hf_token=hf_token,
+                hf_cache=hf_cache,
+                params=params,
+                uses_api=uses_api,
             )
 
         else:
