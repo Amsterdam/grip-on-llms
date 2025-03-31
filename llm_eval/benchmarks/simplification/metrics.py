@@ -5,22 +5,29 @@ import evaluate
 hf_sari = evaluate.load("sari")
 hf_bleu = evaluate.load("bleu")
 hf_meteor = evaluate.load("meteor")
+# FYI: bertscore for dutch supposedly uses bert-base-multilingual-cased
+hf_bertscore = evaluate.load("bertscore")
 
 
 def sari(sources, predictions, references):
     references = list(map(list, references))
-    sari_score = hf_sari.compute(sources=sources, predictions=predictions, references=references)
-    return sari_score
+    score = hf_sari.compute(sources=sources, predictions=predictions, references=references)
+    return score
 
 
 def bleu(predictions, references):
-    bleu_score = hf_bleu.compute(predictions=predictions, references=references)
-    return bleu_score
+    score = hf_bleu.compute(predictions=predictions, references=references)
+    return score
 
 
 def meteor(predictions, references):
-    meteor_score = hf_meteor.compute(predictions=predictions, references=references)
-    return meteor_score
+    score = hf_meteor.compute(predictions=predictions, references=references)
+    return score
+
+
+def bertscore(predictions, references, lang="nl"):
+    score = hf_bertscore.compute(predictions=predictions, references=references, lang=lang)
+    return score
 
 
 if __name__ == "__main__":
@@ -48,7 +55,9 @@ if __name__ == "__main__":
     sari_score = sari(sources=sources, predictions=predictions, references=references)
     bleu_score = bleu(predictions=predictions, references=references)
     meteor_score = meteor(predictions=predictions, references=references)
+    bert_score = bertscore(predictions=predictions, references=references, lang="nl")
 
     print(f"Sari: {sari_score}")
     print(f"BLEU: {bleu_score}")
     print(f"Meteor: {meteor_score}")
+    print(f"bertscore: {bert_score}")

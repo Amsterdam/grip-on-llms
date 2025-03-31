@@ -126,7 +126,9 @@ class SimplificationBaseBenchmark(BaseBenchmark):
         prompt_template = PROMPT_TEMPLATES[self.prompt_type][self.language]
         benchmark_results = []
 
-        for source, target in tqdm(zip(sources_to_process, targets_to_process)):
+        for source, target in tqdm(
+            zip(sources_to_process, targets_to_process), desc=f"Running {self.name}"
+        ):
             prompt = prompt_template.format(
                 GRANULARITY=self.granularity, LEVEL=self.level, TEXT=source
             )
@@ -151,8 +153,16 @@ class SimplificationBaseBenchmark(BaseBenchmark):
         sari_score = metrics.sari(sources=sources, predictions=predictions, references=references)
         bleu_score = metrics.bleu(predictions=predictions, references=references)
         meteor_score = metrics.meteor(predictions=predictions, references=references)
+        bert_score = metrics.bertscore(
+            predictions=predictions, references=references, lang=self.language.lower()
+        )
 
-        return {"bleu": bleu_score, "sari": sari_score, "meteor": meteor_score}
+        return {
+            "bleu": bleu_score,
+            "sari": sari_score,
+            "meteor": meteor_score,
+            "bert_score": bert_score,
+        }
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
