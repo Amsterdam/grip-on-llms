@@ -152,9 +152,11 @@ def test_leaderboard():
 
     logging.info("Running comparison")
     leaderboard = Leaderboard(
-        llms=[gpt, tinyllama],
         # llms=[tinyllama],
+        llms=[gpt, tinyllama, mistral, llama, phi, falcon],
+        # llms=[mistral, falcon],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches,
+#        benchmarks=[arc_nl_bench, mmlu_nl_bench],
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )
