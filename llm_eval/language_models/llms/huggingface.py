@@ -1,5 +1,6 @@
 """Support for locally-hosted HuggingFace models."""
 import logging
+import re
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -44,6 +45,26 @@ class HuggingFaceLLM(BaseLLM):
         )
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=self.hf_cache, **kwargs)
 
+    def clean_and_extract(self, input_string):
+        """Clean response string using regex."""
+        # Remove everything between [] and <> (including the brackets)
+        cleaned_string = re.sub(r"\[.*?\]|\<.*?\>", "", input_string)
+
+        # Check if the string contains "Answer:"
+        answer_match = re.search(r"\bAnswer:\s*([A-D])\.", cleaned_string.strip())
+
+        if answer_match:
+            # If "Answer:" is found, return the letter
+            return answer_match.group(1)
+
+        # If no "Answer:" is found, extract the first valid letter
+        match = re.match(r"^\s*([A-D])\.\s*", cleaned_string.strip())
+
+        if match:
+            return match.group(1)
+
+        return input_string
+
     def _prompt(self, prompt, context=None, system=None, force_format=None):
         """Prompt model by optionally providing a custom system prompt or context"""
         if not self.model:
@@ -51,6 +72,7 @@ class HuggingFaceLLM(BaseLLM):
 
         # conversation = [{"role": "user", "content": prompt}]
         # formatted_prompt = self.tokenizer.apply_chat_template(conversation, tokenize=False)
+
         formatted_prompt = format_prompt(prompt, model_name=self.model_name)
 
         device = get_device()
@@ -65,11 +87,11 @@ class HuggingFaceLLM(BaseLLM):
             # return_full_text=False,
             **self.params,
         )
-
         response = self.tokenizer.decode(output[0], skip_special_tokens=True).replace(
             formatted_prompt.removeprefix("<s>"), ""
         )
 
+        response = self.clean_and_extract(response)
         return response
 
 
