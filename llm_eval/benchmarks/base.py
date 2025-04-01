@@ -5,18 +5,38 @@ generate LLM responses and evaluate them.
 """
 import json
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 
 class BaseBenchmark(ABC):
     """Base benchmark class"""
 
-    def __init__(self, name):
+    def __init__(self, name, source_url=None, data_path=None):
         self._name = name
+
+        if not source_url and not data_path:
+            raise ValueError("At least one of source_url or data_path must be provided")
+
+        self._source_url = source_url
+        if data_path:
+            self._data_path = Path(data_path)
+        else:
+            self._data_path = Path("./data") / self.name / "data.json"
 
     @property
     def name(self):
         """Property to get the benchmark name"""
         return self._name
+
+    @property
+    def source_url(self):
+        """Property to get the source url"""
+        return self._source_url
+
+    @property
+    def data_path(self):
+        """Property to get the data path"""
+        return self._data_path
 
     def run(self, llm, results_path=None):
         """Run the benchmark using the provided LLM."""
@@ -70,6 +90,8 @@ class BaseBenchmark(ABC):
         """Get benchmark metadata for versioning purposes"""
         metadata = {
             "name": self.name,
+            "source_url": self.source_url,
+            "data_path": self.data_path,
         }
         metadata.update(self._get_own_metadata())
         return metadata

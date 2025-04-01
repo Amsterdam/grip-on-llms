@@ -1,7 +1,8 @@
 """Basic tests to check whether a benchmark works as expected"""
 import logging
+from pathlib import Path
 
-from env_setup import get_gpt_secrets, get_hf_secrets
+from env_setup import benchmark_data_folder, get_gpt_secrets, get_hf_secrets
 
 from llm_eval.benchmarks import ARC, MMLU, AmsterdamSimplification, INTDuidelijkeTaal
 from llm_eval.language_models import LLMRouter
@@ -58,13 +59,18 @@ def test_leaderboard():
     )
 
     logging.info("Setting up benchmarks")
-    mmlu_source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
-    data_folder = "./data"
-    mmlu_nl_bench = MMLU("MMLU-NL", mmlu_source, data_folder, categories=["moral_disputes"])
 
-    arc_source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_arc/nl_validation.json"
-    data_folder = "./data"
-    arc_nl_bench = ARC("ARC-NL", arc_source, data_folder, categories=["LEAP"])
+    # Run mmlu using the local dump
+    benchmark_name = "MMLU-NL"
+    data_path = Path(benchmark_data_folder) / benchmark_name / "mmmlu_nl_dev.json"
+    mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=["moral_disputes"])
+    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu_after")
+
+    # Run arc using the local dump
+    benchmark_name = "ARC-NL"
+    data_path = Path(benchmark_data_folder) / benchmark_name / "marc_nl_validation.json"
+    arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
+    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc_after")
 
     simple_benches = []
     int_data_path = "./data/INT-Duidelijke-Taal/CrowdsourcingResults.csv"

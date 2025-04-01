@@ -21,7 +21,6 @@ References:
 arXiv preprint arXiv:2009.03300 (2020).
 """
 import json
-from pathlib import Path
 
 import requests
 from tqdm import tqdm
@@ -56,13 +55,10 @@ class MMLU(BaseBenchmark):
 
     """
 
-    def __init__(self, benchmark_name, source_url, data_dir, categories=None):
+    def __init__(self, benchmark_name, source_url=None, data_path=None, categories=None):
         """Initialize MMLU benchmark."""
-        super().__init__(benchmark_name)
+        super().__init__(benchmark_name, source_url, data_path)
 
-        self.source_url = source_url
-        self.data_dir = Path(data_dir) / self.name
-        self.data_path = self.data_dir / "data.json"
         self.categories = categories
         self.data = None
         self.results = {}
@@ -71,7 +67,6 @@ class MMLU(BaseBenchmark):
 
     def _prep_data(self):
         """Download the benchmark data if not available and load it."""
-        self.data_dir.mkdir(parents=True, exist_ok=True)
         if not self.data_path.exists():
             self._download_data()
         self._load_data()
@@ -79,6 +74,7 @@ class MMLU(BaseBenchmark):
     def _download_data(self):
         """Download the data"""
         response = requests.get(self.source_url)
+        self.data_path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.data_path, "wb") as f:
             f.write(response.content)
 

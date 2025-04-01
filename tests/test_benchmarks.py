@@ -1,7 +1,8 @@
 """Basic tests to check whether a benchmark works as expected."""
 import logging
+from pathlib import Path
 
-from env_setup import get_gpt_secrets, get_hf_secrets
+from env_setup import benchmark_data_folder, get_gpt_secrets, get_hf_secrets
 
 from llm_eval.benchmarks import ARC, MMLU, AmsterdamSimplification, INTDuidelijkeTaal
 from llm_eval.language_models import LLMRouter
@@ -63,11 +64,17 @@ def test_mmlu_nl_gpt():
 
     gpt = get_gpt()
 
-    source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
-    data_folder = "./data"
-    mmlu_nl_bench = MMLU("MMLU-NL", source, data_folder, categories=["moral_disputes"])
+    benchmark_name = "MMLU-NL"
 
-    mmlu_nl_bench.eval(gpt, "results_gpt_mmlu")
+    # Run downloading from the url (tricky on azure)
+    source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
+    mmlu_nl_bench = MMLU(benchmark_name, source_url=source, categories=["moral_disputes"])
+    mmlu_nl_bench.eval(gpt, "results_gpt_mmlu_before")
+
+    # Run using the local dump
+    data_path = Path(benchmark_data_folder) / benchmark_name / "mmmlu_nl_dev.json"
+    mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=["moral_disputes"])
+    mmlu_nl_bench.eval(gpt, "results_gpt_mmlu_after")
 
 
 def test_mmlu_nl_hf():
@@ -76,11 +83,17 @@ def test_mmlu_nl_hf():
 
     tinyllama = get_hf_model("tiny-llama")
 
-    source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
-    data_folder = "./data"
-    mmlu_nl_bench = MMLU("MMLU-NL", source, data_folder, categories=["moral_disputes"])
+    benchmark_name = "MMLU-NL"
 
-    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu")
+    # Run downloading from the url (tricky on azure)
+    source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
+    mmlu_nl_bench = MMLU(benchmark_name, source_url=source, categories=["moral_disputes"])
+    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu_before")
+
+    # Run using the local dump
+    data_path = Path(benchmark_data_folder) / benchmark_name / "mmmlu_nl_dev.json"
+    mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=["moral_disputes"])
+    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu_after")
 
 
 def test_arc_nl_hf():
@@ -89,11 +102,17 @@ def test_arc_nl_hf():
 
     tinyllama = get_hf_model("tiny-llama")
 
-    source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_arc/nl_validation.json"
-    data_folder = "./data"
-    arc_nl_bench = ARC("ARC-NL", source, data_folder, categories=["LEAP"])
+    benchmark_name = "ARC-NL"
 
-    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc")
+    # Run downloading from the url (tricky on azure)
+    source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_arc/nl_validation.json"
+    arc_nl_bench = ARC(benchmark_name, source_url=source, categories=["LEAP"])
+    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc_before")
+
+    # Run using the local dump
+    data_path = Path(benchmark_data_folder) / benchmark_name / "marc_nl_validation.json"
+    arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
+    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc_after")
 
 
 def test_simplification_gpt():
@@ -124,7 +143,7 @@ def test_simplification_gpt():
 
 
 if __name__ == "__main__":
-    test_mmlu_nl_gpt()
-    test_mmlu_nl_hf()
+    # test_mmlu_nl_gpt()
+    # test_mmlu_nl_hf()
     test_arc_nl_hf()
     test_simplification_gpt()

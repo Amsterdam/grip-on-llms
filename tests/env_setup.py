@@ -34,6 +34,8 @@ key_vault = KeyVault(kv_uri, azure_credential)
 hf_cache = key_vault.get_secret("gp-hf-cache")
 os.environ["HF_HOME"] = hf_cache
 
+benchmark_data_folder = key_vault.get_secret("gp-shared-benchmark-data-path")
+
 
 def get_hf_secrets():
     logging.info("Getting HuggingFace secrets")
