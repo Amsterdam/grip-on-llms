@@ -49,6 +49,7 @@ class HuggingFaceLLM(BaseLLM):
         """Clean response string using regex."""
         # Remove everything between [] and <> (including the brackets)
         cleaned_string = re.sub(r"\[.*?\]|\<.*?\>", "", input_string)
+        cleaned_string = cleaned_string.replace("\r\n", "").replace("\n\n", "").lstrip()
 
         # Check if the string contains "Answer:"
         answer_match = re.search(r"\bAnswer:\s*([A-D])\.", cleaned_string.strip())
@@ -58,12 +59,12 @@ class HuggingFaceLLM(BaseLLM):
             return answer_match.group(1)
 
         # If no "Answer:" is found, extract the first valid letter
-        match = re.match(r"^\s*([A-D])\.\s*", cleaned_string.strip())
+        match = re.search(r"\b([A-D])\b", cleaned_string)
 
         if match:
             return match.group(1)
 
-        return input_string
+        return cleaned_string
 
     def _prompt(self, prompt, context=None, system=None, force_format=None):
         """Prompt model by optionally providing a custom system prompt or context"""
