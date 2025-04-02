@@ -70,3 +70,7 @@ class OpenAILLM(BaseLLM):
             logging.info(f"Finish reason: {finish_reason}")
 
         return response.choices[0].message.content
+
+    def unload_model(self):
+        """Unload model on demand to free up memory and reduce resource usage"""
+        pass
