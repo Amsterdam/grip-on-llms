@@ -1,4 +1,5 @@
 """Support for locally-hosted HuggingFace models."""
+import gc
 import logging
 import re
 
@@ -94,6 +95,13 @@ class HuggingFaceLLM(BaseLLM):
 
         response = self.clean_and_extract(response)
         return response
+
+    def unload_model(self):
+        """Unload model on demand to free up memory"""
+        logging.info(f"Unloading {self.model_name}")
+        self.model = None
+        self.tokenizer = None
+        gc.collect()
 
 
 def get_device():
