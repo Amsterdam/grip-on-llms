@@ -24,6 +24,8 @@ def test_leaderboard():
         "allow_multiple_runs": True,
         "save_to_file": False,
         "pue": 1.185,
+        # Directly set log level as suppressing logs doesn't work in other ways
+        "log_level": "WARNING",
     }
 
     gpt_params = {
@@ -45,7 +47,7 @@ def test_leaderboard():
     )
 
     hf_secrets = get_hf_secrets()
-    hf_params = {
+    hf_inference_params = {
         "do_sample": True,
         "temperature": 0.6,
         "top_p": 0.65,
@@ -55,15 +57,37 @@ def test_leaderboard():
         "num_return_sequences": 1,
     }
 
+    hf_object_params = {
+        "provider": "huggingface",
+        "hf_token": hf_secrets["HF_TOKEN"],
+        "params": hf_inference_params,
+        "uses_api": False,
+    }
+
     logging.info("Initializing some HF model")
     tinyllama = LLMRouter.get_model(
-        provider="huggingface",
         model_name="tiny-llama",
-        hf_token=hf_secrets["HF_TOKEN"],
-        #        hf_cache=os.environ["HF_CACHE"],
-        hf_cache=None,
-        params=hf_params,
-        uses_api=False,
+        **hf_object_params,
+    )
+
+    mistral = LLMRouter.get_model(
+        model_name="mistral-7b-instruct-v0.3",
+        **hf_object_params,
+    )
+
+    llama = LLMRouter.get_model(
+        model_name="llama-3.1-8b-instruct",
+        **hf_object_params,
+    )
+
+    phi = LLMRouter.get_model(
+        model_name="phi-4-mini-instruct",
+        **hf_object_params,
+    )
+
+    falcon = LLMRouter.get_model(
+        model_name="falcon3-7b-instruct",
+        **hf_object_params,
     )
 
     logging.info("Setting up benchmarks")
@@ -154,6 +178,7 @@ def test_leaderboard():
     leaderboard = Leaderboard(
         # llms=[tinyllama],
         llms=[gpt, tinyllama, mistral, llama, phi, falcon],
+        # llms=[gpt, tinyllama],
         # llms=[mistral, falcon],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches,
 #        benchmarks=[arc_nl_bench, mmlu_nl_bench],
