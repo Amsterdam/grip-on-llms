@@ -61,6 +61,8 @@ class Leaderboard:
                     }
                 )
 
+            llm.unload_model()
+
         if results_path:
             with open(results_path, "w") as f:
                 json.dump(results, f, indent=4, default=str)
