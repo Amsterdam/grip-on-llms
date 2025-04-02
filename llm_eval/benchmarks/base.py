@@ -7,6 +7,9 @@ import json
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+import mmh3
+import numpy as np
+
 
 class BaseBenchmark(ABC):
     """Base benchmark class"""
@@ -38,9 +41,9 @@ class BaseBenchmark(ABC):
         """Property to get the data path"""
         return self._data_path
 
-    def run(self, llm, results_path=None):
+    def run(self, llm, results_path=None, n_samples=0):
         """Run the benchmark using the provided LLM."""
-        results = self._run_task(llm)
+        results = self._run_task(llm, results_path=results_path, n_samples=n_samples)
 
         if results_path:
             with open(results_path, "w") as f:
@@ -60,9 +63,9 @@ class BaseBenchmark(ABC):
 
         return score
 
-    def eval(self, llm, results_path=None):
+    def eval(self, llm, results_path=None, n_samples=0):
         """Run benchmark and calculate corresponding scores"""
-        run_output = self.run(llm)
+        run_output = self.run(llm, n_samples=n_samples)
         score = self.score(run_output)
 
         results = {
@@ -77,9 +80,26 @@ class BaseBenchmark(ABC):
         return results
 
     @abstractmethod
-    def _run_task(self, llm):
+    def _run_task(self, llm, n_samples=0):
         """Function to run a task should always be implemented"""
         raise NotImplementedError("Implement _run_task function")
+
+    def _sample_data(self, n_samples):
+        """
+        Get a consistent random sample of the data by hashing elementss,
+        sorting them and then taking first n
+        """
+        data = self._get_hashing_data_for_sampling()
+        # ended up using murmurhash because it's supposed to be fast and consistent
+        # we could have also done pyhash.xx_64
+        hashed_data = [mmh3.hash(entry) for entry in data]
+        indices = np.argsort(hashed_data)
+        return indices[:n_samples]
+
+    @abstractmethod
+    def _get_hashing_data_for_sampling(self):
+        """Function to get hashing data for samplig should always be implemented"""
+        raise NotImplementedError("Implement _get_hashing_data_for_sampling function")
 
     @abstractmethod
     def _calculate_metric(self, results):

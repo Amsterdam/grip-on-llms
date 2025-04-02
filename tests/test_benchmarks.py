@@ -7,6 +7,8 @@ from env_setup import benchmark_data_folder, get_gpt_secrets, get_hf_secrets
 from llm_eval.benchmarks import ARC, MMLU, AmsterdamSimplification, INTDuidelijkeTaal
 from llm_eval.language_models import LLMRouter
 
+N_SAMPLES = 10
+
 
 def get_gpt():
     """Get a gpt instance"""
@@ -87,13 +89,15 @@ def test_mmlu_nl_hf():
 
     # Run downloading from the url (tricky on azure)
     source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/nl_dev.json"
-    mmlu_nl_bench = MMLU(benchmark_name, source_url=source, categories=["moral_disputes"])
-    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu_before")
+    # mmlu_nl_bench = MMLU(benchmark_name, source_url=source, categories=["moral_disputes"])
+    mmlu_nl_bench = MMLU(benchmark_name, source_url=source, categories=[])
+    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu_before", n_samples=N_SAMPLES)
 
     # Run using the local dump
     data_path = Path(benchmark_data_folder) / benchmark_name / "mmmlu_nl_dev.json"
-    mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=["moral_disputes"])
-    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu_after")
+    # mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=["moral_disputes"])
+    mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=[])
+    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu_after", n_samples=N_SAMPLES)
 
 
 def test_arc_nl_hf():
@@ -106,13 +110,15 @@ def test_arc_nl_hf():
 
     # Run downloading from the url (tricky on azure)
     source = "http://nlp.uoregon.edu/download/okapi-eval/datasets/m_arc/nl_validation.json"
-    arc_nl_bench = ARC(benchmark_name, source_url=source, categories=["LEAP"])
-    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc_before")
+    # arc_nl_bench = ARC(benchmark_name, source_url=source, categories=["LEAP"])
+    arc_nl_bench = ARC(benchmark_name, source_url=source, categories=[])
+    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc_before", n_samples=N_SAMPLES)
 
     # Run using the local dump
     data_path = Path(benchmark_data_folder) / benchmark_name / "marc_nl_validation.json"
-    arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
-    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc_after")
+    # arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
+    arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=[])
+    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc_after", n_samples=N_SAMPLES)
 
 
 def test_simplification_gpt():
@@ -138,12 +144,12 @@ def test_simplification_gpt():
         prompt_type=prompt_type,
     )
 
-    int_simplification_bench.eval(gpt, "results_gpt_simple-int")
-    amsterdam_simplification_bench.eval(gpt, "results_gpt_simple-city")
+    int_simplification_bench.eval(gpt, "results_gpt_simple-int", n_samples=N_SAMPLES)
+    amsterdam_simplification_bench.eval(gpt, "results_gpt_simple-city", n_samples=N_SAMPLES)
 
 
 if __name__ == "__main__":
     # test_mmlu_nl_gpt()
-    # test_mmlu_nl_hf()
+    test_mmlu_nl_hf()
     test_arc_nl_hf()
     test_simplification_gpt()

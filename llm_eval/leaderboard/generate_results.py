@@ -10,7 +10,7 @@ from llm_eval.utils.metadata import get_device_info, get_environment_info
 class Leaderboard:
     """Run benchmarks for a number of models and generate the data to be presented"""
 
-    def __init__(self, llms, benchmarks, codecarbon_params):
+    def __init__(self, llms, benchmarks, codecarbon_params, n_samples=0):
         """
         Args:
             llms (list): List of LLMs.
@@ -20,6 +20,7 @@ class Leaderboard:
         self.llms = llms
         self.benchmarks = benchmarks
         self.codecarbon_params = codecarbon_params
+        self.n_samples = n_samples
 
     def run_comparison(self, results_path=None):
         """
@@ -37,7 +38,7 @@ class Leaderboard:
                 llm.initialize_carbon_tracking(self.codecarbon_params)
 
                 start_time = datetime.now()
-                benchmark_results = benchmark.eval(llm)
+                benchmark_results = benchmark.eval(llm, n_samples=self.n_samples)
 
                 end_time = datetime.now()
 
@@ -46,6 +47,7 @@ class Leaderboard:
                         "metadata": {
                             "llm": llm.get_metadata(),
                             "benchmark": benchmark.get_metadata(),
+                            "n_samples": self.n_samples,
                             "run": {
                                 "timestamp": datetime.now().strftime(datetime_format),
                                 "timestamp_bench_start": start_time.strftime(datetime_format),
