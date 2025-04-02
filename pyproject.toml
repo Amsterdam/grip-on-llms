@@ -25,6 +25,8 @@ rouge_score = "^0.1.2"
 nltk = "^3.9.1"
 mmh3 = "5.1.0"
 datasets = "^3.5.0"
+protobuf = "^6.30.2"
+sentencepiece = "0.2.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
