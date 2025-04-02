@@ -111,22 +111,22 @@ class SimplificationBaseBenchmark(BaseBenchmark):
         """Access target sentences (ground-truth)"""
         return self._targets
 
-    def _run_task(self, llm, results_path=None, limit_entries=10):
+    def _get_hashing_data_for_sampling(self):
+        return [f"{source}-{target}" for source, target in zip(self.sources, self.targets)]
+
+    def _run_task(self, llm, results_path=None, n_samples=0):
         """Run the MMLU benchmark using the provided LLM."""
-        # Determine the number of entries to process
-        if limit_entries > 0:
-            sources_to_process = self.sources[:limit_entries]
-            targets_to_process = self.targets[:limit_entries]
+        if n_samples:
+            indices = self._sample_data(n_samples)
+            src_trg = list(zip(self.sources, self.targets))
+            data = [src_trg[ind] for ind in indices]
         else:
-            sources_to_process = self.sources
-            targets_to_process = self.targets
+            data = zip(self.sources, self.targets)
 
         prompt_template = PROMPT_TEMPLATES[self.prompt_type][self.language]
         benchmark_results = []
 
-        for source, target in tqdm(
-            zip(sources_to_process, targets_to_process), desc=f"Running {self.name}"
-        ):
+        for source, target in tqdm(data, desc=f"Running {self.name}"):
             prompt = prompt_template.format(
                 GRANULARITY=self.granularity, LEVEL=self.level, TEXT=source
             )
@@ -144,9 +144,8 @@ class SimplificationBaseBenchmark(BaseBenchmark):
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
         predictions = [entry["response"] for entry in results]
-        n_predictions = len(predictions)
-        sources = self.sources[:n_predictions]
-        references = self.targets[:n_predictions]
+        sources = [entry["source"] for entry in results]
+        references = [entry["target"] for entry in results]
 
         sari_score = metrics.sari(sources=sources, predictions=predictions, references=references)
         bleu_score = metrics.bleu(predictions=predictions, references=references)

@@ -63,14 +63,14 @@ def test_leaderboard():
     # Run mmlu using the local dump
     benchmark_name = "MMLU-NL"
     data_path = Path(benchmark_data_folder) / benchmark_name / "mmmlu_nl_dev.json"
-    mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=["moral_disputes"])
-    mmlu_nl_bench.eval(tinyllama, "results_tinyllama_mmlu_after")
+    # mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=["moral_disputes"])
+    mmlu_nl_bench = MMLU(benchmark_name, data_path=data_path, categories=[])
 
     # Run arc using the local dump
     benchmark_name = "ARC-NL"
     data_path = Path(benchmark_data_folder) / benchmark_name / "marc_nl_validation.json"
-    arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
-    arc_nl_bench.eval(tinyllama, "results_tinyllama_arc_after")
+    # arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
+    arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=[])
 
     simple_benches = []
     int_data_path = "./data/INT-Duidelijke-Taal/CrowdsourcingResults.csv"
@@ -94,27 +94,7 @@ def test_leaderboard():
             )
         )
 
-    simple_benches = []
-    int_data_path = "./data/INT-Duidelijke-Taal/CrowdsourcingResults.csv"
-    amsterdam_simplification_path = (
-        "./data/Amsterdam-Simplification/complex-simple-v1-anonymized.csv"
-    )
-    for prompt_type in ["detailed", "simple"]:
-        simple_benches.append(
-            INTDuidelijkeTaal(
-                benchmark_name=f"INT_Duidelijke_Taal-{prompt_type}",
-                data_path=int_data_path,
-                prompt_type=prompt_type,
-            )
-        )
-
-        simple_benches.append(
-            AmsterdamSimplification(
-                benchmark_name=f"AmsterdamSimplification-{prompt_type}",
-                data_path=amsterdam_simplification_path,
-                prompt_type=prompt_type,
-            )
-        )
+    n_samples = 10
 
     logging.info("Running comparison")
     leaderboard = Leaderboard(
@@ -122,6 +102,7 @@ def test_leaderboard():
         # llms=[tinyllama],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches,
         codecarbon_params=codecarbon_params,
+        n_samples=n_samples,
     )
     leaderboard.run_comparison(results_path="leaderboard")
 

@@ -85,13 +85,22 @@ class MMLU(BaseBenchmark):
                 entry for entry in self.data if any(cat in entry["id"] for cat in self.categories)
             ]
 
-    def _run_task(self, llm, results_path=None):
+    def _get_hashing_data_for_sampling(self):
+        return [entry["id"] for entry in self.data]
+
+    def _run_task(self, llm, results_path=None, n_samples=0):
         """Run the MMLU benchmark using the provided LLM."""
         if self.data is None:
             raise ValueError("Benchmark data is not loaded.")
 
+        if n_samples:
+            indices = self._sample_data(n_samples)
+            data = [self.data[ind] for ind in indices]
+        else:
+            data = self.data
+
         benchmark_results = []
-        for entry in tqdm(self.data):
+        for entry in tqdm(data):
             question_type = entry["id"].split("/")[0].replace("/", " ")
 
             prompt = prompt_template.format(
