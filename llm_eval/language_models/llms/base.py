@@ -80,6 +80,11 @@ class BaseLLM:
         """
         return self.prompt(prompt)
 
+    @abstractmethod
+    def unload_model(self):
+        """Unload model on demand to free up memory and reduce resource usage"""
+        raise NotImplementedError("Implement unload_model function")
+
     def get_metadata(self):
         """Get model metadata for versioning purposes"""
         metadata = {
