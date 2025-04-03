@@ -22,6 +22,7 @@ class HuggingFaceLLM(BaseLLM):
         self.hf_cache = hf_cache
         self.model = None
         self.tokenizer = None
+        self.device = "cpu"
 
     def _load_model(self):
         """
@@ -36,7 +37,7 @@ class HuggingFaceLLM(BaseLLM):
         model_id = model_config["id"]
         kwargs = {
             "torch_dtype": torch.bfloat16,
-            "device_map": "auto",
+            # "device_map": "auto",
             "token": self.hf_token,
         }
         kwargs.update(model_config["kwargs"])
@@ -44,6 +45,8 @@ class HuggingFaceLLM(BaseLLM):
         self.model = AutoModelForCausalLM.from_pretrained(
             model_id, cache_dir=self.hf_cache, **kwargs
         )
+        self.device = get_device()
+        self.model.to(self.device)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=self.hf_cache, **kwargs)
 
     def clean_and_extract(self, input_string):
@@ -77,9 +80,8 @@ class HuggingFaceLLM(BaseLLM):
 
         formatted_prompt = format_prompt(prompt, model_name=self.model_name)
 
-        device = get_device()
-        input_ids = self.tokenizer.encode(formatted_prompt, return_tensors="pt").to(device)
-        attention_mask = torch.ones(input_ids.shape).to(device)
+        input_ids = self.tokenizer.encode(formatted_prompt, return_tensors="pt").to(self.device)
+        attention_mask = torch.ones(input_ids.shape).to(self.device)
 
         output = self.model.generate(
             input_ids,
