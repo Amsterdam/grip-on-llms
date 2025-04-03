@@ -174,10 +174,13 @@ def test_leaderboard():
                 )
             )
 
+    n_samples = 2
+
     logging.info("Running comparison")
     leaderboard = Leaderboard(
         # llms=[tinyllama],
         llms=[gpt, tinyllama, mistral, llama, phi, falcon],
+        # llms=[phi],
         # llms=[gpt, tinyllama],
         # llms=[mistral, falcon],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches,
