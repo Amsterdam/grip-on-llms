@@ -1,5 +1,6 @@
 """Generate the data for the leaderboard"""
 import json
+import logging
 from datetime import datetime
 
 from tqdm import tqdm
@@ -34,32 +35,40 @@ class Leaderboard:
         results = []
         for llm in tqdm(self.llms, desc="LLMs"):
             for benchmark in tqdm(self.benchmarks, desc="Benchmarks"):
-                self.codecarbon_params["project_name"] = f"{benchmark.name}-{llm.model_name}"
-                llm.initialize_carbon_tracking(self.codecarbon_params)
+                try:
+                    self.codecarbon_params["project_name"] = f"{benchmark.name}-{llm.model_name}"
+                    llm.initialize_carbon_tracking(self.codecarbon_params)
 
-                start_time = datetime.now()
-                benchmark_results = benchmark.eval(llm, n_samples=self.n_samples)
+                    start_time = datetime.now()
+                    benchmark_results = benchmark.eval(llm, n_samples=self.n_samples)
 
-                end_time = datetime.now()
+                    end_time = datetime.now()
 
-                results.append(
-                    {
-                        "metadata": {
-                            "llm": llm.get_metadata(),
-                            "benchmark": benchmark.get_metadata(),
-                            "n_samples": self.n_samples,
-                            "run": {
-                                "timestamp": datetime.now().strftime(datetime_format),
-                                "timestamp_bench_start": start_time.strftime(datetime_format),
-                                "timestamp_bench_end": end_time.strftime(datetime_format),
-                                "time_bench_total": str(end_time - start_time),
-                                "system": get_system_metadata(),
+                    results.append(
+                        {
+                            "metadata": {
+                                "llm": llm.get_metadata(),
+                                "benchmark": benchmark.get_metadata(),
+                                "n_samples": self.n_samples,
+                                "run": {
+                                    "timestamp": datetime.now().strftime(datetime_format),
+                                    "timestamp_bench_start": start_time.strftime(datetime_format),
+                                    "timestamp_bench_end": end_time.strftime(datetime_format),
+                                    "time_bench_total": str(end_time - start_time),
+                                    "system": get_system_metadata(),
+                                },
+                                "code_carbon": llm.get_carbon_data(),
                             },
-                            "code_carbon": llm.get_carbon_data(),
-                        },
-                        "benchmark_results": benchmark_results,
-                    }
-                )
+                            "benchmark_results": benchmark_results,
+                        }
+                    )
+
+                    if results_path:
+                        with open(results_path + "_tmp", "a") as f:
+                            json.dump(results, f, default=str)
+
+                except Exception as e:
+                    logging.error(f"{llm.model_name} failed: {e}")
 
             llm.unload_model()
 
