@@ -184,7 +184,7 @@ def test_leaderboard():
         # llms=[gpt, tinyllama],
         # llms=[mistral, falcon],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches,
-#        benchmarks=[arc_nl_bench, mmlu_nl_bench],
+        # benchmarks=[arc_nl_bench, mmlu_nl_bench],
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )

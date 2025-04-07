@@ -70,9 +70,14 @@ class SimplificationBaseBenchmark(BaseBenchmark):
         prompt_type="detailed",
         level="B1",
         granularity="sentence",
+        preferred_response_format=None,
     ):
         """Initialize the benchmark."""
-        super().__init__(benchmark_name=benchmark_name, data_path=data_path)
+        super().__init__(
+            benchmark_name,
+            data_path=data_path,
+            preferred_response_format=preferred_response_format,
+        )
 
         self.language = language
         self.prompt_type = prompt_type

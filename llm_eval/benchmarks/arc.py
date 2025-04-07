@@ -62,9 +62,21 @@ class ARC(BaseBenchmark):
 
     """
 
-    def __init__(self, benchmark_name, source_url=None, data_path=None, categories=None):
+    def __init__(
+        self,
+        benchmark_name,
+        source_url=None,
+        data_path=None,
+        categories=None,
+        preferred_response_format="multiple_choice",
+    ):
         """Initialize ARC benchmark."""
-        super().__init__(benchmark_name=benchmark_name, source_url=source_url, data_path=data_path)
+        super().__init__(
+            benchmark_name=benchmark_name,
+            source_url=source_url,
+            data_path=data_path,
+            preferred_response_format=preferred_response_format,
+        )
 
         self.categories = categories
         self.data = None
@@ -121,7 +133,7 @@ class ARC(BaseBenchmark):
             )
 
             expected_answer = entry["answer"]
-            llm_response = llm.prompt(prompt)
+            llm_response = llm.prompt(prompt, response_format=self.preferred_response_format)
             # fmt: off
             result = {
                 "prompt": prompt,
