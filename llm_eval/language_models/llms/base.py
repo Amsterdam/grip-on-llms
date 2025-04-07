@@ -7,6 +7,8 @@ from abc import abstractmethod
 
 from codecarbon import OfflineEmissionsTracker
 
+from llm_eval.utils.string_utils import clean_and_extract_multiple_choice
+
 
 class TrackerNotStartedError(Exception):
     """Raises error whenever tracker is not started."""
@@ -26,11 +28,21 @@ class BaseLLM:
 
     def prompt(self, prompt, context=None, system=None, response_format=None):
         """Starts and stops code carbon tracker, and gets response from model."""
+        # Start carbon tracker
         if self.tracker:
             self.tracker.start()
+
+        # Generate the reposnse
         response = self._prompt(prompt, context, system, response_format)
+
+        # Stop tracker for the llm itself
         if self.tracker:
             self.tracker.stop()
+
+        # If a specific format is desired, post-process accordingly
+        if response_format == "multiple_choice":
+            response = clean_and_extract_multiple_choice(response)
+
         return response
 
     def initialize_carbon_tracking(self, codecarbon_params=dict):

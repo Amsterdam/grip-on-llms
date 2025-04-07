@@ -15,7 +15,13 @@ class BaseBenchmark(ABC):
     """Base benchmark class"""
 
     def __init__(
-        self, benchmark_name, source_url=None, data_dir=None, data_path=None, hf_repository=None
+        self,
+        benchmark_name,
+        source_url=None,
+        data_dir=None,
+        data_path=None,
+        hf_repository=None,
+        preferred_response_format=None,
     ):
         self._name = benchmark_name
 
@@ -31,6 +37,8 @@ class BaseBenchmark(ABC):
         self._data_path = (
             Path(data_path) if data_path else self._data_dir / self.name / "data.json"
         )
+
+        self._preferred_response_format = preferred_response_format
 
     @property
     def name(self):
@@ -56,6 +64,10 @@ class BaseBenchmark(ABC):
     def hf_repository(self):
         """Property to get the hugging face repository"""
         return self._hf_repository
+
+    def preferred_response_format(self):
+        """Property to get the preferred response format"""
+        return self._preferred_response_format
 
     def run(self, llm, results_path=None, n_samples=0):
         """Run the benchmark using the provided LLM."""
@@ -128,6 +140,7 @@ class BaseBenchmark(ABC):
             "name": self.name,
             "source_url": self.source_url,
             "data_path": self.data_path,
+            "preferred_response_format": self.preferred_response_format,
         }
         metadata.update(self._get_own_metadata())
         return metadata
