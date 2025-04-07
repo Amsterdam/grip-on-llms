@@ -53,6 +53,14 @@ class OpenAILLM(BaseLLM):
                     response_format={"type": "json_object"},
                 )
 
+            # Handled by base class
+            elif force_format == "multiple_choice":
+                response = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=conversation,
+                    **self.params,
+                )
+
             else:
                 raise NotImplementedError(
                     "Currently there is no support for special formats other than json"
