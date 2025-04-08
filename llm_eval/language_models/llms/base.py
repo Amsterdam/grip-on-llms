@@ -7,7 +7,10 @@ from abc import abstractmethod
 
 from codecarbon import OfflineEmissionsTracker
 
-from llm_eval.utils.string_utils import clean_and_extract_multiple_choice
+from llm_eval.utils.string_utils import (
+    clean_and_extract_multiple_choice,
+    clean_and_extract_open_text_answers,
+)
 
 
 class TrackerNotStartedError(Exception):
@@ -42,6 +45,8 @@ class BaseLLM:
         # If a specific format is desired, post-process accordingly
         if response_format == "multiple_choice":
             response = clean_and_extract_multiple_choice(response)
+        if not response_format:
+            response = clean_and_extract_open_text_answers(response)
 
         return response
 
