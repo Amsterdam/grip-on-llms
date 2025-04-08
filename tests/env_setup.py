@@ -30,6 +30,12 @@ logging.info("Setting up the key vault connection")
 kv_uri = os.getenv("KVUri")
 key_vault = KeyVault(kv_uri, azure_credential)
 
+# Change HuggingFace cache to shared storage account folder
+hf_cache = key_vault.get_secret("gp-hf-cache")
+os.environ["HF_HOME"] = hf_cache
+
+benchmark_data_folder = key_vault.get_secret("gp-shared-benchmark-data-path")
+
 
 def get_hf_secrets():
     logging.info("Getting HuggingFace secrets")

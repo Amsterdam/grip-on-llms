@@ -26,7 +26,7 @@ WIP
     Currently, we support Azure deployments of GPT as well as HuggingFace models.
 * [`tests`](./tests) - tests the usage of models and benchmarks.
 
-## Installation
+## Installation & Setup
 
 1) Clone this repository:
 
@@ -46,7 +46,13 @@ poetry install
 poetry run pre-commit install
 ```
 
-5) Optional: Manually set CPU power TDP value if requested.
+5) Optional: Change HuggingFace cache (e.g. to the shared storage account folder)
+When using HuggingFace model, evaluation metrics, etc, all necessary artefacts
+are cached in a default directory. To change this directory, you can set the
+environment variable `HF_HOME` (export prior to running experiments or set
+during run time using `os.environ["HF_HOME"] = {folder}`.
+
+6) Optional: Manually set CPU power TDP value if requested.
 
 When running CodeCarbon for the first time, the output will display hardware information. Occasionally, an unknown CPU error may occur. If this happens, manually add the CPU and its TDP value, which can be found online, to the cpu_power.csv file located at: /anaconda/envs/{name environment}/lib/{python version}/site-packages/codecarbon/data/hardware/cpu_power.csv.
 

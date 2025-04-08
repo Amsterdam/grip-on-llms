@@ -71,9 +71,7 @@ class SimplificationBaseBenchmark(BaseBenchmark):
         granularity="sentence",
     ):
         """Initialize the benchmark."""
-        super().__init__(benchmark_name)
-
-        self.data_path = data_path
+        super().__init__(benchmark_name, data_path=data_path)
 
         self.language = language
         self.prompt_type = prompt_type
