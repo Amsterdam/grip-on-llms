@@ -47,12 +47,22 @@ def llama_prompt(prompt, context=None, system=""):
 
 def tiny_llama_prompt(prompt, context=None, system=""):
     if context:
-        system_msg = f"[SYS] {DEFAULT_INTRO_CONTEXT} {system} [/SYS]"
+        system_msg = f"<|system|>{DEFAULT_INTRO_CONTEXT} {system}</s>"
         instruction = USING_CONTEXT.format(context=context, prompt=prompt)
-        formatted_prompt = f"<s>[INST] {system_msg} {instruction} [/INST]"
+        formatted_prompt = f"<|user|>{system_msg} {instruction}</s><|assistant|>"
     else:
-        system_msg = f"[SYS] {DEFAULT_INTRO} {system} [/SYS]"
-        formatted_prompt = f"<s>[INST] {system_msg} {prompt} [/INST]"
+        system_msg = f"<|system|>{DEFAULT_INTRO} {system}</s>"
+        formatted_prompt = f"<|user|>{system_msg} {prompt}</s><|assistant|>"
+    return formatted_prompt
+
+
+def phi_prompt(prompt, context=None, system=""):
+    formatted_prompt = (
+        "<|im_start|>system<|im_sep|>"
+        f"{DEFAULT_INTRO}"
+        "<|im_start|>user<|im_sep|>"
+        f"{prompt}<|im_end|>"
+    )
     return formatted_prompt
 
 
@@ -79,9 +89,9 @@ template_mapping = {
     "llama-13b-chat": llama_prompt,
     "llama-70b-chat": llama_prompt,
     "tiny-llama": tiny_llama_prompt,
-    "mistral-7b-instruct-v0.3": tiny_llama_prompt,
+    "mistral-7b-instruct-v0.3": llama_prompt,
     "llama-3.1-8b-instruct": llama_prompt,
-    "phi-4-mini-instruct": llama_prompt,
+    "phi-4-mini-instruct": phi_prompt,
     "falcon3-7b-instruct": falcon_prompt,
 }
 
