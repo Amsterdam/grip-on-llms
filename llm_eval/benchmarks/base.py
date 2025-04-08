@@ -14,13 +14,17 @@ import numpy as np
 class BaseBenchmark(ABC):
     """Base benchmark class"""
 
-    def __init__(self, name, source_url=None, data_path=None):
+    def __init__(self, name, source_url=None, data_path=None, hf_repository=None):
         self._name = name
 
-        if not source_url and not data_path:
-            raise ValueError("At least one of source_url or data_path must be provided")
+        if not source_url and not data_path and not hf_repository:
+            raise ValueError(
+                "At least one of source_url or data_path or hf_repository must be provided"
+            )
 
         self._source_url = source_url
+        self._hf_repository = hf_repository
+
         if data_path:
             self._data_path = Path(data_path)
         else:
@@ -40,6 +44,11 @@ class BaseBenchmark(ABC):
     def data_path(self):
         """Property to get the data path"""
         return self._data_path
+
+    @property
+    def hf_repository(self):
+        """Property to get the hugging face repository"""
+        return self._hf_repository
 
     def run(self, llm, results_path=None, n_samples=0):
         """Run the benchmark using the provided LLM."""

@@ -8,8 +8,8 @@ from abc import abstractmethod
 
 from tqdm import tqdm
 
+from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
-from llm_eval.benchmarks.simplification import metrics
 
 PROMPT_TEMPLATES = {
     "simple": {
