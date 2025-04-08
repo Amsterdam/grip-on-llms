@@ -4,7 +4,13 @@ from pathlib import Path
 
 from env_setup import benchmark_data_folder, get_gpt_secrets, get_hf_secrets
 
-from llm_eval.benchmarks import ARC, MMLU, AmsterdamSimplification, INTDuidelijkeTaal
+from llm_eval.benchmarks import (
+    ARC,
+    MMLU,
+    AmsterdamSimplification,
+    INTDuidelijkeTaal,
+    XSum,
+)
 from llm_eval.language_models import LLMRouter
 
 N_SAMPLES = 10
@@ -123,7 +129,7 @@ def test_arc_nl_hf():
 
 def test_simplification_gpt():
     """Test simplification benchmarks using GPT-4o model."""
-    logging.info("Testing MMLU using GPT")
+    logging.info("Testing simplification using GPT")
 
     gpt = get_gpt()
 
@@ -148,8 +154,23 @@ def test_simplification_gpt():
     amsterdam_simplification_bench.eval(gpt, "results_gpt_simple-city", n_samples=N_SAMPLES)
 
 
+def test_summarization_gpt():
+    """Test summarization benchmarks using GPT-4o model."""
+    logging.info("Testing summarization using GPT")
+
+    gpt = get_gpt()
+
+    for prompt_type in ["detailed", "simple"]:
+        bench_name = f"XSum-{prompt_type}"
+        summarization_bench = XSum(
+            benchmark_name=bench_name, language="EN", prompt_type=prompt_type
+        )
+        summarization_bench.eval(gpt, f"results/results_{bench_name}", n_samples=N_SAMPLES)
+
+
 if __name__ == "__main__":
     # test_mmlu_nl_gpt()
-    test_mmlu_nl_hf()
-    test_arc_nl_hf()
-    test_simplification_gpt()
+    # test_mmlu_nl_hf()
+    # test_arc_nl_hf()
+    # test_simplification_gpt()
+    test_summarization_gpt()

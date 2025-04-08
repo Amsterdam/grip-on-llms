@@ -10,9 +10,9 @@ hf_meteor = evaluate.load("meteor")
 hf_bertscore = evaluate.load("bertscore")
 
 
-def rouge(sources, predictions, references):
-    references = list(map(list, references))
-    score = hf_rouge.compute(sources=sources, predictions=predictions, references=references)
+def rouge(predictions, references):
+    # references = list(map(list, references))
+    score = hf_rouge.compute(predictions=predictions, references=references)
     return score
 
 
