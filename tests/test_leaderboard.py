@@ -36,7 +36,7 @@ def test_leaderboard():
 
     logging.info("Initializing GPT")
     gpt_secrets = get_gpt_secrets()
-    gpt = LLMRouter.get_model(
+    gpt_4o = LLMRouter.get_model(
         provider="azure",
         model_name="gpt-4o",
         api_endpoint=gpt_secrets["API_ENDPOINT"],
@@ -45,6 +45,26 @@ def test_leaderboard():
         params=gpt_params,
         uses_api=True,
     )
+
+    gpt_4o_mini = LLMRouter.get_model(
+        provider="azure",
+        model_name="gpt-4o-mini",
+        api_endpoint=gpt_secrets["API_ENDPOINT"],
+        api_key=gpt_secrets["API_KEY"],
+        api_version=gpt_secrets["API_VERSION"],
+        params=gpt_params,
+        uses_api=True,
+    )
+
+    # gpt_35_turbo = LLMRouter.get_model(
+    #     provider="azure",
+    #     model_name="gpt-3.5-turbo",
+    #     api_endpoint=gpt_secrets["API_ENDPOINT"],
+    #     api_key=gpt_secrets["API_KEY"],
+    #     api_version=gpt_secrets["API_VERSION"],
+    #     params=gpt_params,
+    #     uses_api=True,
+    # )
 
     hf_secrets = get_hf_secrets()
     hf_inference_params = {
@@ -86,7 +106,7 @@ def test_leaderboard():
     )
 
     falcon = LLMRouter.get_model(
-        model_name="falcon3-7b-instruct",
+        model_name="falcon-7b-instruct",
         **hf_object_params,
     )
 
@@ -104,7 +124,7 @@ def test_leaderboard():
     # arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
     arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=[])
 
-    translation_model = gpt
+    translation_model = gpt_4o_mini
     # translation_model = tinyllama
 
     en_nl_translator = TranslatorRouter.get_translator(
@@ -125,6 +145,7 @@ def test_leaderboard():
         int_data_path = (
             Path(benchmark_data_folder) / "INT-Duidelijke-Taal/CrowdsourcingResults.csv"
         )
+
         simple_benches.append(
             INTDuidelijkeTaal(
                 benchmark_name=f"INT_Duidelijke_Taal-{prompt_type}",
@@ -179,7 +200,7 @@ def test_leaderboard():
     logging.info("Running comparison")
     leaderboard = Leaderboard(
         # llms=[tinyllama],
-        llms=[gpt, tinyllama, mistral, llama, phi, falcon],
+        llms=[gpt_4o, tinyllama, mistral, llama, phi, falcon],
         # llms=[phi],
         # llms=[gpt, tinyllama],
         # llms=[mistral, falcon],
