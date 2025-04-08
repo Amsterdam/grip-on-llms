@@ -1,12 +1,19 @@
-"""Implementation of simplification metrics"""
+"""Implementation of tsummarization, simplification, translation, etc metrics"""
 
 import evaluate
 
+hf_rouge = evaluate.load("rouge")
 hf_sari = evaluate.load("sari")
 hf_bleu = evaluate.load("bleu")
 hf_meteor = evaluate.load("meteor")
 # FYI: bertscore for dutch supposedly uses bert-base-multilingual-cased
 hf_bertscore = evaluate.load("bertscore")
+
+
+def rouge(sources, predictions, references):
+    references = list(map(list, references))
+    score = hf_rouge.compute(sources=sources, predictions=predictions, references=references)
+    return score
 
 
 def sari(sources, predictions, references):
