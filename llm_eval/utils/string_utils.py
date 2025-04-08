@@ -22,3 +22,11 @@ def clean_and_extract_multiple_choice(input_string):
         return match.group(1)
 
     return cleaned_string
+
+
+def clean_and_extract_open_text_answers(input_string):
+    """Clean response string using regex."""
+    # Remove everything between [] and <> (including the brackets)
+    cleaned_string = re.sub(r"\[.*?\]|\<.*?\>", "", input_string)
+    cleaned_string = cleaned_string.replace("\r\n", "").replace("\n\n", "").lstrip()
+    return cleaned_string
