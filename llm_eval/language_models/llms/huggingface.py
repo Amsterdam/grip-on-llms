@@ -69,9 +69,13 @@ class HuggingFaceLLM(BaseLLM):
             # return_full_text=False,
             **self.params,
         )
-        response = self.tokenizer.decode(output[0], skip_special_tokens=True).replace(
-            formatted_prompt.removeprefix("<s>"), ""
+        # fmt: off
+        response = self.tokenizer.decode(
+            output[0][input_ids.shape[-1]:], skip_special_tokens=True
         )
+        # fmt: on
+        response = response.replace(formatted_prompt.removeprefix("<s>"), "")
+        response = response.removeprefix("assistant\n")
 
         return response
 
