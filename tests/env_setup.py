@@ -34,6 +34,8 @@ key_vault = KeyVault(kv_uri, azure_credential)
 hf_cache = key_vault.get_secret("gp-hf-cache")
 os.environ["HF_HOME"] = hf_cache
 
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 benchmark_data_folder = key_vault.get_secret("gp-shared-benchmark-data-path")
 
 
