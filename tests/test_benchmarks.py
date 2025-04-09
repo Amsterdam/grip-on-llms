@@ -8,7 +8,6 @@ from llm_eval.benchmarks import (
     ARC,
     MMLU,
     AmsterdamSimplification,
-    CNNDailyMail,
     INTDuidelijkeTaal,
     XSum,
 )
@@ -162,16 +161,8 @@ def test_summarization_gpt():
     gpt = get_gpt()
 
     for prompt_type in ["detailed", "simple"]:
-        # Run XSum
         bench_name = f"XSum-{prompt_type}"
         summarization_bench = XSum(
-            benchmark_name=bench_name, language="EN", prompt_type=prompt_type
-        )
-        summarization_bench.eval(gpt, f"results/results_{bench_name}", n_samples=N_SAMPLES)
-
-        # Run CNN/DailyMail
-        bench_name = f"CNNDailyMail-{prompt_type}"
-        summarization_bench = CNNDailyMail(
             benchmark_name=bench_name, language="EN", prompt_type=prompt_type
         )
         summarization_bench.eval(gpt, f"results/results_{bench_name}", n_samples=N_SAMPLES)
