@@ -3,6 +3,11 @@ Benchmarking (Extreme) Summarization using the XSum dataset which
 aims to create a short, one-sentence summary of online
 articles from the British Broadcasting Corporation (BBC) [1].
 
+In our experiments we use the test split of the dataset available
+in the HuggingFace Hub (https://huggingface.co/datasets/EdinburghNLP/xsum).
+
+We instruct the model to summarize to "1 sentence" according to the task.
+
 References:
 [1] Narayan, Shashi, Shay B. Cohen, and Mirella Lapata.
 "Don't give me the details, just the summary!
@@ -17,8 +22,6 @@ from llm_eval.benchmarks.summarization.base import SummarizationBaseBenchmark
 class XSum(SummarizationBaseBenchmark):
     """
     The Extreme Summarization
-    ....
-    https://huggingface.co/datasets/EdinburghNLP/xsum/viewer/default/train?row=95
 
     An example entry
     (Source: https://huggingface.co/datasets/EdinburghNLP/xsum/viewer/default/train?row=95)

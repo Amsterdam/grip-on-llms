@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
+from llm_eval.utils.exceptions import EmptyResponseError
 
 PROMPT_TEMPLATES = {
     "simple": {
@@ -155,6 +156,8 @@ class SummarizationBaseBenchmark(BaseBenchmark):
             }
             try:
                 llm_response = llm.prompt(prompt)
+                if not llm_response:
+                    raise EmptyResponseError
                 result["response"] = llm_response
             except Exception as e:
                 result["response"] = "FAILED"

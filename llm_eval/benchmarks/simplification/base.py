@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
+from llm_eval.utils.exceptions import EmptyResponseError
 
 PROMPT_TEMPLATES = {
     "simple": {
@@ -131,12 +132,19 @@ class SimplificationBaseBenchmark(BaseBenchmark):
                 GRANULARITY=self.granularity, LEVEL=self.level, TEXT=source
             )
 
-            llm_response = llm.prompt(prompt)
             result = {
                 "source": source,
                 "target": target,
-                "response": llm_response,
             }
+            try:
+                llm_response = llm.prompt(prompt)
+                if not llm_response:
+                    raise EmptyResponseError
+                result["response"] = llm_response
+            except Exception as e:
+                result["response"] = "FAILED"
+                result["error"] = True
+                result["exception"] = str(e)
             benchmark_results.append(result)
 
         return benchmark_results
