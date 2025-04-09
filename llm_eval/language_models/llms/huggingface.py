@@ -7,12 +7,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.language_models.llms.llm_templates import format_prompt
-
-
-class UnsupportedModelError(Exception):
-    """Exception raised for unsupported models."""
-
-    pass
+from llm_eval.utils.exceptions import UnsupportedModelError
 
 
 class HuggingFaceLLM(BaseLLM):
@@ -33,8 +28,7 @@ class HuggingFaceLLM(BaseLLM):
         """
         logging.info(f"Loading {self.model_name}")
         if self.model_name not in MODEL_MAPPING:
-            error_msg = f"Unsupported Model {self.model_name}. Choose from {MODEL_MAPPING.keys()}"
-            raise UnsupportedModelError(error_msg)
+            raise UnsupportedModelError(self.model_name, MODEL_MAPPING.keys())
 
         model_config = MODEL_MAPPING[self.model_name]
         model_id = model_config["id"]
