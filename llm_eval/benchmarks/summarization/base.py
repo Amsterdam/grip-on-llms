@@ -79,15 +79,24 @@ class SummarizationBaseBenchmark(BaseBenchmark):
     def __init__(
         self,
         benchmark_name,
+        source_url=None,
+        data_dir=None,
         data_path=None,
         hf_repository=None,
         language="NL",
         prompt_type="simple",
         target_length=(50, "words"),
         document_type="document",
+        translator=None,
     ):
         """Initialize the benchmark."""
-        super().__init__(benchmark_name, data_path=data_path, hf_repository=hf_repository)
+        super().__init__(
+            name=benchmark_name,
+            source_url=source_url,
+            data_dir=data_dir,
+            data_path=data_path,
+            hf_repository=hf_repository,
+        )
 
         self.language = language
         self.prompt_type = prompt_type
@@ -101,8 +110,9 @@ class SummarizationBaseBenchmark(BaseBenchmark):
             self.target_length = f"{target_length[0]} {granularity}"
             self.document_type = document_type_translations[language][document_type]
 
-        self._load_data()
+        self.translator = translator
 
+        self._load_data()
         self._sources = self.get_sources()
         self._summaries = self.get_summaries()
 
@@ -122,12 +132,12 @@ class SummarizationBaseBenchmark(BaseBenchmark):
 
     @property
     def sources(self):
-        """Access source sentences (complex ones)"""
+        """Access source text (full document)"""
         return self._sources
 
     @property
     def summaries(self):
-        """Access target sentences (ground-truth)"""
+        """Access target summary (ground-truth)"""
         return self._summaries
 
     def _get_hashing_data_for_sampling(self):
