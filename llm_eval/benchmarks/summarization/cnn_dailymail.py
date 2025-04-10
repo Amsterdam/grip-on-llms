@@ -23,12 +23,17 @@ arXiv preprint arXiv:1704.04368 (2017).
 """
 from datasets import load_dataset
 
-from llm_eval.benchmarks.summarization.base import SummarizationBaseBenchmark
+from llm_eval.benchmarks.summarization.huggingface import (
+    HuggingFaceSummarizationBaseBenchmark,
+)
 
 
-class CNNDailyMail(SummarizationBaseBenchmark):
+class CNNDailyMail(HuggingFaceSummarizationBaseBenchmark):
     """
     CNN / DailyMail Summarization
+
+    By default the benchmark is in English, but if a translator is provided,
+    it could be translated and run it other languages.
 
     An example entry
     (Source: https://huggingface.co/datasets/abisee/cnn_dailymail/viewer/3.0.0/train?&row=192)
@@ -56,26 +61,30 @@ class CNNDailyMail(SummarizationBaseBenchmark):
     }
     """
 
-    def __init__(self, benchmark_name, language="NL", prompt_type="simple"):
+    def __init__(
+        self,
+        benchmark_name,
+        language="NL",
+        prompt_type="simple",
+        data_dir=None,
+        translator=None,
+        max_translation_entries=100,
+    ):
         """Initialize CNN/Daily Mail benchmark."""
         super().__init__(
             benchmark_name=benchmark_name,
+            source_field="article",
+            summary_field="highlights",
             hf_repository="abisee/cnn_dailymail",
+            data_dir=data_dir,
             language=language,
             prompt_type=prompt_type,
             target_length=("3-4", "sentences"),
             document_type="news article",
+            translator=translator,
+            max_translation_entries=max_translation_entries,
         )
 
-        self._load_data()
-
-    def _load_data(self):
-        self.dataset = load_dataset(self.hf_repository, "3.0.0", split="test")
-
-    def get_sources(self):
-        """Get source sentences (complex ones)"""
-        return self.dataset["article"]
-
-    def get_summaries(self):
-        """Get summaries (ground-truth)"""
-        return self.dataset["highlights"]
+    def _load_huggingface_data(self):
+        dataset = load_dataset(self.hf_repository, "3.0.0", split="test")
+        return dataset

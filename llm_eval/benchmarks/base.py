@@ -14,7 +14,7 @@ import numpy as np
 class BaseBenchmark(ABC):
     """Base benchmark class"""
 
-    def __init__(self, name, source_url=None, data_path=None, hf_repository=None):
+    def __init__(self, name, source_url=None, data_dir=None, data_path=None, hf_repository=None):
         self._name = name
 
         if not source_url and not data_path and not hf_repository:
@@ -24,11 +24,11 @@ class BaseBenchmark(ABC):
 
         self._source_url = source_url
         self._hf_repository = hf_repository
+        self._data_dir = Path(data_dir) if data_dir else Path("./data")
 
-        if data_path:
-            self._data_path = Path(data_path)
-        else:
-            self._data_path = Path("./data") / self.name / "data.json"
+        self._data_path = (
+            Path(data_path) if data_path else self._data_dir / self.name / "data.json"
+        )
 
     @property
     def name(self):
@@ -39,6 +39,11 @@ class BaseBenchmark(ABC):
     def source_url(self):
         """Property to get the source url"""
         return self._source_url
+
+    @property
+    def data_dir(self):
+        """Property to get the data dir"""
+        return self._data_dir
 
     @property
     def data_path(self):

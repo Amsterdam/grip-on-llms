@@ -16,12 +16,17 @@ arXiv preprint arXiv:1808.08745 (2018).
 """
 from datasets import load_dataset
 
-from llm_eval.benchmarks.summarization.base import SummarizationBaseBenchmark
+from llm_eval.benchmarks.summarization.huggingface import (
+    HuggingFaceSummarizationBaseBenchmark,
+)
 
 
-class XSum(SummarizationBaseBenchmark):
+class XSum(HuggingFaceSummarizationBaseBenchmark):
     """
-    The Extreme Summarization
+    The Extreme Summarization.
+
+    By default the benchmark is in English, but if a translator is provided,
+    it could be translated and run it other languages.
 
     An example entry
     (Source: https://huggingface.co/datasets/EdinburghNLP/xsum/viewer/default/train?row=95)
@@ -45,26 +50,30 @@ class XSum(SummarizationBaseBenchmark):
     }
     """
 
-    def __init__(self, benchmark_name, language="NL", prompt_type="simple"):
+    def __init__(
+        self,
+        benchmark_name,
+        language="NL",
+        prompt_type="simple",
+        data_dir=None,
+        translator=None,
+        max_translation_entries=100,
+    ):
         """Initialize XSum benchmark."""
         super().__init__(
             benchmark_name=benchmark_name,
+            source_field="document",
+            summary_field="summary",
             hf_repository="EdinburghNLP/xsum",
+            data_dir=data_dir,
             language=language,
             prompt_type=prompt_type,
             target_length=(1, "sentence"),
             document_type="news article",
+            translator=translator,
+            max_translation_entries=max_translation_entries,
         )
 
-        self._load_data()
-
-    def _load_data(self):
-        self.dataset = load_dataset(self.hf_repository, trust_remote_code=True, split="test")
-
-    def get_sources(self):
-        """Get source sentences (complex ones)"""
-        return self.dataset["document"]
-
-    def get_summaries(self):
-        """Get summaries (ground-truth)"""
-        return self.dataset["summary"]
+    def _load_huggingface_data(self):
+        dataset = load_dataset(self.hf_repository, trust_remote_code=True, split="test")
+        return dataset

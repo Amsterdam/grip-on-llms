@@ -24,3 +24,17 @@ class UnsupportedModelError(Exception):
         if self.supported_models:
             error_msg += f"Choose from: {self.supported_models}"
         return error_msg
+
+
+class TranslatorMissingError(ValueError):
+    """Exception raised when a translator is missing but a language is specified."""
+
+    def __init__(self, language=None):
+        self.language = language
+        super().__init__(self._generate_message())
+
+    def _generate_message(self):
+        error_msg = "Missing a necessary translator.\n"
+        if self.language:
+            error_msg += f"Ensure {self.language} support"
+        return error_msg

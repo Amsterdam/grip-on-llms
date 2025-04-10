@@ -8,10 +8,12 @@ from llm_eval.benchmarks import (
     ARC,
     MMLU,
     AmsterdamSimplification,
+    CNNDailyMail,
     INTDuidelijkeTaal,
     XSum,
 )
 from llm_eval.language_models import LLMRouter
+from llm_eval.translators import TranslatorRouter
 
 N_SAMPLES = 10
 
@@ -159,13 +161,47 @@ def test_summarization_gpt():
     logging.info("Testing summarization using GPT")
 
     gpt = get_gpt()
+    translation_model = gpt
+    # translation_model = get_hf_model("tiny-llama")
+
+    en_nl_translator = TranslatorRouter.get_translator(
+        translator_type="llm_based",
+        model_name=translation_model.model_name,
+        llm=translation_model,
+        source_lang="EN",
+        target_lang="NL",
+    )
 
     for prompt_type in ["detailed", "simple"]:
-        bench_name = f"XSum-{prompt_type}"
-        summarization_bench = XSum(
-            benchmark_name=bench_name, language="EN", prompt_type=prompt_type
-        )
-        summarization_bench.eval(gpt, f"results/results_{bench_name}", n_samples=N_SAMPLES)
+        # for language in ["NL", "EN"]
+        for language in ["NL"]:
+            bench_name = "CNNDailyMail"
+            data_dir = Path(benchmark_data_folder) / bench_name
+            summarization_bench = CNNDailyMail(
+                benchmark_name=bench_name,
+                language=language,
+                prompt_type=prompt_type,
+                data_dir=data_dir,
+                translator=en_nl_translator,
+                max_translation_entries=N_SAMPLES + 5,
+            )
+            summarization_bench.eval(
+                gpt, f"results/results_{bench_name}-{prompt_type}-{language}", n_samples=N_SAMPLES
+            )
+
+            bench_name = "XSum"
+            data_dir = Path(benchmark_data_folder) / bench_name
+            summarization_bench = XSum(
+                benchmark_name=bench_name,
+                language=language,
+                prompt_type=prompt_type,
+                data_dir=data_dir,
+                translator=en_nl_translator,
+                max_translation_entries=N_SAMPLES + 5,
+            )
+            summarization_bench.eval(
+                gpt, f"results/results_{bench_name}-{prompt_type}-{language}", n_samples=N_SAMPLES
+            )
 
 
 if __name__ == "__main__":
