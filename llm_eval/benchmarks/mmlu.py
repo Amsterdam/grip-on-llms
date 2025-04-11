@@ -57,7 +57,7 @@ class MMLU(BaseBenchmark):
 
     def __init__(self, benchmark_name, source_url=None, data_path=None, categories=None):
         """Initialize MMLU benchmark."""
-        super().__init__(benchmar_name=benchmark_name, source_url=source_url, data_path=data_path)
+        super().__init__(benchmark_name=benchmark_name, source_url=source_url, data_path=data_path)
 
         self.categories = categories
         self.data = None
