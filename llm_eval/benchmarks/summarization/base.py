@@ -91,7 +91,7 @@ class SummarizationBaseBenchmark(BaseBenchmark):
     ):
         """Initialize the benchmark."""
         super().__init__(
-            name=benchmark_name,
+            benchmark_name=benchmark_name,
             source_url=source_url,
             data_dir=data_dir,
             data_path=data_path,
