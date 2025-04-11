@@ -4,9 +4,17 @@ from pathlib import Path
 
 from env_setup import benchmark_data_folder, get_gpt_secrets, get_hf_secrets
 
-from llm_eval.benchmarks import ARC, MMLU, AmsterdamSimplification, INTDuidelijkeTaal
+from llm_eval.benchmarks import (
+    ARC,
+    MMLU,
+    AmsterdamSimplification,
+    CNNDailyMail,
+    INTDuidelijkeTaal,
+    XSum,
+)
 from llm_eval.language_models import LLMRouter
 from llm_eval.leaderboard import Leaderboard
+from llm_eval.translators import TranslatorRouter
 
 
 def test_leaderboard():
@@ -72,18 +80,38 @@ def test_leaderboard():
     # arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
     arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=[])
 
-    simple_benches = []
-    int_data_path = "./data/INT-Duidelijke-Taal/CrowdsourcingResults.csv"
-    amsterdam_simplification_path = (
-        "./data/Amsterdam-Simplification/complex-simple-v1-anonymized.csv"
+    translation_model = gpt
+    # translation_model = tinyllama
+
+    en_nl_translator = TranslatorRouter.get_translator(
+        translator_type="llm_based",
+        model_name=translation_model.model_name,
+        llm=translation_model,
+        source_lang="EN",
+        target_lang="NL",
     )
-    for prompt_type in ["detailed", "simple"]:
+
+    simple_benches = []
+    summary_benches = []
+
+    n_samples = 2
+
+    # for prompt_type in ["detailed", "simple"]:
+    for prompt_type in ["detailed"]:
+        int_data_path = (
+            Path(benchmark_data_folder) / "INT-Duidelijke-Taal/CrowdsourcingResults.csv"
+        )
         simple_benches.append(
             INTDuidelijkeTaal(
                 benchmark_name=f"INT_Duidelijke_Taal-{prompt_type}",
                 data_path=int_data_path,
                 prompt_type=prompt_type,
             )
+        )
+
+        amsterdam_simplification_path = (
+            Path(benchmark_data_folder)
+            / "Amsterdam-Simplification/complex-simple-v1-anonymized.csv"
         )
 
         simple_benches.append(
@@ -94,13 +122,39 @@ def test_leaderboard():
             )
         )
 
-    n_samples = 10
+        # for language in ["NL", "EN"]
+        for language in ["NL"]:
+            bench_name = "CNNDailyMail"
+            data_dir = Path(benchmark_data_folder) / bench_name
+            summary_benches.append(
+                CNNDailyMail(
+                    benchmark_name=bench_name,
+                    language=language,
+                    prompt_type=prompt_type,
+                    data_dir=data_dir,
+                    translator=en_nl_translator,
+                    max_translation_entries=n_samples + 5,
+                )
+            )
+
+            bench_name = "XSum"
+            data_dir = Path(benchmark_data_folder) / bench_name
+            summary_benches.append(
+                XSum(
+                    benchmark_name=bench_name,
+                    language=language,
+                    prompt_type=prompt_type,
+                    data_dir=data_dir,
+                    translator=en_nl_translator,
+                    max_translation_entries=n_samples + 5,
+                )
+            )
 
     logging.info("Running comparison")
     leaderboard = Leaderboard(
         llms=[gpt, tinyllama],
         # llms=[tinyllama],
-        benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches,
+        benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches,
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )
