@@ -14,8 +14,10 @@ import numpy as np
 class BaseBenchmark(ABC):
     """Base benchmark class"""
 
-    def __init__(self, name, source_url=None, data_dir=None, data_path=None, hf_repository=None):
-        self._name = name
+    def __init__(
+        self, benchmar_name, source_url=None, data_dir=None, data_path=None, hf_repository=None
+    ):
+        self._name = benchmar_name
 
         if not source_url and not data_path and not hf_repository:
             raise ValueError(
