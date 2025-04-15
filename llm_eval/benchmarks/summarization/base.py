@@ -21,7 +21,7 @@ PROMPT_TEMPLATES = {
             "Summary:"
         ),
         "NL": (
-            "Hieronder staat een {DOCUMENT_TYPE}.\n"
+            "Hier volgt een {DOCUMENT_TYPE}.\n"
             "Vat het document samen in ongeveer {TARGET_LENGTH}.\n"
             "Document: {DOCUMENT}\n"
             "Samenvatting:"
@@ -39,12 +39,12 @@ PROMPT_TEMPLATES = {
             "Summary:"
         ),
         "NL": (
-            "Hieronder staat een {DOCUMENT_TYPE}.\n"
+            "Hier volgt een {DOCUMENT_TYPE}.\n"
             "Vat het document samen in ongeveer {TARGET_LENGTH}, "
             "met de nadruk op de belangrijkste punten."
-            "Zorg voor nauwkeurigheid en behoud feiten, data, namen, etc. ongewijzigd.\n"
+            "Wees nauwkeurig en behoud feiten, data, namen, etc.\n"
             "Vermijd onnodige details of meningen.\n"
-            "Gebruik duidelijke en beknopte taal en behoud de toon.\n"
+            "Gebruik duidelijke en bondige taal en behoud de stijl van de tekst.\n"
             "Document: {DOCUMENT}\n"
             "Samenvatting:"
         ),
