@@ -19,11 +19,16 @@ from datasets import load_dataset
 from llm_eval.benchmarks.tiny_benchmarks.base import BaseTinyBenchmark
 
 ANSWERS = {
-    1: "A",
-    2: "B",
-    3: "C",
-    4: "D",
+    0: "A",
+    1: "B",
+    2: "C",
+    3: "D",
 }
+
+BENCHMARK_PURPOSE = (
+    "The purpose of the benchmark is to measure world knowledge "
+    "and problem solving ability by answering multiple-choice questions."
+)
 
 
 class TinyMMLU(BaseTinyBenchmark):
@@ -42,6 +47,7 @@ class TinyMMLU(BaseTinyBenchmark):
             benchmark_name=benchmark_name,
             input_field="input_formatted",
             target_field="answer",
+            benchmark_purpose=BENCHMARK_PURPOSE,
             hf_repository="tinyBenchmarks/tinyMMLU",
             data_dir=data_dir,
             language=language,
