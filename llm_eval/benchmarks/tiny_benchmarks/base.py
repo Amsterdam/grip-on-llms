@@ -42,21 +42,26 @@ from llm_eval.benchmarks.base import BaseBenchmark
 from llm_eval.utils.exceptions import EmptyResponseError, TranslatorMissingError
 
 TRANSLATE_PROMPT = (
-    "Below is a formatted prompt for an LLM benchmark."
-    "The purpose of the benchmark is to {BENCHMARK_PURPOSE}.\n"
+    "Below is a formatted prompt for an LLM benchmark.\n"
+    "{benchmark_purpose}.\n"
     "Instructions:\n"
-    "Your task is to translate the entry to {TARGET_LANGUAGE} "
+    "Your task is to translate the entry to {target_language} "
     "by fully preserving the meaning, the structure, tone of voice. "
     "For multiple-choice questions or continuation tasks "
     "ensure that the translated sentences are grammatically correct "
     "and make sense in the target language. "
-    "Make sure that the benchmark is"
+    "Only return the translation, no further explanations. "
+    "The last question must not contain be answered.\n"
     "The entry is:\n"
-    "-----"
-    "{ENTRY}"
-    "-----"
+    "{entry}"
     "Translation: "
 )
+
+language_mapping = {
+    "NL": "Dutch",
+    "EN": "English",
+    "BG": "Bulgarian",
+}
 
 
 class BaseTinyBenchmark(BaseBenchmark):
@@ -70,6 +75,7 @@ class BaseTinyBenchmark(BaseBenchmark):
         benchmark_name,
         input_field,
         target_field,
+        benchmark_purpose,
         data_dir=None,
         hf_repository=None,
         language="NL",
@@ -85,6 +91,7 @@ class BaseTinyBenchmark(BaseBenchmark):
 
         self.input_field = input_field
         self.target_field = target_field
+        self.benchmark_purpose = benchmark_purpose
         self.language = language
         self.translator = translator
         self.max_translation_entries = max_translation_entries
@@ -128,7 +135,17 @@ class BaseTinyBenchmark(BaseBenchmark):
 
             def try_to_translate(doc):
                 try:
-                    return self.translator.translate(doc)
+                    translation_text = TRANSLATE_PROMPT.format(
+                        benchmark_purpose=self.benchmark_purpose,
+                        target_language=language_mapping[self.language],
+                        entry=doc,
+                    )
+                    print(translation_text[:1000])
+                    translation = self.translator.translate(
+                        translation_text, target_lang=self.language, use_default_prompt=False
+                    )
+                    print(translation[:1000])
+                    return translation
                 except Exception:
                     return None
 
