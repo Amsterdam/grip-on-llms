@@ -10,6 +10,7 @@ from llm_eval.benchmarks import (
     AmsterdamSimplification,
     CNNDailyMail,
     INTDuidelijkeTaal,
+    TinyMMLU,
     XSum,
 )
 from llm_eval.language_models import LLMRouter
@@ -150,11 +151,24 @@ def test_leaderboard():
                 )
             )
 
+    tiny_benches = []
+
+    tiny_benches.append(
+        TinyMMLU(
+            benchmark_name="TinyMMLU",
+            language="NL",
+            data_dir=Path(benchmark_data_folder) / "TinyMMLU",
+            translator=en_nl_translator,
+            max_translation_entries=n_samples + 5,
+        )
+    )
+
     logging.info("Running comparison")
     leaderboard = Leaderboard(
         llms=[gpt, tinyllama],
         # llms=[tinyllama],
-        benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches,
+        benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches + tiny_benches,
+        # benchmarks=tiny_benches,
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )
