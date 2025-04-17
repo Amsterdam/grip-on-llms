@@ -15,14 +15,14 @@ class BaseTranslator:
         self.target_lang = target_lang
         self._params = params
 
-    def translate(self, text, source_lang=None, target_lang=None):
+    def translate(self, text, source_lang=None, target_lang=None, **kwargs):
         """Translate the given text."""
         # Possibly add carbon tracking here
-        translation = self._translate(text, target_lang)
+        translation = self._translate(text, source_lang, target_lang, **kwargs)
         return translation
 
     @abstractmethod
-    def _translate(self, text, source_lang=None, target_lang=None):
+    def _translate(self, text, source_lang=None, target_lang=None, **kwargs):
         """Function to translate text should always be implemented"""
         raise NotImplementedError("Implement _translate function")
 
@@ -36,7 +36,7 @@ class BaseTranslator:
         """Property to get the model parameters"""
         return self._params
 
-    def __call__(self, text, source_lang=None, target_lang=None):
+    def __call__(self, text, source_lang=None, target_lang=None, **kwargs):
         """Translate the given input.
         Args:
             text: The prompt to generate from.
@@ -44,7 +44,7 @@ class BaseTranslator:
         Returns:
             The translation as a string.
         """
-        return self.translate(text, target_lang)
+        return self.translate(text, source_lang, target_lang, **kwargs)
 
     def get_metadata(self):
         """Get model metadata for versioning purposes"""

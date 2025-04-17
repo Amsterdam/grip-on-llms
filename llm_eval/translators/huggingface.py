@@ -58,7 +58,7 @@ class HuggingFaceTranslator(BaseTranslator):
         """Get the correct language code"""
         return TRANSLATOR_MAPPING[self.model_name]["language_codes"][lang]
 
-    def _translate(self, text, source_lang=None, target_lang=None, max_length=512):
+    def _translate(self, text, source_lang=None, target_lang=None, max_length=512, **kwargs):
         """Translate text"""
         if not self.model:
             self._load_model()
