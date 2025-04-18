@@ -9,7 +9,7 @@ To Do
 Introduction
 ------------
 
-This documentation provides guidelines on using CodeCarbon to measure CO2-equivalent emissions and energy usage for benchmarking large language models (LLMs). The goal of using CodeCarbon in this project is to accurately measure and compare the CO2-equivalent emissions and energy usage of different large language models (LLMs) during benchmarking. This helps assess their environmental impact and make informed decisions about model selection based on sustainability criteria. Due to limited information about the Azure Cloud environment, we utilize the OfflineEmissionsTracker instead of the online version (EmissionsTracker). 
+This documentation provides guidelines on using [CodeCarbon](https://codecarbon.io/) to measure CO2-equivalent emissions and energy usage for benchmarking large language models (LLMs). The goal of using CodeCarbon in this project is to accurately measure and compare the CO2-equivalent emissions and energy usage of different large language models (LLMs) during benchmarking. This helps assess their environmental impact and make informed decisions about model selection based on sustainability criteria. Due to limited information about the Azure Cloud environment, we utilize the OfflineEmissionsTracker instead of the online version (EmissionsTracker). 
 
 Please note that certain LLMs, such as OpenAI's GPT models, were not included in the CodeCarbon assessment. Due to the lack of transparency regarding energy usage and other relevant data when using their API, it is not possible to make an accurate environmental impact assessment, resulting in null values for these models.
 
