@@ -1,0 +1,109 @@
+/* Reset some default styles */
+@import './fonts/fonts.css';
+
+body {
+    font-family: 'Amsterdam Sans', sans-serif;
+    /* Use the imported font */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  /* background: #004699; */
+  padding: 0 24px;
+  width: 100%;
+}
+
+.header a img {
+  height: 40px; /* Adjust logo height as needed */
+  width: auto;
+  display: block;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-btn img {
+  width: 32px;
+  height: 32px;
+  /* filter: invert(1); Makes menu icon white if it's a black SVG */
+}
+
+#nav-menu {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+#nav-menu a {
+  /* color: #fff; */
+  color: #004699;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: color 0.2s;
+  padding: 8px 0;
+}
+
+#nav-menu a:hover {
+  color: #003677; /* Gold on hover, or pick your preferred hover color */
+}
+
+/* Responsive: show menu button, hide nav links on mobile */
+@media (max-width: 768px) {
+  .navbar-top {
+    padding: 0 16px;
+  }
+  #nav-menu {
+    display: none;
+    position: absolute;
+    top: 64px;
+    right: 0;
+    flex-direction: column;
+    background: #004699;
+    width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 0 0 8px 8px;
+    z-index: 10;
+    padding: 16px 0;
+  }
+  #nav-menu.active {
+    display: flex;
+  }
+  .menu-btn {
+    display: flex;
+  }
+}
+
+/* On desktop, always show nav, hide menu button */
+@media (min-width: 769px) {
+  #nav-menu {
+    display: flex !important;
+    position: static;
+    background: none;
+    box-shadow: none;
+    width: auto;
+    border-radius: 0;
+    padding: 0;
+  }
+  .menu-btn {
+    display: none;
+  }
+}
+
