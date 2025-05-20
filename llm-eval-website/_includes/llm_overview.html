@@ -1,0 +1,11 @@
+{% assign translations_key = 'translations_' | append: page.lang %}
+
+<table>
+    <thead>
+        <tr>
+        {% for header in site.data[translations_key].table_headers %}
+            <th>{{ header }}</th>
+        {% endfor %}
+        </tr>
+    </thead>
+</table>

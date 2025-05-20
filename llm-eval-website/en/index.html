@@ -1,0 +1,29 @@
+---
+layout: null
+title: Home
+lang: en
+---
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+
+    <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/style.css">
+    <!-- <script src="{{ site.baseurl }}/assets/js/script.js"></script> -->
+    <!-- Include jQuery before your custom script -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    {% include header.html %}
+    {% include intro.html %}
+    <div class="content">
+        <h2>Disclaimer</h2>
+        <p> This website is work in progress and contains mostly made up data. </p>
+    </div>
+    {% include llm_overview.html %}    
+    {% include footer.html %}
+</body>
+</html>

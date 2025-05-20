@@ -1,0 +1,13 @@
+table_headers:
+  - Model
+  - Provider
+  - Kosten
+  - Redenering
+  - Inclusie
+  - Energiverbruik
+  - In het kort
+  - In de praktijk
+page_title: LLM Overzicht
+mission: "Om het verantwoord gebruik van LLM's te bevorderen, bieden wij een overzicht van modellen die ingezet kunnen worden voor Nederlandse gemeentelijke toepassingen."
+hover_energy_impossible: "Omdat dit model niet open-source is, is het onmogelijk om te berekenen hoeveel energie het verbruikt. Als je je zorgen maakt over ons milieu, raden we je aan een model te gebruiken waarvoor deze informatie beschikbaar is."
+copyright_footer: "Grip op LLMs, Gemeente Amsterdam"

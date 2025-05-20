@@ -1,37 +1,24 @@
 ---
-layout: null
 title: Home
 ---
 <!DOCTYPE html>
-<html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Redirecting...</title>
+    <script>
+        // Detect the browser's preferred language
+        const userLang = navigator.language || navigator.userLanguage;
 
-    <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/style.css">
-    <!-- <script src="{{ site.baseurl }}/assets/js/script.js"></script> -->
-    <!-- Include jQuery before your custom script -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            margin: 0;
+        // Redirect based on the detected language
+        if (userLang.startsWith('nl')) {
+            window.location.href = "{{ site.baseurl }}/nl/";
+        } else {
+            window.location.href = "{{ site.baseurl }}/en/";
         }
-
-        .content {
-            padding: 20px;
-        }
-    </style>
+    </script>
 </head>
-
 <body>
-    {% include header.html %}
-    <div class="content">
-        <h1>LLM Overzicht</h1>
-        <p style="font-size: 1.5rem; margin-bottom: 0;">
-            Om het verantwoord gebruik van LLM's te bevorderen, bieden wij een overzicht van modellen die ingezet kunnen worden voor Nederlandse gemeentelijke toepassingen.
-        </p>
-    </div>
-    {% include footer.html %}
+    <p>Redirecting based on your browser's language...</p>
+    <p>If you are not redirected, choose your language: <a href="{{ site.baseurl }}/en/">English</a> | <a href="{{ site.baseurl }}/nl/">Nederlands</a>.</p>
 </body>
 </html>

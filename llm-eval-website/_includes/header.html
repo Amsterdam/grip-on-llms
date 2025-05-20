@@ -1,13 +1,14 @@
 <div class="header">
-    <a href="{{ url_for('home') }}">
+    <a href="{{ site.baseurl }}/">
         <img src="{{ site.baseurl }}/assets/images/Logo_of_Gemeente_Amsterdam.svg" alt="Organization Logo">
     </a>
     <button class="menu-btn" id="menu-btn" aria-label="Open navigation">
         <img src="{{ site.baseurl }}/assets/images/Menu.svg" alt="Menu Icon">
     </button>
     <nav id="nav-menu">
-        <a href="{{ site.baseurl }}/">Home</a>
-        <a href="{{ site.baseurl }}/about.html">About</a>
-        <a href="{{ site.baseurl }}/contact.html">Contact</a>
+        <!-- <a href="{{ site.baseurl }}/">Home</a> -->
+        <!-- <a href="{{ site.baseurl }}/about.html">About</a> -->
+        <!-- <a href="{{ site.baseurl }}/contact.html">Contact-</a> -->
+        {% include language_toggle.html %}
     </nav>
 </div>
