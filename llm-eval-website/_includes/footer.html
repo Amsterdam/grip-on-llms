@@ -1,3 +1,12 @@
+{% assign translations_key = 'translations_' | append: page.lang %}
 <footer>
-  <p>&copy; 2025 Grip op LLMs, Gemeente Amsterdam</p>
+  <p>&copy; 2025 {{ site.data[translations_key].copyright_footer }}</p>
 </footer>
+
+<!-- <footer>
+  <p>Debug: Current Language = {{ page.lang }}</p>
+  <p>Debug: Translations Key = {{ 'translations_' | append: page.lang }}</p>
+  <p>Debug: Data = {{ site.data['translations_' | append: page.lang] }}</p>
+  <p>Debug: Copyright = {{ site.data['translations_' | append: page.lang].copyright_footer }}</p>
+  <p>Debug: Available Data Keys = {{ site.data | keys }}</p>
+</footer> -->

@@ -4,6 +4,20 @@
 body {
     font-family: 'Amsterdam Sans', sans-serif;
     /* Use the imported font */
+    margin: 0;
+}
+
+.content {
+    padding: 20px;
+}
+
+.content p {
+    margin-bottom: 0;
+    font-family: "Amsterdam Sans";
+    font-size: 14.4px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 150%; /* 21.6px */
 }
 
 * {
@@ -107,3 +121,63 @@ body {
   }
 }
 
+#nav-menu .language-toggle a {
+  padding: 0 2px;
+}
+
+#nav-menu .language-toggle a.active {
+  font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    display: flex;
+    height: 632px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex-shrink: 0;
+    align-self: stretch;
+}
+
+thead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+}
+
+th,
+td {
+    /* border: 1px solid #ddd; */
+    padding: 8px;
+}
+
+th {
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: 56px;
+    padding: 16px;
+    justify-content: center;
+    gap: 8px;
+
+    background: white;
+
+    /* borders */
+    /* border-right: 1px solid #BEBEBE;
+    border-bottom: 1px solid black; */
+
+    /* typography */
+    overflow: hidden;
+    color: black;
+    font-feature-settings: 'liga' off, 'clig' off;
+    text-overflow: ellipsis;
+    font-family: "Amsterdam Sans";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: 150%; /* 24px */
+}
