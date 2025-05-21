@@ -1,0 +1,7 @@
+{% assign license = include.license %}
+{% assign translations_key = 'translations_' | append: page.lang %}
+
+<div class="license-wrapper">
+  <span class="license-circle {{ license }}"></span>
+  <span class="license-label">{{ site.data[translations_key].license_options[license] }}</span>
+</div>

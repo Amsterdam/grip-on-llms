@@ -1,12 +1,19 @@
 table_headers:
   model: Model
   provider: Provider
+  license: License
   costs: Costs
   reasoning: Reasoning
   inclusion: Inclusion
   energy_use: Energy Use
   in_short: In Short
   use_cases: Use Cases
+
+license_options:
+  open: Open
+  restricted: Restricted
+  commercial: Commercial
+
 page_title: LLM Overview
 mission: "To encourage the responsible use of Large Language Models, we create an overview of models, which can be used for Dutch municipal use cases."
 energy_disclaimer:

@@ -174,6 +174,36 @@ th {
 } */
 
 
+.license-cell {
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.license-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.license-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: block;
+  flex-shrink: 0;
+}
+
+.license-circle.open { background: #00A03C; }
+.license-circle.restricted { background: #FFE600; }
+.license-circle.commercial { background: #EC0000; }
+
+.license-label {
+  font-size: 16px;
+  color: #111;
+  line-height: 1;
+}
+
+
 .score-cell {
   width: 150px;
   padding: 5;
@@ -285,11 +315,11 @@ th {
 
 .score-disclaimer-title {
   font-weight: bold;
-  font-size: 1.15em;
+  font-size: 16px;
   margin-bottom: 12px;
 }
 
 .score-disclaimer-text {
-  font-size: 1em;
+  font-size: 12px;
   color: #222;
 }

@@ -5,6 +5,7 @@ default_lang: nl
 visible_columns:
   - model
   - provider
+  - license
   - costs
   - reasoning
   - inclusion
