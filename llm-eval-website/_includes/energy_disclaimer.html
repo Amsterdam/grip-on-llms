@@ -1,0 +1,20 @@
+{% assign translations_key = 'translations_' | append: page.lang %}
+
+<div class="score-circles score-unavailable">
+  <span class="score-stop-icon">
+    {% include WarningFill.svg %}
+    <div class="score-disclaimer-card">
+      <div class="score-disclaimer-bar">
+        {% include WarningFill.svg %}
+      </div>
+      <div class="score-disclaimer-content">
+        <div class="score-disclaimer-title">
+            {{ site.data[translations_key].energy_disclaimer.title }}
+        </div>
+        <div class="score-disclaimer-text">
+            {{ site.data[translations_key].energy_disclaimer.explanation }}
+        </div>
+      </div>
+    </div>
+  </span>
+</div>

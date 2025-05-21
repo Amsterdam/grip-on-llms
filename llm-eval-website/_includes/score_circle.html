@@ -1,7 +1,11 @@
 {% assign score = include.score | plus: 0 %}
 
-<div class="score-circles">
-  {% for i in (1..5) %}
-    <span class="score-circle {{ i }}{% if i == score %} active{% endif %}"></span>
-  {% endfor %}
-</div>
+{% if score == -1 %}
+    {% include energy_disclaimer.html %}
+{% else %}
+  <div class="score-circles">
+      {% for i in (1..5) %}
+        <span class="score-circle {{ i }}{% if i == score %} active{% endif %}"></span>
+      {% endfor %}
+  </div>
+{% endif %}
