@@ -1,12 +1,19 @@
 table_headers:
   model: Model
   provider: Aanbieder
+  license: License
   costs: Kosten
   reasoning: Redenering
   inclusion: Inclusie
   energy_use: Energiverbruik
   in_short: In het kort
   use_cases: In de praktijk
+
+license_options:
+  open: Open
+  restricted: Beperkt
+  commercial: Commercieel
+
 page_title: LLM Overzicht
 mission: "Om het verantwoord gebruik van LLM's te bevorderen, bieden wij een overzicht van modellen die ingezet kunnen worden voor Nederlandse gemeentelijke toepassingen."
 energy_disclaimer:

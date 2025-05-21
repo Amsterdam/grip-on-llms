@@ -25,6 +25,9 @@
                     {% elsif score_columns contains column %}
                         {% assign score_value = model[column] %}
                         <td class="score-cell">{% include score_circle.html score=score_value %}</td>
+                    {% elsif column == 'license' %}
+                        {% assign license = model[column] %}
+                        <td class="license-cell">{% include license_cell.html license=license %}</td>
                     {% else %}
                         <td>{{ model[column] }}</td>
                     {% endif %}
