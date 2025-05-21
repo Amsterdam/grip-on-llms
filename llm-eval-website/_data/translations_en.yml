@@ -9,5 +9,7 @@ table_headers:
   use_cases: Use Cases
 page_title: LLM Overview
 mission: "To encourage the responsible use of Large Language Models, we create an overview of models, which can be used for Dutch municipal use cases."
-hover_energy_impossible: "Because this is a closed model, it is impossible to calculate how much energy it uses. If you would like to take care of the environment, we advise you to use a model for which this information is available."
+energy_disclaimer:
+  title: Energy Estimate Impossible
+  explanation: "Because this is a closed model, it is impossible to calculate how much energy it uses. If you would like to take care of the environment, we advise you to use a model for which this information is available."
 copyright_footer: "Grip on LLMs, City of Amsterdam"
