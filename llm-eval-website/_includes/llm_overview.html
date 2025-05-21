@@ -1,11 +1,37 @@
 {% assign translations_key = 'translations_' | append: page.lang %}
+{% assign score_columns = "reasoning,inclusion,factuality,energy_use" | split: "," %}
 
-<table>
-    <thead>
-        <tr>
-        {% for header in site.data[translations_key].table_headers %}
-            <th>{{ header }}</th>
-        {% endfor %}
-        </tr>
-    </thead>
-</table>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                {% for column in site.visible_columns %}
+                    {% if score_columns contains column %}
+                        <th class="score-cell">{{ site.data[translations_key].table_headers[column] }}</th>
+                    {% else %}
+                        <th>{{ site.data[translations_key].table_headers[column] }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for model in site.data.models %}
+            <tr>
+                {% for column in site.visible_columns %}
+                    {% if column == 'model' %}
+                        <td><a href="{{ model.model_url }}" target="_blank">{{ model.model }}</a></td>
+                    {% elsif column == 'provider' %}
+                        <td><a href="{{ model.provider_url }}" target="_blank">{{ model.provider }}</a></td>
+                    {% elsif score_columns contains column %}
+                        {% assign score_value = model[column] %}
+                        <td class="score-cell">{% include score_circle.html score=score_value %}</td>
+                    {% else %}
+                        <td>{{ model[column] }}</td>
+                    {% endif %}
+                    <!-- For a score of 3 -->
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
