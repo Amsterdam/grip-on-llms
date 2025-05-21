@@ -1,0 +1,7 @@
+{% assign score = include.score | plus: 0 %}
+
+<div class="score-circles">
+  {% for i in (1..5) %}
+    <span class="score-circle {{ i }}{% if i == score %} active{% endif %}"></span>
+  {% endfor %}
+</div>
