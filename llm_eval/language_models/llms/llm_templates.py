@@ -90,6 +90,7 @@ template_mapping = {
     "llama-70b-chat": llama_prompt,
     "tiny-llama": tiny_llama_prompt,
     "mistral-7b-instruct-v0.3": llama_prompt,
+    "mistral-small": llama_prompt,
     "llama-3.1-8b-instruct": llama_prompt,
     "phi-4-mini-instruct": phi_prompt,
     "falcon3-7b-instruct": falcon_prompt,

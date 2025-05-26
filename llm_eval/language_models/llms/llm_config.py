@@ -14,9 +14,17 @@ MODEL_MAPPING = {
         "id": "mistralai/Mistral-7B-Instruct-v0.1",
         "kwargs": {"torch_dtype": "auto"},
     },
+    "mistral-7b-instruct-v0.3": {
+        "id": "mistralai/Mistral-7B-Instruct-v0.3",
+        "kwargs": {},
+    },
     "mixtral-7b-instruct": {
         "id": "mistralai/Mixtral-8x7B-Instruct-v0.1",
         "kwargs": {"torch_dtype": "auto"},
+    },
+    "mistral-small": {
+        "id": "mistralai/Mistral-Small-Instruct-2409",
+        "kwargs": {},
     },
     "llama-7b-chat": {
         "id": "meta-llama/Llama-2-7b-chat-hf",
@@ -36,10 +44,6 @@ MODEL_MAPPING = {
     },
     "tiny-llama": {
         "id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-        "kwargs": {},
-    },
-    "mistral-7b-instruct-v0.3": {
-        "id": "mistralai/Mistral-7B-Instruct-v0.3",
         "kwargs": {},
     },
     "llama-3.1-8b-instruct": {
