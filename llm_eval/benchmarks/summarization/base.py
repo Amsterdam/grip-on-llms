@@ -207,5 +207,6 @@ class SummarizationBaseBenchmark(BaseBenchmark):
             "target_length": self.target_length,
             "document_type": self.document_type,
             "prompt_template": PROMPT_TEMPLATES[self.prompt_type][self.language],
+            "translator": self.translator.get_metadata() if self.translator else None,
         }
         return metadata
