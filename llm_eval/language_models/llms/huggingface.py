@@ -23,12 +23,15 @@ class HuggingFaceLLM(BaseLLM):
         self.tokenizer = None
         self.device = "cpu"
 
-    def _load_model(self):
+    def _load_model(self, pause_tracker=True):
         """
         Load HF model based on a short model name.
         Expects known mapping to full model ID & params
         """
         logging.info(f"Loading {self.model_name}")
+        if self.tracker and pause_tracker:
+            self.tracker.stop()
+
         if self.model_name not in MODEL_MAPPING:
             raise UnsupportedModelError(self.model_name, MODEL_MAPPING.keys())
 
@@ -48,10 +51,13 @@ class HuggingFaceLLM(BaseLLM):
         self.model.to(self.device)
         self.tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=self.hf_cache, **kwargs)
 
+        if self.tracker and pause_tracker:
+            self.tracker.start()
+
     def _prompt(self, prompt, context=None, system=None, force_format=None):
         """Prompt model by optionally providing a custom system prompt or context"""
         if not self.model:
-            self._load_model()
+            self._load_model(pause_tracker=True)
 
         # conversation = [{"role": "user", "content": prompt}]
         # formatted_prompt = self.tokenizer.apply_chat_template(conversation, tokenize=False)
