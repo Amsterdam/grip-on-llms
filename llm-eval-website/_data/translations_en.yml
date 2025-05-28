@@ -4,6 +4,8 @@ table_headers:
   license: License
   costs: Costs
   reasoning: Reasoning
+  simplifcation: Simplification
+  summarization: Summarization
   inclusion: Inclusion
   energy_use: Energy Use
   in_short: In Short
