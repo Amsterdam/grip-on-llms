@@ -4,6 +4,7 @@ Implementation of simplification benchmarks.
 The base class handles the default templ
 """
 
+import logging
 from abc import abstractmethod
 
 from tqdm import tqdm
@@ -122,6 +123,8 @@ class SimplificationBaseBenchmark(BaseBenchmark):
 
     def _run_task(self, llm, results_path=None, n_samples=0):
         """Run the MMLU benchmark using the provided LLM."""
+        logging.info(f"Running {self.name} in {n_samples} samples")
+
         if n_samples:
             indices = self._sample_data(n_samples)
             src_trg = list(zip(self.sources, self.targets))
@@ -141,21 +144,24 @@ class SimplificationBaseBenchmark(BaseBenchmark):
                 "source": source,
                 "target": target,
             }
+
             try:
                 llm_response = llm.prompt(prompt)
                 if not llm_response:
                     raise EmptyResponseError
                 result["response"] = llm_response
             except Exception as e:
-                result["response"] = "FAILED"
+                result["response"] = ""
                 result["error"] = True
                 result["exception"] = str(e)
+
             benchmark_results.append(result)
 
         return benchmark_results
 
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
+        logging.info(f"Calculating Simplification Metrics for {self.name}")
         predictions = [entry["response"] for entry in results]
         sources = [entry["source"] for entry in results]
         references = [entry["target"] for entry in results]
