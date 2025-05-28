@@ -1,5 +1,6 @@
 """Base for benchmarking summarization using a dataset from the Hugging Face Hub"""
 import logging
+import random
 from abc import abstractmethod
 
 from datasets import load_dataset
@@ -82,7 +83,9 @@ class HuggingFaceSummarizationBaseBenchmark(SummarizationBaseBenchmark):
             logging.info(f"Couldn't load the translated parquet for {dataset_version}: {e}")
             logging.info(f"Translating {self.name} to {self.language}")
             self.dataset = self._load_huggingface_data()
-            self.dataset = self.dataset.select(range(self.max_translation_entries))
+
+            random_indices = random.sample(range(len(self.dataset)), self.max_translation_entries)
+            self.dataset = self.dataset.select(random_indices)
 
             def try_to_translate(doc):
                 try:
