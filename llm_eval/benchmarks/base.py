@@ -65,6 +65,7 @@ class BaseBenchmark(ABC):
         """Property to get the hugging face repository"""
         return self._hf_repository
 
+    @property
     def preferred_response_format(self):
         """Property to get the preferred response format"""
         return self._preferred_response_format
