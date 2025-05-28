@@ -1,5 +1,7 @@
 """Implementation of tsummarization, simplification, translation, etc metrics"""
 
+import logging
+
 import evaluate
 
 hf_rouge = evaluate.load("rouge")
@@ -12,28 +14,53 @@ hf_bertscore = evaluate.load("bertscore")
 
 def rouge(predictions, references):
     # references = list(map(list, references))
-    score = hf_rouge.compute(predictions=predictions, references=references)
+    logging.info("Calculating ROUGE")
+    try:
+        score = hf_rouge.compute(predictions=predictions, references=references)
+    except Exception as e:
+        logging.warning(f"ROUGE failed: {e}")
+        score = None
     return score
 
 
 def sari(sources, predictions, references):
-    references = list(map(list, references))
-    score = hf_sari.compute(sources=sources, predictions=predictions, references=references)
+    logging.info("Calculating SARI")
+    try:
+        references = list(map(list, references))
+        score = hf_sari.compute(sources=sources, predictions=predictions, references=references)
+    except Exception as e:
+        logging.warning(f"SARI failed: {e}")
+        score = None
     return score
 
 
 def bleu(predictions, references):
-    score = hf_bleu.compute(predictions=predictions, references=references)
+    logging.info("Calculating BLEU")
+    try:
+        score = hf_bleu.compute(predictions=predictions, references=references)
+    except Exception as e:
+        logging.warning(f"BLEU failed: {e}")
+        score = None
     return score
 
 
 def meteor(predictions, references):
-    score = hf_meteor.compute(predictions=predictions, references=references)
+    logging.info("Calculating METEOR")
+    try:
+        score = hf_meteor.compute(predictions=predictions, references=references)
+    except Exception as e:
+        logging.warning(f"METEOR failed: {e}")
+        score = None
     return score
 
 
 def bertscore(predictions, references, lang="nl"):
-    score = hf_bertscore.compute(predictions=predictions, references=references, lang=lang)
+    logging.info("Calculating BERTScore")
+    try:
+        score = hf_bertscore.compute(predictions=predictions, references=references, lang=lang)
+    except Exception as e:
+        logging.warning(f"BERTScore failed: {e}")
+        score = None
     return score
 
 

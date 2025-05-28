@@ -4,6 +4,7 @@ Implementation of summarization benchmarks.
 The base class handles the default templating, calculating metrics, etc.
 """
 
+import logging
 from abc import abstractmethod
 
 from tqdm import tqdm
@@ -145,6 +146,8 @@ class SummarizationBaseBenchmark(BaseBenchmark):
 
     def _run_task(self, llm, results_path=None, n_samples=0):
         """Run the MMLU benchmark using the provided LLM."""
+        logging.info(f"Running {self.name} in {n_samples} samples")
+
         if n_samples:
             indices = self._sample_data(n_samples)
             src_sum = list(zip(self.sources, self.summaries))
@@ -164,25 +167,26 @@ class SummarizationBaseBenchmark(BaseBenchmark):
                 "source": source,
                 "summary": summary,
             }
+
             try:
                 llm_response = llm.prompt(prompt)
                 if not llm_response:
                     raise EmptyResponseError
                 result["response"] = llm_response
             except Exception as e:
-                result["response"] = "FAILED"
+                result["response"] = ""
                 result["error"] = True
                 result["exception"] = str(e)
+
             benchmark_results.append(result)
 
         return benchmark_results
 
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
-        # succeeded = [entry for entry in results if "error" not in entry]
-        predictions = [entry["response"] for entry in results]
-        # sources = [entry["source"] for entry in results]
-        references = [entry["summary"] for entry in results]
+        logging.info(f"Calculating Summarization Metrics for {self.name}")
+        predictions = [entry["response"] if entry["response"] else "" for entry in results]
+        references = [entry["summary"] if entry["summary"] else "" for entry in results]
 
         rouge_score = metrics.rouge(predictions=predictions, references=references)
         bleu_score = metrics.bleu(predictions=predictions, references=references)

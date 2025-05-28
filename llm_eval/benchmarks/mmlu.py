@@ -26,6 +26,7 @@ import requests
 from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
+from llm_eval.utils.exceptions import EmptyResponseError
 
 prompt_template = (
     "The following is a multiple choice question about {question_type}.\n"
@@ -125,13 +126,24 @@ class MMLU(BaseBenchmark):
             )
 
             expected_answer = entry["answer"]
-            llm_response = llm.prompt(prompt, response_format=self.preferred_response_format)
+
             result = {
                 "prompt": prompt,
                 "expected": expected_answer,
-                "response": llm_response,
-                "correct": llm_response.strip().lower() == expected_answer.strip().lower(),
             }
+
+            try:
+                llm_response = llm.prompt(prompt, response_format=self.preferred_response_format)
+                if not llm_response:
+                    raise EmptyResponseError
+                result["response"] = llm_response
+                result["correct"] = llm_response.strip().lower() == expected_answer.strip().lower()
+            except Exception as e:
+                result["response"] = ""
+                result["error"] = True
+                result["exception"] = str(e)
+                result["correct"] = False
+
             benchmark_results.append(result)
 
         return benchmark_results
