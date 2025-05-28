@@ -28,14 +28,40 @@ def test_leaderboard():
         "log_level": "WARNING",
     }
 
-    gpt_params = {
+    logging.info("Initializing GPT(s?)")
+    gpt_secrets = get_gpt_secrets()
+
+    gpt_translation_params = {
+        # temp ~0-0.2 to avoid weird translations
+        "temperature": 0.2,
+        # top_p ~0.95-1
+        "top_p": 0.95,
         "frequency_penalty": 0,
         "presence_penalty": 0,
-        # "stop": None,
+        "n": 1,
     }
 
-    logging.info("Initializing GPT")
-    gpt_secrets = get_gpt_secrets()
+    translation_gpt = LLMRouter.get_model(
+        provider="azure",
+        model_name="gpt-4o",
+        api_endpoint=gpt_secrets["API_ENDPOINT"],
+        api_key=gpt_secrets["API_KEY"],
+        api_version=gpt_secrets["API_VERSION"],
+        params=gpt_translation_params,
+        uses_api=True,
+    )
+
+    gpt_params = {
+        "temperature": 0,
+        "top_p": 1,
+        # Don't penalize to ensure greedy decoding
+        "frequency_penalty": 0,
+        "presence_penalty": 0,
+        "n": 1,
+        # "stop": None,
+        "max_tokens": 200,
+    }
+
     gpt_4o = LLMRouter.get_model(
         provider="azure",
         model_name="gpt-4o",
@@ -68,13 +94,15 @@ def test_leaderboard():
 
     hf_secrets = get_hf_secrets()
     hf_inference_params = {
-        "do_sample": True,
-        "temperature": 0.6,
-        "top_p": 0.65,
-        # "top_k": 25,
-        "max_new_tokens": 200,
-        "no_repeat_ngram_size": 3,
+        "do_sample": False,
+        # temp, top_k & top_p - unused for greedy decoding (adding for transparency)
+        # "temperature": 0,
+        # "top_k": 0,
+        "top_p": 1.0,
+        "repetition_penalty": 1.0,
         "num_return_sequences": 1,
+        # "no_repeat_ngram_size": 3,
+        "max_new_tokens": 200,
     }
 
     hf_object_params = {
@@ -91,6 +119,7 @@ def test_leaderboard():
     )
 
     mistral = LLMRouter.get_model(
+        # model_name="mistral-small",
         model_name="mistral-7b-instruct-v0.3",
         **hf_object_params,
     )
@@ -124,7 +153,7 @@ def test_leaderboard():
     # arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=["LEAP"])
     arc_nl_bench = ARC(benchmark_name, data_path=data_path, categories=[])
 
-    translation_model = gpt_4o_mini
+    translation_model = translation_gpt
     # translation_model = tinyllama
 
     en_nl_translator = TranslatorRouter.get_translator(
@@ -138,7 +167,7 @@ def test_leaderboard():
     simple_benches = []
     summary_benches = []
 
-    n_samples = 2
+    n_samples = 100
 
     # for prompt_type in ["detailed", "simple"]:
     for prompt_type in ["detailed"]:
@@ -178,7 +207,7 @@ def test_leaderboard():
                     prompt_type=prompt_type,
                     data_dir=data_dir,
                     translator=en_nl_translator,
-                    max_translation_entries=n_samples + 5,
+                    max_translation_entries=n_samples,
                 )
             )
 
@@ -191,21 +220,16 @@ def test_leaderboard():
                     prompt_type=prompt_type,
                     data_dir=data_dir,
                     translator=en_nl_translator,
-                    max_translation_entries=n_samples + 5,
+                    max_translation_entries=n_samples,
                 )
             )
-
-    n_samples = 2
 
     logging.info("Running comparison")
     leaderboard = Leaderboard(
         # llms=[tinyllama],
-        llms=[gpt_4o, tinyllama, mistral, llama, phi, falcon],
-        # llms=[phi],
+        llms=[mistral, llama, gpt_4o, gpt_4o_mini, falcon, phi, tinyllama],
         # llms=[gpt, tinyllama],
-        # llms=[mistral, falcon],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches,
-        # benchmarks=[arc_nl_bench, mmlu_nl_bench],
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )
