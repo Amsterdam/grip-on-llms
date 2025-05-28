@@ -59,6 +59,7 @@
         "in_short": "TBA",
         "use_cases": "TBA"
     },
+    {
         "model": "Llama-3.2-3B-Instruct",
         "model_url": "https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct",
         "provider": "Meta",
