@@ -34,6 +34,9 @@ class Leaderboard:
 
         results = []
         for llm in tqdm(self.llms, desc="LLMs"):
+            # Warm up LLM: temp fix for duration discrepancy
+            llm.prompt("Let's benchmark some models!!")
+
             for benchmark in tqdm(self.benchmarks, desc="Benchmarks"):
                 try:
                     self.codecarbon_params["project_name"] = f"{benchmark.name}-{llm.model_name}"
