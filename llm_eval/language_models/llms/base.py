@@ -45,7 +45,7 @@ class BaseLLM:
         # If a specific format is desired, post-process accordingly
         if response_format == "multiple_choice":
             response = clean_and_extract_multiple_choice(response)
-        if not response_format:
+        else:
             response = clean_and_extract_open_text_answers(response)
 
         return response
