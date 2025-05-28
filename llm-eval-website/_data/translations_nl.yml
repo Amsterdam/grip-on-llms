@@ -4,6 +4,8 @@ table_headers:
   license: License
   costs: Kosten
   reasoning: Redenering
+  simplifcation: Vereenvoudiging
+  summarization: Samenvatting
   inclusion: Inclusie
   energy_use: Energiverbruik
   in_short: In het kort
