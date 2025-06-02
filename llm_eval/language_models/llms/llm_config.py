@@ -38,16 +38,20 @@ MODEL_MAPPING = {
         "id": "meta-llama/Llama-2-70b-chat-hf",
         "kwargs": {},
     },
-    "llama3-8b-instruct": {
-        "id": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "llama-3.2-3b-instruct": {
+        "id": "meta-llama/Llama-3.2-3B-Instruct",
         "kwargs": {},
     },
-    "tiny-llama": {
-        "id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "llama-3-8b-instruct": {
+        "id": "meta-llama/Meta-Llama-3-8B-Instruct",
         "kwargs": {},
     },
     "llama-3.1-8b-instruct": {
         "id": "meta-llama/Llama-3.1-8B-Instruct",
+        "kwargs": {},
+    },
+    "tiny-llama": {
+        "id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
         "kwargs": {},
     },
     "phi-4-mini-instruct": {
