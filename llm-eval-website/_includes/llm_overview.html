@@ -1,5 +1,5 @@
 {% assign translations_key = 'translations_' | append: page.lang %}
-{% assign score_columns = "reasoning,inclusion,simplifcation,summarization,factuality,energy_use" | split: "," %}
+{% assign score_columns = "reasoning,inclusion,simplification,summarization,factuality,energy_use" | split: "," %}
 
 <div class="table-container">
     <table>
@@ -7,7 +7,8 @@
             <tr>
                 {% for column in site.visible_columns %}
                     {% if score_columns contains column %}
-                        <th class="score-cell">{{ site.data[translations_key].table_headers[column] }}</th>
+                        {% include score_header.html score_type=column%}
+                        <!-- <th class="score-cell">{{ site.data[translations_key].table_headers[column] }}</th> -->
                     {% else %}
                         <th>{{ site.data[translations_key].table_headers[column] }}</th>
                     {% endif %}
@@ -15,7 +16,8 @@
             </tr>
         </thead>
         <tbody>
-            {% for model in site.data.models %}
+            {% assign sorted_models = site.data.models | sort: "energy_use" | reverse %}
+            {% for model in sorted_models %}
             <tr>
                 {% for column in site.visible_columns %}
                     {% if column == 'model' %}

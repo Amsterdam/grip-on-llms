@@ -1,0 +1,32 @@
+{% assign score_type = include.score_type %}
+{% assign translations_key = 'translations_' | append: page.lang %}
+
+<th class="score-cell">
+    <div class="score-header-container">
+        {{ site.data[translations_key].table_headers[score_type] }}
+        <div class="score-info-icon" tabindex="0" aria-label="Show explanation">
+            <span class="score-explanation-header-info-circle">
+                {% include InfoFill.svg %}
+            </span>
+            <!-- <div class="score-explanation-card"> -->
+            <div class="score-explanation-card{% if forloop.last %} score-explanation-card--right{% endif %}">
+                <button class="score-explanation-close" aria-label="Close explanation" type="button">&times;</button>
+                <div class="score-explanation-bar">
+                    {% include InfoFill.svg %}
+                </div>
+                <div class="score-explanation-content">
+                    <!-- <div class="score-explanation-title">
+                        {{ site.data[translations_key].score_explanation.title }}
+                    </div> -->
+                    <div class="score-explanation-text">
+                        <p>{{ site.data[translations_key].score_explanation[score_type].intro }}</p>
+                        <div class="score-explanation-example">
+                            <p>{{ site.data[translations_key].score_explanation[score_type].example | newline_to_br }}</p>
+                        </div>
+                        <p>{{ site.data[translations_key].score_explanation[score_type].outro }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th>

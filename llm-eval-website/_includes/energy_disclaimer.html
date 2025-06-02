@@ -1,9 +1,11 @@
 {% assign translations_key = 'translations_' | append: page.lang %}
 
 <div class="score-circles score-unavailable">
-  <span class="score-stop-icon">
-    {% include WarningFill.svg %}
-    <div class="score-disclaimer-card">
+  <span class="missing-score-icon" tabindex="0">
+    <!-- {% include WarningFill.svg %} -->
+    ?
+    <div class="score-disclaimer-card" id="energy-disclaimer">
+      <button class="score-disclaimer-close" aria-label="Close disclaimer" type="button">&times;</button>
       <div class="score-disclaimer-bar">
         {% include WarningFill.svg %}
       </div>

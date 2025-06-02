@@ -1,10 +1,10 @@
 table_headers:
   model: Model
   provider: Aanbieder
-  license: License
+  license: Licentie
   costs: Kosten
   reasoning: Redenering
-  simplifcation: Vereenvoudiging
+  simplification: Vereenvoudiging
   summarization: Samenvatting
   inclusion: Inclusie
   energy_use: Energiverbruik
@@ -22,3 +22,50 @@ energy_disclaimer:
   title: Energieverbruik Inschatten Onmogelijk
   explanation: "Omdat dit model niet open-source is, is het onmogelijk om te berekenen hoeveel energie het verbruikt. Als je je zorgen maakt over ons milieu, raden we je aan een model te gebruiken waarvoor deze informatie beschikbaar is."
 copyright_footer: "Grip op LLMs, Gemeente Amsterdam"
+
+score_explanation:
+  reasoning:
+    intro: "We meten redeneervaardigheden met behulp van twee benchmarks bekend als MMLU en ARC. Deze benchmarks bestaan uit meerkeuzevragen zoals:"
+    example: |
+      Welke van de volgende wordt beschouwd als een zuuranhydride?
+      A: HCl
+      B: H2SO3
+      C: SO2
+      D: Al(NO3)3
+    outro: "We kennen de antwoorden op deze vragen en kunnen berekenen hoe vaak het model correct heeft geantwoord."
+  simplification:
+    intro: "
+      Wij meten de vereenvoudigingsvaardigheden met behulp van paren van complexe zinnen
+      samen met hun bijbehorende eenvoudige versies -
+      geschreven of gecontroleerd door experts en gebruikers.
+      Bijvoorbeeld:"
+    example: |
+      Complex: Hierin is de ambitie vastgelegd om in Amsterdam voor 2030 tenminste 127 MW windenergie te realiseren.
+      Simple: Hierin staat dat Amsterdam voor 2030 tenminste 127 MW aan windenergie wil kunnen opwekken.
+    outro: "
+      Wij vragen een LLM om elke complexe zin te vereenvoudigen.
+      Daarna berekenen we hoe vergelijkbaar de vereenvoudiging is met die in het dataset."
+  summarization:
+    intro: "
+      Wij meten samenvattingsvaardigheden met behulp van twee benchmarks,
+      bekend als XSum en CNN/DailyMail.
+      Deze benchmarks bevatten paren van nieuwsartikelen samen met een voorgestelde samenvatting.
+      "
+    example:
+    outro: "
+      Wij vragen een LLM om elk artikel samen te vatten.
+      Daarna berekenen we hoe vergelijkbaar de samenvatting is met die in het dataset.
+      "
+  energy_use:
+    intro: "
+      We meten de ecologische voetafdruk van LLMs met behulp van een tool genaamd CodeCarbon.
+      Deze tool houdt bij hoe lang een programma draait,
+      hoeveel rekenkracht en energie worden gebruikt,
+      en hoeveel koolstofdioxide er wordt uitgestoten,
+      afhankelijk van het geografische gebied waar de servers zich bevinden.
+      "
+    example:
+    outro: "
+      Wij gebruiken CodeCarbon wanneer we alle andere benchmarks uitvoeren
+      en berekenen vervolgens een gemiddelde score per model."
+ 

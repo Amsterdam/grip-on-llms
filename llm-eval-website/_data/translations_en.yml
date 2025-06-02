@@ -4,7 +4,7 @@ table_headers:
   license: License
   costs: Costs
   reasoning: Reasoning
-  simplifcation: Simplification
+  simplification: Simplification
   summarization: Summarization
   inclusion: Inclusion
   energy_use: Energy Use
@@ -22,3 +22,49 @@ energy_disclaimer:
   title: Energy Estimate Impossible
   explanation: "Because this is a closed model, it is impossible to calculate how much energy it uses. If you would like to take care of the environment, we advise you to use a model for which this information is available."
 copyright_footer: "Grip on LLMs, City of Amsterdam"
+
+score_explanation:
+  reasoning:
+    intro: "We measure reasoning abilities using two benchmarks known as MMLU and ARC. These benchmarks consist of multiple-choice questions such as:"
+    example: |
+      Which of the following is considered an acid anhydride?
+      A: HCl
+      B: H2SO3
+      C: SO2
+      D: Al(NO3)3
+    outro: "We know the answers to these questions and can calculate how often the model answered correctly."
+  simplification:
+    intro: "
+      We measure simplification abilities using pairs of complex sentences
+      together with their corresponding simple versions -
+      written or verified by experts and users.
+      For example:"
+    example: |
+      Complex: This outlines the ambition to realize at least 127 MW of wind energy in Amsterdam by 2030.
+      Simple: This states that Amsterdam wants to generate at least 127 MW of wind energy by 2030.
+    outro: "
+      We ask an LLM to simplify each complex sentence,
+      and then we calculate how similar its simplification is to the one in the dataset.
+      "
+  summarization:
+    intro: "
+      We measure summarization abilities using two benchmarks
+      known as XSum and CNN/DailyMail.
+      These benchmarks contain pairs of news articles together with a proposed summarization.
+      "
+    example:
+    outro: "
+      We ask an LLM to summarize each article,
+      and then we calculate how similar the summary is to the one in the dataset.
+      "
+  energy_use:
+    intro: "
+      We measure environmental impact using a tool called CodeCarbon.
+      This tool tracks how long a program runs,
+      how much computational resources and energy are used
+      and how much carbon dioxide is emitted
+      depending on the geographic area where servers are located."
+    example:
+    outro: "
+      We use CodeCarbon when we run all other benchmarks
+      and then calculate an average score per model."
