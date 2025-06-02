@@ -8,6 +8,7 @@ visible_columns:
   - provider
   - license
   - costs
-  - reasoning
-  - inclusion
   - energy_use
+  - reasoning
+  - simplification
+  - summarization
