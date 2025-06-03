@@ -4,7 +4,11 @@ Model Zoo Information
 Introduction
 ------------
 
-Our Model Zoo is a curated collection of both open-source and closed-source large language models (LLMs) that are tested and benchmarked to provide insights into their performance and capabilities. The models are currently being evaluated and will be ranked on a leaderboard based on various criteria, including facutality, knowledge, and environmental impact.
+Our Model Zoo is a curated collection of both open-source and closed-source large language models (LLMs) that are tested and benchmarked
+to provide insights into their performance, environmental impact and alignment with municipal values.
+As soon as new models are added to the Model Zoo and evaluated, they are ranked on a publicly available [leaderboard](https://amsterdam.github.io/grip-on-llms)
+based on various aspects, including facutality, inclusivity, and carbon footprint.
+This leaderboard helps users identify the strengths and weaknesses of each model, facilitating informed decisions based on specific needs and criteria.
 
 Model Selection
 ---------------
@@ -14,20 +18,39 @@ We selected a diverse set of models from different companies, including both ope
 Current Models in the Zoo
 -------------------------
 
-The following models are currently part of the Model Zoo. This list is subject to updates as new models are added:
+We currently support a number of open-source models hosted on HuggingFace (
+[Tiny Llama](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0),
+[Mistral 7B Instruct v0.3](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3),
+[Llama 3.1 8B Instruct](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct),
+[Phi 4 Mini Instruct](https://huggingface.co/microsoft/Phi-4-mini-instruct),
+[Falcon 3 7B Instruct](https://huggingface.co/tiiuae/Falcon3-7B-Instruct)
+), as well as closed-source models securely hosted in our Azure environment (
+[GPT-4o](https://openai.com/index/hello-gpt-4o/), 
+[GPT-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/)
+).
 
-### API Models
+This list is subject to updates as new models are added.
 
-*   **[GPT-4o](https://openai.com/index/hello-gpt-4o/):** A variant of OpenAI's GPT model, included for benchmarking.
-*   **[GPT-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/):** Planned to be part of the Model Zoo, offering a smaller version for testing.
 
-### Open Source Models
+How to add models
+-----------------
+### For all models:
+1. Check **compliance**:
+   * Check whether the **license** allows us to use it following the guidelines below.
+   * Check whether **training data** poses privacy or copyright concerns (guidelines to follow)
+   * Check if the model **can be hosted or deployed** in our cloud environment
+2. Add to the **list of supported models** in this docs page
+3. Add to the **[leaderboard](/llm-eval-website/_data/models.json)** including information such as provider, costs, etc
 
-*   **[Tiny Llama](https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0):** A compact model designed for chat applications.
-*   **[Mistral 7B Instruct v0.3](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3):** A model tailored for instruction-based tasks.
-*   **[Llama 3.1 8B Instruct](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct):** A model designed for complex language tasks.
-*   **[Phi 4 Mini Instruct](https://huggingface.co/microsoft/Phi-4-mini-instruct):** A smaller version of Phi, tailored for instruction-based applications.
-*   **[Falcon 3 7B Instruct](https://huggingface.co/tiiuae/Falcon3-7B-Instruct):** A model known for instruction-based scenarios.
+### HuggingFace models:
+1. **Add to [model_config.py](/llm_eval/language_models/llms/llm_config.py)**
+   * add the full repo id
+   * add any custom arguments if required
+   * add a recommended system prompt if it exists
+2. **Confirm apply_chat_template works**
+   * Test whether it applies the expected model template or just a default template which might decrease performance.
+3. **Test** if the model works (e.g. using the [test_llms.py](/tests/test_llms.py) file)
+
 
 License Information
 -------------------
@@ -63,13 +86,3 @@ To make informed decisions about which models to use based on their licenses, co
     *   Ensure that any use complies with applicable laws and regulations, including but not limited to:
         - **AI Act:** A regulatory framework proposed by the European Union to ensure safe and ethical use of AI technologies.
         - **GDPR (General Data Protection Regulation):** EU legislation focused on data protection and privacy, which impacts how AI models handle personal data.
-
-Leaderboard
------------
-
-The models in the zoo are currently being tested against a series of benchmarks and will be placed on a leaderboard. This leaderboard helps users identify the strengths and weaknesses of each model, facilitating informed decisions based on specific needs and criteria.
-
-Updates
--------
-
-The Model Zoo is continuously evolving, with new models being added and existing ones updated to reflect the latest advancements in the field. Stay tuned for updates to the list and leaderboard rankings.
