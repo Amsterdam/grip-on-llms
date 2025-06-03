@@ -3,6 +3,7 @@ Dealing with (huggingface) model templating.
 Currently, we are using a set of own basic templates for more transparency and control.
 The aim is to transfer to the hugging face chat templating wherever possible and convenient.
 More information: https://huggingface.co/docs/transformers/main/chat_templating
+Disclaimer: Prompts using context still need to be thoroughly tested.
 """
 import re
 
@@ -20,20 +21,6 @@ DEFAULT_INTRO_CONTEXT = (
 USING_CONTEXT = "Using this information: {context} " + "answer the Question: {prompt}"
 
 
-def falcon_prompt(prompt, context=None, system=""):
-    if context:
-        instruction = USING_CONTEXT.format(context=context, prompt=prompt)
-        formatted_prompt = f"{system} {instruction}"
-    else:
-        formatted_prompt = f"{system} {prompt}"
-    return formatted_prompt
-
-
-def falcon_prompt_dutch(prompt, context=None, system=""):
-    formatted_prompt = f"Vraag: {prompt}\nAntwoord:"
-    return formatted_prompt
-
-
 def llama_prompt(prompt, context=None, system=""):
     if context:
         system_msg = f"<<SYS>> {DEFAULT_INTRO_CONTEXT} {system} <</SYS>>"
@@ -45,14 +32,35 @@ def llama_prompt(prompt, context=None, system=""):
     return formatted_prompt
 
 
-def tiny_llama_prompt(prompt, context=None, system=""):
+def mistral_prompt(prompt, context=None, system=""):
+    system_msg = f" {system}\n\n" if system else ""
     if context:
-        system_msg = f"<|system|>{DEFAULT_INTRO_CONTEXT} {system}</s>"
         instruction = USING_CONTEXT.format(context=context, prompt=prompt)
-        formatted_prompt = f"<|user|>{system_msg} {instruction}</s><|assistant|>"
     else:
-        system_msg = f"<|system|>{DEFAULT_INTRO} {system}</s>"
-        formatted_prompt = f"<|user|>{system_msg} {prompt}</s><|assistant|>"
+        instruction = prompt
+
+    formatted_prompt = f"<s>[INST] {system_msg}{instruction}[/INST]"
+    return formatted_prompt
+
+
+def system_user_assistant_prompt(prompt, context=None, system=""):
+    system_msg = f"<|system|>\n{system}\n" if system else ""
+
+    if context:
+        instruction = USING_CONTEXT.format(context=context, prompt=prompt)
+    else:
+        instruction = prompt
+    formatted_prompt = f"{system_msg}<|user|>\n{instruction}\n<|assistant|>\n"
+    return formatted_prompt
+
+
+def falcon3_prompt(prompt, context=None, system=""):
+    default_falcon_system = (
+        "You are a helpful, friendly assistant Falcon3 from TII, "
+        "try to follow instructions as much as possible."
+    )
+    system = system if system else default_falcon_system
+    formatted_prompt = system_user_assistant_prompt(prompt, context, system)
     return formatted_prompt
 
 
@@ -78,23 +86,12 @@ def default_prompt(prompt, context=None, system=""):
 
 
 template_mapping = {
-    "falcon-7b-instruct": falcon_prompt,
-    "falcon-40b-instruct": falcon_prompt,
-    "falcon-7b-instruct-dutch": falcon_prompt_dutch,
-    "falcon-40b-instruct-dutch": falcon_prompt_dutch,
-    "mistral-7b-instruct": llama_prompt,
-    "mixtral-7b-instruct": llama_prompt,
-    "llama-7b": llama_prompt,
-    "llama-7b-chat": llama_prompt,
-    "llama-13b-chat": llama_prompt,
-    "llama-70b-chat": llama_prompt,
-    "llama-3.1-8b-instruct": llama_prompt,
-    "llama-3.2-3b-instruct": llama_prompt,
-    "tiny-llama": tiny_llama_prompt,
-    "mistral-7b-instruct-v0.3": llama_prompt,
-    "mistral-small": llama_prompt,
+    "falcon3-7b-instruct": falcon3_prompt,
+    "mistral-7b-instruct-v0.3": mistral_prompt,
+    "tiny-llama": system_user_assistant_prompt,
     "phi-4-mini-instruct": phi_prompt,
-    "falcon3-7b-instruct": falcon_prompt,
+    "llama-3.2-3b-instruct": llama_prompt,
+    "llama-3.1-8b-instruct": llama_prompt,
 }
 
 
@@ -111,3 +108,9 @@ def get_default_template(model_name, context=False, system=""):
     return format_prompt(
         prompt="{prompt}", model_name=model_name, context=context_msg, system=system_msg
     )
+
+
+if __name__ == "__main__":
+    for model in template_mapping.keys():
+        print(f"----- {model} -----")
+        print(template_mapping[model](prompt="PROMPT", context=None, system=None))
