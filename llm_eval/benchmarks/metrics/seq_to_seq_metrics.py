@@ -1,4 +1,4 @@
-"""Implementation of tsummarization, simplification, translation, etc metrics"""
+"""Implementation of summarization, simplification, translation, etc metrics"""
 
 import logging
 

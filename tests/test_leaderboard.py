@@ -10,6 +10,7 @@ from llm_eval.benchmarks import (
     AmsterdamSimplification,
     CNNDailyMail,
     INTDuidelijkeTaal,
+    TinyARC,
     TinyMMLU,
     XSum,
 )
@@ -136,7 +137,7 @@ def test_leaderboard():
     )
 
     falcon = LLMRouter.get_model(
-        model_name="falcon-7b-instruct",
+        model_name="falcon3-7b-instruct",
         **hf_object_params,
     )
 
@@ -233,7 +234,17 @@ def test_leaderboard():
             language="NL",
             data_dir=Path(benchmark_data_folder) / "TinyMMLU",
             translator=en_nl_translator,
-            max_translation_entries=n_samples + 5,
+            max_translation_entries=n_samples,
+        )
+    )
+
+    tiny_benches.append(
+        TinyARC(
+            benchmark_name="TinyARC",
+            language="NL",
+            data_dir=Path(benchmark_data_folder) / "TinyARC",
+            translator=en_nl_translator,
+            max_translation_entries=n_samples,
         )
     )
 
@@ -241,11 +252,11 @@ def test_leaderboard():
     leaderboard = Leaderboard(
         # llms=[tinyllama],
         llms=[mistral, llama, gpt_4o, gpt_4o_mini, falcon, phi, tinyllama],
-        # llms=[gpt, tinyllama],
+        # llms=[gpt_4o_mini],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches + tiny_benches,
         # benchmarks=tiny_benches,
         codecarbon_params=codecarbon_params,
-        n_samples=n_samples,
+        n_samples=None,
     )
     leaderboard.run_comparison(results_path="leaderboard")
 

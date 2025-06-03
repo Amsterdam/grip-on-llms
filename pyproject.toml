@@ -27,6 +27,7 @@ mmh3 = "5.1.0"
 datasets = "^3.5.0"
 protobuf = "^6.30.2"
 sentencepiece = "0.2.0"
+tinyBenchmarks = { git = "https://github.com/felipemaiapolo/tinyBenchmarks" }
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"

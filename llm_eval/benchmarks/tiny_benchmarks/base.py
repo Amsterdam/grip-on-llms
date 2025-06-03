@@ -81,12 +81,14 @@ class BaseTinyBenchmark(BaseBenchmark):
         language="NL",
         translator=None,
         max_translation_entries=10,
+        preferred_response_format=None,
     ):
         """Initialize the benchmark."""
         super().__init__(
             benchmark_name=benchmark_name,
             data_dir=data_dir,
             hf_repository=hf_repository,
+            preferred_response_format=preferred_response_format,
         )
 
         self.input_field = input_field
@@ -200,14 +202,15 @@ class BaseTinyBenchmark(BaseBenchmark):
                 "target": target,
             }
             try:
-                llm_response = llm.prompt(input)
+                llm_response = llm.prompt(input, response_format=self.preferred_response_format)
                 if not llm_response:
                     raise EmptyResponseError
                 result["response"] = llm_response
             except Exception as e:
-                result["response"] = "FAILED"
+                result["response"] = ""
                 result["error"] = True
                 result["exception"] = str(e)
+                result["correct"] = False
             benchmark_results.append(result)
 
         return benchmark_results
