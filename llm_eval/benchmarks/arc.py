@@ -34,14 +34,17 @@ from llm_eval.benchmarks.base import BaseBenchmark
 from llm_eval.utils.exceptions import EmptyResponseError
 
 prompt_template = (
-    "The following is a multiple choice question.\n"
-    "Only answer with the letter A, B, C or D\n"
+    # "The following is a multiple choice question.\n"
+    # "Only answer with the letter A, B, C or D\n"
+    "Hier volgt een meerkeuzevraag.\n"
+    "Antwoord alleen met de letter A, B, C of D.\n"
     "{instruction}\n"
     "A. {option_a}\n"
     "B. {option_b}\n"
     "C. {option_c}\n"
     "D. {option_d}\n"
-    "Answer:"
+    # "Answer:"
+    "Antwoord:"
 )
 
 
