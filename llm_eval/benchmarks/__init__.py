@@ -4,7 +4,7 @@ from .arc import ARC
 from .mmlu import MMLU
 from .simplification import AmsterdamSimplification, INTDuidelijkeTaal
 from .summarization import CNNDailyMail, XSum
-from .tiny_benchmarks import TinyMMLU
+from .tiny_benchmarks import TinyARC, TinyMMLU
 
 __all__ = [
     "MMLU",
@@ -13,5 +13,6 @@ __all__ = [
     "AmsterdamSimplification",
     "XSum",
     "CNNDailyMail",
+    "TinyARC",
     "TinyMMLU",
 ]

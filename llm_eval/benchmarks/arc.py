@@ -1,5 +1,5 @@
 """
-Implementation of the AI2’s Reasoning Challenge (ARC) benchmark.
+Implementation of the AI2’s Reasoning Challenge (ARC) benchmark [1].
 
 ARC is a common sense reasoning, multiple choice question-answering
 dataset, containing questions from science exams from grade 3 to grade 9.
@@ -23,6 +23,11 @@ comparing the corresponding probabilities more closely mimicing direct
 user interaction with the model.
 2. perform a single pass
 3. employ a zero-shot setup as opposed to the commonly used 5-shot setup
+
+References:
+[1] Clark, Peter, et al.
+"Think you have solved question answering? try arc, the ai2 reasoning challenge."
+arXiv preprint arXiv:1803.05457 (2018).
 """
 
 import json

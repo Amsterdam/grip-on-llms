@@ -1,14 +1,16 @@
 """
-Implementation of the tiny version of the MMLU benchmark which contains
-57 tasks and ims to measure world knowledge and problem solving ability [1].
+Implementation of the tiny version of the AI2’s Reasoning Challenge (ARC) benchmark
+which measures common sense reasing and contains multiple-choice questions
+from science exams from grade 3 to grade 9 [1].
 
 We directly use the formatted inputs from the TinyBenchmarks [2]
 available in the huggingface hub
 (https://huggingface.co/datasets/tinyBenchmarks/tinyMMLU).
 
 References:
-[1] Hendrycks, Dan, et al. "Measuring massive multitask language understanding."
-arXiv preprint arXiv:2009.03300 (2020).
+[1] Clark, Peter, et al.
+"Think you have solved question answering? try arc, the ai2 reasoning challenge."
+arXiv preprint arXiv:1803.05457 (2018).
 
 [2] Polo, Felipe Maia, et al.
 "tinyBenchmarks: evaluating LLMs with fewer examples."
@@ -26,15 +28,14 @@ ANSWERS = {
     3: "D",
 }
 
-
 BENCHMARK_PURPOSE = (
-    "The purpose of the benchmark is to measure world knowledge "
-    "and problem solving ability by answering multiple-choice questions."
+    "The purpose of the benchmark is to measure common sense reasing"
+    "using multiple-choice questions from science exams"
 )
 
 
-class TinyMMLU(BaseTinyBenchmark):
-    """TinyMMLU implementation."""
+class TinyARC(BaseTinyBenchmark):
+    """TinyARC implementation."""
 
     def __init__(
         self,
@@ -44,13 +45,13 @@ class TinyMMLU(BaseTinyBenchmark):
         translator=None,
         max_translation_entries=10,
     ):
-        """Initialize TinyMMLU benchmark."""
+        """Initialize TinyARC benchmark."""
         super().__init__(
             benchmark_name=benchmark_name,
             input_field="input_formatted",
-            target_field="answer",
+            target_field="answerKey",
             benchmark_purpose=BENCHMARK_PURPOSE,
-            hf_repository="tinyBenchmarks/tinyMMLU",
+            hf_repository="tinyBenchmarks/tinyAI2_arc",
             data_dir=data_dir,
             language=language,
             translator=translator,
@@ -68,10 +69,10 @@ class TinyMMLU(BaseTinyBenchmark):
 
     def _get_targets(self):
         """Get ground-truth answers"""
-        return [ANSWERS[x] for x in self.dataset[self.target_field]]
+        return self.dataset[self.target_field]
 
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
         predictions = [entry["response"] for entry in results]
-        accuracy = tiny_accuracy(predictions, task="mmlu")
+        accuracy = tiny_accuracy(predictions, task="arc")
         return {"acc": accuracy}
