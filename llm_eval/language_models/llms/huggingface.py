@@ -7,7 +7,6 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
-from llm_eval.language_models.llms.llm_templates import format_prompt
 from llm_eval.utils.exceptions import UnsupportedModelError
 
 
@@ -22,6 +21,7 @@ class HuggingFaceLLM(BaseLLM):
         self.model = None
         self.tokenizer = None
         self.device = "cpu"
+        self.system_prompt = None
 
     def _load_model(self, pause_tracker=True):
         """
@@ -43,6 +43,7 @@ class HuggingFaceLLM(BaseLLM):
             "token": self.hf_token,
         }
         kwargs.update(model_config["kwargs"])
+        self.system_prompt = kwargs.pop("system_prompt", None)
 
         self.model = AutoModelForCausalLM.from_pretrained(
             model_id, cache_dir=self.hf_cache, **kwargs
@@ -59,12 +60,19 @@ class HuggingFaceLLM(BaseLLM):
         if not self.model:
             self._load_model(pause_tracker=True)
 
-        # conversation = [{"role": "user", "content": prompt}]
-        # formatted_prompt = self.tokenizer.apply_chat_template(conversation, tokenize=False)
+        if self.system_prompt:
+            conversation = [{"role": "system", "content": self.system_prompt}]
+        else:
+            conversation = []
+        conversation.append([{"role": "user", "content": prompt}])
 
-        formatted_prompt = format_prompt(prompt, model_name=self.model_name)
+        input_ids = self.tokenizer.apply_chat_template(
+            conversation,
+            tokenize=True,
+            add_generation_prompt=True,
+            return_tensors="pt",
+        ).to(self.device)
 
-        input_ids = self.tokenizer.encode(formatted_prompt, return_tensors="pt").to(self.device)
         attention_mask = torch.ones(input_ids.shape).to(self.device)
 
         output = self.model.generate(
@@ -75,13 +83,9 @@ class HuggingFaceLLM(BaseLLM):
             # return_full_text=False,
             **self.params,
         )
-        # fmt: off
         response = self.tokenizer.decode(
-            output[0][input_ids.shape[-1]:], skip_special_tokens=True
+            output[0][input_ids.shape[-1] :], skip_special_tokens=True
         )
-        # fmt: on
-        response = response.replace(formatted_prompt.removeprefix("<s>"), "")
-        response = response.removeprefix("assistant\n")
 
         return response
 

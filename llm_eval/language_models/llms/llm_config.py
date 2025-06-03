@@ -4,7 +4,12 @@
 MODEL_MAPPING = {
     "falcon3-7b-instruct": {
         "id": "tiiuae/Falcon3-7B-Instruct",
-        "kwargs": {"system_prompt": "..."},
+        "kwargs": {
+            # "system_prompt": (
+            #     "You are a helpful friendly assistant Falcon3 from TII, "
+            #     "try to follow instructions as much as possible."
+            # ),
+        },
     },
     "mistral-7b-instruct-v0.3": {
         "id": "mistralai/Mistral-7B-Instruct-v0.3",
