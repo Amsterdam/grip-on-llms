@@ -1,0 +1,24 @@
+---
+title: Home
+---
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+    <script>
+        // Detect the browser's preferred language
+        const userLang = navigator.language || navigator.userLanguage;
+
+        // Redirect based on the detected language
+        if (userLang.startsWith('nl')) {
+            window.location.href = "{{ site.baseurl }}/nl/";
+        } else {
+            window.location.href = "{{ site.baseurl }}/en/";
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting based on your browser's language...</p>
+    <p>If you are not redirected, choose your language: <a href="{{ site.baseurl }}/en/">English</a> | <a href="{{ site.baseurl }}/nl/">Nederlands</a>.</p>
+</body>
+</html>

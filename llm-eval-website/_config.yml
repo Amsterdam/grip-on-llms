@@ -1,0 +1,13 @@
+title: Grip op LLMs
+baseurl: "/grip-on-llms" # for project sites
+url: "https://Amsterdam.github.io"
+default_lang: nl
+visible_columns:
+  - model
+  - provider
+  - license
+  - costs
+  - energy_use
+  - reasoning
+  - simplification
+  - summarization

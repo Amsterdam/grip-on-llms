@@ -1,0 +1,28 @@
+---
+layout: null
+title: Home
+lang: nl
+---
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+
+    <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ site.baseurl }}/assets/js/script.js"></script>
+</head>
+
+<body>
+    {% include header.html %}
+    {% include intro.html %}
+    <div class="content">
+        <h2>Disclaimer: Voorlopig Fictieve Gegevens</h2>
+        <p> Deze website is een werk in uitvoering en bevat voorlopig voornamelijk fictieve gegevens. </p>
+    </div>
+    {% include llm_overview.html %}    
+    {% include footer.html %}
+</body>
+</html>

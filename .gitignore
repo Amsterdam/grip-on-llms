@@ -1,6 +1,10 @@
 # Adapt to your needs. This version includes typical data files we work with, along with the default python template.
 
-# output / results
+# webstie stuffs
+**/_site/*
+
+# data / output / results
+data/*
 results*
 output*
 

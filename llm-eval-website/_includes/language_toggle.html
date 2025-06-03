@@ -1,0 +1,21 @@
+<!-- <div class="language-toggle">
+  <a href="/en{{ page.url | remove: '/nl' }}">EN</a> | 
+  <a href="/nl{{ page.url | remove: '/en' }}">NL</a>
+</div> -->
+
+{% assign current_lang = page.lang %}
+{% assign current_lang_prefix = current_lang | prepend: '/' %}
+
+<div class="language-toggle">
+  <!-- English Link -->
+  <a href="{{ site.baseurl }}/en{{ page.url | remove: current_lang_prefix }}" 
+     class="{% if current_lang == 'en' %}active{% endif %}">
+    EN
+  </a> | 
+
+  <!-- Dutch Link -->
+  <a href="{{ site.baseurl }}/nl{{ page.url | remove: current_lang_prefix }}" 
+     class="{% if current_lang == 'nl' %}active{% endif %}">
+    NL
+  </a>
+</div>
