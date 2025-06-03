@@ -24,6 +24,8 @@ extend-ignore =
     D400,
     # D401 First line should be in imperative mood
     D401
+    # E203 white space before :
+    E203
 
 max-complexity = 8
 max-line-length = 99
