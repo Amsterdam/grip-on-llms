@@ -2,64 +2,28 @@
 
 
 MODEL_MAPPING = {
-    "falcon-7b-instruct": {
-        "id": "tiiuae/falcon-7b-instruct",
-        "kwargs": {},
-    },
-    "falcon-40b-instruct": {
-        "id": "tiiuae/falcon-40b-instruct",
-        "kwargs": {},
-    },
-    "mistral-7b-instruct": {
-        "id": "mistralai/Mistral-7B-Instruct-v0.1",
-        "kwargs": {"torch_dtype": "auto"},
+    "falcon3-7b-instruct": {
+        "id": "tiiuae/Falcon3-7B-Instruct",
+        "kwargs": {"system_prompt": "..."},
     },
     "mistral-7b-instruct-v0.3": {
         "id": "mistralai/Mistral-7B-Instruct-v0.3",
-        "kwargs": {},
-    },
-    "mixtral-7b-instruct": {
-        "id": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-        "kwargs": {"torch_dtype": "auto"},
-    },
-    "mistral-small": {
-        "id": "mistralai/Mistral-Small-Instruct-2409",
-        "kwargs": {},
-    },
-    "llama-7b-chat": {
-        "id": "meta-llama/Llama-2-7b-chat-hf",
-        "kwargs": {},
-    },
-    "llama-13b-chat": {
-        "id": "meta-llama/Llama-2-13b-chat-hf",
-        "kwargs": {},
-    },
-    "llama-70b-chat": {
-        "id": "meta-llama/Llama-2-70b-chat-hf",
-        "kwargs": {},
-    },
-    "llama-3.2-3b-instruct": {
-        "id": "meta-llama/Llama-3.2-3B-Instruct",
-        "kwargs": {},
-    },
-    "llama-3-8b-instruct": {
-        "id": "meta-llama/Meta-Llama-3-8B-Instruct",
-        "kwargs": {},
-    },
-    "llama-3.1-8b-instruct": {
-        "id": "meta-llama/Llama-3.1-8B-Instruct",
         "kwargs": {},
     },
     "tiny-llama": {
         "id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
         "kwargs": {},
     },
-    "phi-4-mini-instruct": {
-        "id": "microsoft/Phi-4-mini-instruct",
+    "llama-3.2-3b-instruct": {
+        "id": "meta-llama/Llama-3.2-3B-Instruct",
         "kwargs": {},
     },
-    "falcon3-7b-instruct": {
-        "id": "tiiuae/Falcon3-7B-Instruct",
+    "llama-3.1-8b-instruct": {
+        "id": "meta-llama/Llama-3.1-8B-Instruct",
+        "kwargs": {},
+    },
+    "phi-4-mini-instruct": {
+        "id": "microsoft/Phi-4-mini-instruct",
         "kwargs": {},
     },
 }
