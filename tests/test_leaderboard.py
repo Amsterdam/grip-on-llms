@@ -12,6 +12,7 @@ from llm_eval.benchmarks import (
     INTDuidelijkeTaal,
     TinyARC,
     TinyMMLU,
+    TinyTruthfulQA,
     XSum,
 )
 from llm_eval.language_models import LLMRouter
@@ -166,10 +167,9 @@ def test_leaderboard():
         target_lang="NL",
     )
 
-    simple_benches = []
-    summary_benches = []
-
     n_samples = 100
+
+    simple_benches = []
 
     # for prompt_type in ["detailed", "simple"]:
     for prompt_type in ["detailed"]:
@@ -198,14 +198,18 @@ def test_leaderboard():
             )
         )
 
+    summary_benches = []
+
+    # for prompt_type in ["detailed", "simple"]:
+    for prompt_type in ["detailed"]:
         # for language in ["NL", "EN"]
-        for language in ["NL"]:
+        for sum_lang in ["NL"]:
             bench_name = "CNNDailyMail"
             data_dir = Path(benchmark_data_folder) / bench_name
             summary_benches.append(
                 CNNDailyMail(
                     benchmark_name=bench_name,
-                    language=language,
+                    language=sum_lang,
                     prompt_type=prompt_type,
                     data_dir=data_dir,
                     translator=en_nl_translator,
@@ -218,7 +222,7 @@ def test_leaderboard():
             summary_benches.append(
                 XSum(
                     benchmark_name=bench_name,
-                    language=language,
+                    language=sum_lang,
                     prompt_type=prompt_type,
                     data_dir=data_dir,
                     translator=en_nl_translator,
@@ -228,23 +232,32 @@ def test_leaderboard():
 
     tiny_benches = []
 
+    tiny_benches_lang = "NL"
+
     tiny_benches.append(
         TinyMMLU(
             benchmark_name="TinyMMLU",
-            language="NL",
+            language=tiny_benches_lang,
             data_dir=Path(benchmark_data_folder) / "TinyMMLU",
             translator=en_nl_translator,
-            max_translation_entries=n_samples,
         )
     )
 
     tiny_benches.append(
         TinyARC(
             benchmark_name="TinyARC",
-            language="NL",
+            language=tiny_benches_lang,
             data_dir=Path(benchmark_data_folder) / "TinyARC",
             translator=en_nl_translator,
-            max_translation_entries=n_samples,
+        )
+    )
+
+    tiny_benches.append(
+        TinyTruthfulQA(
+            benchmark_name="TinyTruthfulQA",
+            language=tiny_benches_lang,
+            data_dir=Path(benchmark_data_folder) / "TinyTruthfulQA",
+            translator=en_nl_translator,
         )
     )
 

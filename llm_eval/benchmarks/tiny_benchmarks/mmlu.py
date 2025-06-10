@@ -16,16 +16,10 @@ arXiv preprint arXiv:2402.14992 (2024).
 """
 from datasets import load_dataset
 
-from llm_eval.benchmarks.metrics import tiny_accuracy
-from llm_eval.benchmarks.tiny_benchmarks.base import BaseTinyBenchmark
-
-ANSWERS = {
-    0: "A",
-    1: "B",
-    2: "C",
-    3: "D",
-}
-
+from llm_eval.benchmarks.tiny_benchmarks.base_mc import (
+    BaseTinyMultipleChoiceBenchmark,
+    template_question,
+)
 
 BENCHMARK_PURPOSE = (
     "The purpose of the benchmark is to measure world knowledge "
@@ -33,7 +27,7 @@ BENCHMARK_PURPOSE = (
 )
 
 
-class TinyMMLU(BaseTinyBenchmark):
+class TinyMMLU(BaseTinyMultipleChoiceBenchmark):
     """TinyMMLU implementation."""
 
     def __init__(
@@ -42,36 +36,26 @@ class TinyMMLU(BaseTinyBenchmark):
         language="NL",
         data_dir=None,
         translator=None,
-        max_translation_entries=10,
     ):
         """Initialize TinyMMLU benchmark."""
         super().__init__(
             benchmark_name=benchmark_name,
-            input_field="input_formatted",
+            input_field="input_formatted_0shot",
             target_field="answer",
             benchmark_purpose=BENCHMARK_PURPOSE,
             hf_repository="tinyBenchmarks/tinyMMLU",
             data_dir=data_dir,
             language=language,
             translator=translator,
-            max_translation_entries=max_translation_entries,
-            preferred_response_format="multiple_choice",
+            tiny_task="mmlu",
         )
 
     def _load_huggingface_data(self):
         dataset = load_dataset(self.hf_repository, trust_remote_code=True, split="test")
+        dataset = dataset.map(
+            lambda data_point: {
+                **data_point,
+                self.input_field: template_question(data_point["question"], data_point["choices"]),
+            }
+        )
         return dataset
-
-    def _get_inputs(self):
-        """Get formatted questions"""
-        return self.dataset[self.input_field]
-
-    def _get_targets(self):
-        """Get ground-truth answers"""
-        return [ANSWERS[x] for x in self.dataset[self.target_field]]
-
-    def _calculate_metric(self, results=None):
-        """Given results, calculate desired score"""
-        predictions = [entry["response"] for entry in results]
-        accuracy = tiny_accuracy(predictions, task="mmlu")
-        return {"acc": accuracy}
