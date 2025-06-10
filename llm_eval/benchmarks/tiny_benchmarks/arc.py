@@ -18,15 +18,10 @@ arXiv preprint arXiv:2402.14992 (2024).
 """
 from datasets import load_dataset
 
-from llm_eval.benchmarks.metrics import tiny_accuracy
-from llm_eval.benchmarks.tiny_benchmarks.base import BaseTinyBenchmark
-
-ANSWERS = {
-    0: "A",
-    1: "B",
-    2: "C",
-    3: "D",
-}
+from llm_eval.benchmarks.tiny_benchmarks.base_mc import (
+    BaseTinyMultipleChoiceBenchmark,
+    template_question,
+)
 
 BENCHMARK_PURPOSE = (
     "The purpose of the benchmark is to measure common sense reasing"
@@ -34,7 +29,7 @@ BENCHMARK_PURPOSE = (
 )
 
 
-class TinyARC(BaseTinyBenchmark):
+class TinyARC(BaseTinyMultipleChoiceBenchmark):
     """TinyARC implementation."""
 
     def __init__(
@@ -43,36 +38,34 @@ class TinyARC(BaseTinyBenchmark):
         language="NL",
         data_dir=None,
         translator=None,
-        max_translation_entries=10,
     ):
         """Initialize TinyARC benchmark."""
         super().__init__(
             benchmark_name=benchmark_name,
-            input_field="input_formatted",
+            input_field="input_formatted_0shot",
             target_field="answerKey",
             benchmark_purpose=BENCHMARK_PURPOSE,
             hf_repository="tinyBenchmarks/tinyAI2_arc",
             data_dir=data_dir,
             language=language,
             translator=translator,
-            max_translation_entries=max_translation_entries,
-            preferred_response_format="multiple_choice",
+            tiny_task="arc",
         )
 
     def _load_huggingface_data(self):
         dataset = load_dataset(self.hf_repository, trust_remote_code=True, split="test")
-        return dataset
+        dataset = dataset.map(
+            lambda data_point: {
+                **data_point,
+                self.input_field: template_question(
+                    data_point["question"], data_point["choices"]["text"]
+                ),
+            }
+        )
 
-    def _get_inputs(self):
-        """Get formatted questions"""
-        return self.dataset[self.input_field]
+        return dataset
 
     def _get_targets(self):
         """Get ground-truth answers"""
+        # Take target directly as it's already A/B/C
         return self.dataset[self.target_field]
-
-    def _calculate_metric(self, results=None):
-        """Given results, calculate desired score"""
-        predictions = [entry["response"] for entry in results]
-        accuracy = tiny_accuracy(predictions, task="arc")
-        return {"acc": accuracy}

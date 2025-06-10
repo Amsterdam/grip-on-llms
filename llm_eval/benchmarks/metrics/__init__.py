@@ -1,6 +1,6 @@
 """Imports for benchmarks metrics."""
 
-from .classification import tiny_accuracy
+from .classification import tiny_scores
 from .seq_to_seq_metrics import bertscore, bleu, meteor, rouge, sari
 
 __all__ = [
@@ -9,5 +9,5 @@ __all__ = [
     "bleu",
     "meteor",
     "bertscore",
-    "tiny_accuracy",
+    "tiny_scores",
 ]

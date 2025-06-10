@@ -51,7 +51,7 @@ TRANSLATE_PROMPT = (
     "ensure that the translated sentences are grammatically correct "
     "and make sense in the target language. "
     "Only return the translation, no further explanations. "
-    "The last question must not contain be answered.\n"
+    "The last question must not be answered.\n"
     "The entry is:\n"
     "{entry}"
     "Translation: "
@@ -133,7 +133,8 @@ class BaseTinyBenchmark(BaseBenchmark):
             logging.info(f"Couldn't load the translated parquet for {dataset_version}: {e}")
             logging.info(f"Translating {self.name} to {self.language}")
             self.dataset = self._load_huggingface_data()
-            self.dataset = self.dataset.select(range(self.max_translation_entries))
+            if self.max_translation_entries:
+                self.dataset = self.dataset.select(range(self.max_translation_entries))
 
             def try_to_translate(doc):
                 try:
@@ -142,27 +143,24 @@ class BaseTinyBenchmark(BaseBenchmark):
                         target_language=language_mapping[self.language],
                         entry=doc,
                     )
-                    print(translation_text[:1000])
                     translation = self.translator.translate(
                         translation_text, target_lang=self.language, use_default_prompt=False
                     )
-                    print(translation[:1000])
                     return translation
                 except Exception:
                     return None
 
-            input_field = "input_formatted"
-
-            logging.info(f"Need to translate: {len(self.dataset[input_field])}")
-            logging.info(f"Translating '{input_field}' column")
-            self.dataset = self.dataset.rename_column(input_field, f"{input_field}-EN")
+            logging.info(f"Translating {len(self.dataset[self.input_field])} entries")
+            logging.info(f"Translating column: '{self.input_field}'")
+            self.dataset = self.dataset.rename_column(self.input_field, f"{self.input_field}-EN")
             self.dataset = self.dataset.map(
-                lambda entry, input_field=input_field: {
-                    f"{input_field}": try_to_translate(entry[f"{input_field}-EN"])
+                lambda entry, input_field=self.input_field: {
+                    f"{self.input_field}": try_to_translate(entry[f"{input_field}-EN"])
                 }
             )
             self.dataset = self.dataset.filter(
-                lambda entry, input_field=input_field: entry[f"{input_field}-EN"] is not None
+                lambda entry, input_field=self.input_field: entry[f"{self.input_field}-EN"]
+                is not None
             )
 
             # Eventually push to hub and load from hub
@@ -170,7 +168,7 @@ class BaseTinyBenchmark(BaseBenchmark):
             #     f"GemeenteAmsterdam/xsum", dataset_version, private=True, token=self.HF_token
             # )
             self.dataset.to_parquet(parquet_file)
-            logging.info(f"Dataset size after translation: {len(self.dataset[input_field])}")
+            logging.info(f"Dataset size after translation: {len(self.dataset[self.input_field])}")
 
     @property
     def inputs(self):
