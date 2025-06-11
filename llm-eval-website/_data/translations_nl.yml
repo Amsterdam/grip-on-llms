@@ -3,7 +3,7 @@ table_headers:
   provider: Aanbieder
   license: Licentie
   costs: Kosten
-  reasoning: Redenering
+  factuality: Feitelijkheid
   simplification: Vereenvoudiging
   summarization: Samenvatting
   inclusion: Inclusie
@@ -24,8 +24,8 @@ energy_disclaimer:
 copyright_footer: "Grip op LLMs, Gemeente Amsterdam"
 
 score_explanation:
-  reasoning:
-    intro: "We meten redeneervaardigheden met behulp van twee benchmarks bekend als MMLU en ARC. Deze benchmarks bestaan uit meerkeuzevragen zoals:"
+  factuality:
+    intro: "We meten feitelijkheid met behulp van drie benchmarks bekend als MMLU, ARC en TruthfulQA. Deze benchmarks bestaan uit meerkeuzevragen zoals:"
     example: |
       Welke van de volgende wordt beschouwd als een zuuranhydride?
       A: HCl
