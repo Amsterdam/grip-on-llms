@@ -4,47 +4,48 @@ Benchmarking Overview
 Introduction
 ------------
 
-This documentation provides an overview of the benchmarks used to evaluate various language models within our organization. Benchmarks are essential tools for assessing model performance across different tasks, including translation, text simplification, summarization, and reasoning. They help us understand the strengths and weaknesses of models and guide improvements.
+This documentation provides an overview of the benchmarks used to evaluate various [aspects of language models](./aspects.md) within our organization.
+Benchmarks are essential tools for assessing model performance across different tasks, including translation, text simplification, summarization, and reasoning.
+They help us understand the strengths and weaknesses of models and guide improvements.
 
-Current Benchmarks
-------------------
 
-### General Knowledge & Reasoning (Dutch Translations)
+Choice of Benchmarks and Implementation
+---------------------------------------
 
-- **[MMLU](http://nlp.uoregon.edu/download/okapi-eval/datasets/m_mmlu/):** Implementation of the MMLU benchmark, which contains 57 tasks aimed at measuring world knowledge and problem-solving ability [2]. We adopt a pragmatic, user-centered approach to compare diverse models, including closed-source ones, in a municipal context. This involves generating answers for direct comparison, performing a single pass, and using a zero-shot setup.
+### Reuse, Reduce, Recycle
 
-- **[ARC](http://nlp.uoregon.edu/download/okapi-eval/datasets/m_arc/):** Implementation of AI2’s Reasoning Challenge (ARC) benchmark, a common sense reasoning, multiple-choice question-answering dataset. We use a Dutch translation of the original dataset, focusing on generating answers for direct comparison, performing a single pass, and employing a zero-shot setup.
+Whenever possible, we have a preference for using existing benchmarks and reusing the work and findings of experts in the field.
+Ideally, we would like to use benchmarks directly curated in Dutch, such as e.g. BZK's [Social Bias Benchmark](https://github.com/MinBZK/llm-benchmark/blob/main/benchmarks/social-bias/README.md).
+However, many existing benchmarks are only available in English.
+In these cases, we automatically translate the known benchmarks.
+Finally, if no suitable benchmark exists or meets our needs or quality standards, we (semi-)manually curate a benchmark from scratch.
 
-### Text Simplification
 
-- **[Amsterdam Simplification](https://amsterdamintelligence.com/posts/automatic-text-simplification):** This benchmark uses a dataset containing 1,311 automatically aligned complex-simple sentence pairs from documents provided by the Communications Department of the City of Amsterdam [1]. It evaluates the model's ability to simplify text while maintaining meaning.
+Furthermore, we aim for an efficient and environmentally friendly implementation of benchmark.
+We have a preference for using smaller benchmarks, supporting initiatives such as [tinyBenchmarks](https://github.com/felipemaiapolo/tinyBenchmarks) or simply running the evaluation scripts on a random sample of evaluation prompts in order to reduce the environmental impact of our benchmarking process.
 
-- **[INT Duidelijke Taal](https://ivdnt.org/onderzoek-projecten/afgeronde-projecten/duidelijke-taal/):** This benchmark uses sentences from the SoNaR corpus, automatically simplified using GPT-4o and manually evaluated for simplicity, accuracy, and fluency [3]. We filter higher quality data by selecting samples with "Accuratesse Gem." > 70, preserving all samples regardless of fluency, and ensuring simplifications are simpler than the original.
+### LLM-as-a-judge -> Human-in-the-loop
 
-### Summarization
+While we aim to use benchmarks which allow for objective quantifiable evaluation, the rapid advancements in the LLM world do not always allow for such objective evaluation. Unfortunately, manual evaluation is also not always possible or scalable.
+As a last option, we sometimes accept using LLM as a judge, acknowledging the multiple challenges and biases related to it.
 
-The summarization benchmarks are initially available in English and are being translated in Dutch by use of LLMs. A dedicated translation module has been added, with support for basic llm-based and HuggingFace translations. Currently, the implementation focuses on the XSum and CNN/Daily Mail datasets.
+We make the following agreements about using LLM as a judge within our benchmarks:
+- we **do not use it for sensitive tasks**, where alignment with human values is important
+- always design the task well, make it **as concrete as possible**, using clear criteria and definitions. Never let an LLM decide on a definition (e.g. what is inclusive or simple language).
+- essentially ensure that humans can also perform the task with a **high inter-annotator agreement**
+- always try to **"evaluate the evaluator"** (annotate a number of examples ourselves and check how the LLM-to-be-used-as-a-judge performs the task). This would also help with better understanding of the evaluation task and refinement of the evaluation prompt and criteria
+- check [recent literature](https://arxiv.org/pdf/2411.15594?) for practical tips on improving performance and avoiding biases, such as e.g. aggregating results from multiple rounds or multiple models
+- consider how to perform the evaluations for Dutch, depending on the task, goal and models, it could be better to instruct the model in English or directly in Dutch
 
-- **[CNN/Daily Mail Summarization](https://www.kaggle.com/datasets/gowrishankarp/newspaper-text-summarization-cnn-dailymail):** This benchmark uses a dataset of articles and their summaries, instructing models to summarize content into 3-4 sentences [4][5]. The dataset is non-anonymized and sourced from the HuggingFace Hub.
 
-- **[XSum Summarization](https://huggingface.co/datasets/EdinburghNLP/xsum):** Benchmarking extreme summarization using the XSum dataset, which aims to create a short, one-sentence summary of online articles from the BBC [6]. We instruct the model to summarize to "1 sentence" according to the task.
-
-### Tiny Benchmarks
-
-- **[Tiny MMLU](https://huggingface.co/datasets/tinyBenchmarks/tinyMMLU):** This benchmark implements a smaller version of the MMLU benchmark, containing 57 tasks to measure world knowledge and problem-solving ability. It uses formatted inputs from TinyBenchmarks available on the HuggingFace Hub.
-
-- **[Tiny ARC](https://huggingface.co/datasets/tinyBenchmarks/tinyAI2_arc):** This benchmark implements a smaller version of the ARC benchmark, containing a subset of 100 data points selected from the original compilation. It uses formatted inputs from TinyBenchmarks available on the HuggingFace Hub.
-
-### Why Use Tiny Benchmarks?
-
-Tiny benchmarks are valuable because they allow for efficient evaluation with fewer examples, making them ideal for quick assessments and iterative testing. They are sampled in a way that provides similar scores and evaluations as complete benchmarks, ensuring reliable results. Additionally, they are more sustainable, requiring less computational power and resources.
-
-References
-----------
-
-- [1] Vlantis, Daniel, Iva Gornishka, and Shuai Wang. "Benchmarking the simplification of Dutch municipal text." Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024). 2024.
-- [2] Hendrycks, Dan, et al. "Measuring massive multitask language understanding." arXiv preprint arXiv:2009.03300 (2020).
-- [3] Menselijke evaluatie van geautomatiseerde tekstvereenvoudiging: resultaten van crowdsourcing (Version 1.0) (2024) [Data set]. Available at the Dutch Language Institute: <https://hdl.handle.net/10032/tm-a2-y8>.
-- [4] Hermann, Karl Moritz, et al. "Teaching machines to read and comprehend." Advances in neural information processing systems 28 (2015).
-- [5] See, Abigail, Peter J. Liu, and Christopher D. Manning. "Get to the point: Summarization with pointer-generator networks." arXiv preprint arXiv:1704.04368 (2017).
-- [6] Narayan, Shashi, Shay B. Cohen, and Mirella Lapata. "Don't give me the details, just the summary! Topic-aware convolutional neural networks for extreme summarization." arXiv preprint arXiv:1808.08745 (2018).
+How to add benchmarks
+---------------------
+1. Check the quality of the benchmark, how it was collected and whether it poses any technical or ethical concerns.
+    * Be critical about whether the benchmark contributes to assessing the aspect of interest.
+    * Think whether the benchmark isn't outdated or saturated.
+1. Check if a Dutch version of the benchmark exists.
+    * If yes, check the quality of translations in case it was automatically translated.
+    * If not, ensure we support translation functionality (e.g. as we did for [XSum](/llm_eval/benchmarks/summarization/xsum.py) where we pass a [translator object](/llm_eval/translators/translator_router.py)). Consider publishing the translated version for others to reuse.
+1. Add a new module, extending the [BaseBenchmark](/llm_eval/benchmarks/base.py) class. In this way we ensure consistently running, scoring and documenting benchmarks for the leaderboard.
+1. Add to the list of benchmarks in the corresponding aspect page (see all [aspects](./aspects.md))
+1. After running, ensure the results are reflected in the scores on the **[leaderboard](/llm-eval-website/_data/models.json)** (this process will be automated soon). Also, adjust the aspect description on the leaderboard to mention the benchmark or include a relevant example.
