@@ -4,10 +4,10 @@ table_headers:
   license: Licentie
   costs: Kosten
   factuality: Feitelijkheid
-  simplification: Vereenvoudiging
-  summarization: Samenvatting
+  simplification: Vereenvoudigen
+  summarization: Samenvatten
   inclusion: Inclusie
-  energy_use: Energiverbruik
+  energy_use: Energieverbruik
   in_short: In het kort
   use_cases: In de praktijk
 
@@ -25,7 +25,13 @@ copyright_footer: "Grip op LLMs, Gemeente Amsterdam"
 
 score_explanation:
   factuality:
-    intro: "We meten feitelijkheid met behulp van drie benchmarks bekend als MMLU, ARC en TruthfulQA. Deze benchmarks bestaan uit meerkeuzevragen zoals:"
+    intro: "
+      We meten feitelijkheid met behulp van de milieuvriendelijke,
+      kleine versies van drie benchmarks, namelijk
+      <a href=https://huggingface.co/datasets/tinyBenchmarks/tinyMMLU target='_blank'>MMLU</a>,
+      <a href=https://huggingface.co/datasets/tinyBenchmarks/tinyAI2_arc target='_blank'>ARC</a>, and
+      <a href=https://huggingface.co/datasets/tinyBenchmarks/tinyTruthfulQA target='_blank'>TruthfulQA</a>.
+      Deze benchmarks bestaan uit meerkeuzevragen zoals:"
     example: |
       Welke van de volgende wordt beschouwd als een zuuranhydride?
       A: HCl
@@ -47,8 +53,9 @@ score_explanation:
       Daarna berekenen we hoe vergelijkbaar de vereenvoudiging is met die in het dataset."
   summarization:
     intro: "
-      Wij meten samenvattingsvaardigheden met behulp van twee benchmarks,
-      bekend als XSum en CNN/DailyMail.
+      Wij meten samenvattingsvaardigheden met behulp van twee benchmarks, bekend als
+      <a href=https://huggingface.co/datasets/EdinburghNLP/xsum target='_blank'>XSum</a> en
+      <a href=https://huggingface.co/datasets/abisee/cnn_dailymail target='_blank'>CNN/DailyMail</a>.
       Deze benchmarks bevatten paren van nieuwsartikelen samen met een voorgestelde samenvatting.
       "
     example:
@@ -58,10 +65,10 @@ score_explanation:
       "
   energy_use:
     intro: "
-      We meten de ecologische voetafdruk van LLMs met behulp van een tool genaamd CodeCarbon.
-      Deze tool houdt bij hoe lang een programma draait,
-      hoeveel rekenkracht en energie worden gebruikt,
-      en hoeveel koolstofdioxide er wordt uitgestoten,
+      We meten de impact van LLMs op het milieu met behulp van een tool genaamd CodeCarbon.
+      Deze tool houdt bij hoe lang een programma draait en
+      hoeveel rekenkracht en energie worden gebruikt.
+      Vervolgens berekent het hoeveel koolstofdioxide er wordt uitgestoten,
       afhankelijk van het geografische gebied waar de servers zich bevinden.
       "
     example:

@@ -25,14 +25,22 @@ copyright_footer: "Grip on LLMs, City of Amsterdam"
 
 score_explanation:
   factuality:
-    intro: "We measure factuality using three benchmarks known as MMLU, ARC and TruthfulQA. These benchmarks consist of multiple-choice questions such as:"
+    intro: "
+      We measure factuality using the environmentally friendly,
+      tiny versions versions three benchmarks known as
+      <a href=https://huggingface.co/datasets/tinyBenchmarks/tinyMMLU target='_blank'>MMLU</a>,
+      <a href=https://huggingface.co/datasets/tinyBenchmarks/tinyAI2_arc target='_blank'>ARC</a>, and
+      <a href=https://huggingface.co/datasets/tinyBenchmarks/tinyTruthfulQA target='_blank'>TruthfulQA</a>.
+      These benchmarks consist of multiple-choice questions, such as:"
     example: |
       Which of the following is considered an acid anhydride?
       A: HCl
       B: H2SO3
       C: SO2
       D: Al(NO3)3
-    outro: "We know the answers to these questions and can calculate how often the model answered correctly."
+    outro: "
+      We know the answers to these questions and can calculate
+      how often the model answered correctly."
   simplification:
     intro: "
       We measure simplification abilities using pairs of complex sentences
@@ -48,8 +56,9 @@ score_explanation:
       "
   summarization:
     intro: "
-      We measure summarization abilities using two benchmarks
-      known as XSum and CNN/DailyMail.
+      We measure summarization abilities using two benchmarks known as
+      <a href=https://huggingface.co/datasets/EdinburghNLP/xsum target='_blank'>XSum</a> and
+      <a href=https://huggingface.co/datasets/abisee/cnn_dailymail target='_blank'>CNN/DailyMail</a>.
       These benchmarks contain pairs of news articles together with a proposed summarization.
       "
     example:
@@ -60,9 +69,9 @@ score_explanation:
   energy_use:
     intro: "
       We measure environmental impact using a tool called CodeCarbon.
-      This tool tracks how long a program runs,
-      how much computational resources and energy are used
-      and how much carbon dioxide is emitted
+      This tool tracks how long a program runs and
+      how much computational resources and energy are used.
+      Afterwards, it calculates how much carbon dioxide is emitted
       depending on the geographic area where servers are located."
     example:
     outro: "
