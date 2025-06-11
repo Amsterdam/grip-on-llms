@@ -8,6 +8,6 @@ visible_columns:
   - license
   - costs
   - energy_use
-  - reasoning
+  - factuality
   - simplification
   - summarization

@@ -3,7 +3,7 @@ table_headers:
   provider: Provider
   license: License
   costs: Costs
-  reasoning: Reasoning
+  factuality: Factuality
   simplification: Simplification
   summarization: Summarization
   inclusion: Inclusion
@@ -24,8 +24,8 @@ energy_disclaimer:
 copyright_footer: "Grip on LLMs, City of Amsterdam"
 
 score_explanation:
-  reasoning:
-    intro: "We measure reasoning abilities using two benchmarks known as MMLU and ARC. These benchmarks consist of multiple-choice questions such as:"
+  factuality:
+    intro: "We measure factuality using three benchmarks known as MMLU, ARC and TruthfulQA. These benchmarks consist of multiple-choice questions such as:"
     example: |
       Which of the following is considered an acid anhydride?
       A: HCl
