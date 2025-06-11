@@ -18,24 +18,26 @@
         <tbody>
             {% assign sorted_models = site.data.models | sort: "energy_use" | reverse %}
             {% for model in sorted_models %}
-            <tr>
-                {% for column in site.visible_columns %}
-                    {% if column == 'model' %}
-                        <td><a href="{{ model.model_url }}" target="_blank">{{ model.model }}</a></td>
-                    {% elsif column == 'provider' %}
-                        <td><a href="{{ model.provider_url }}" target="_blank">{{ model.provider }}</a></td>
-                    {% elsif score_columns contains column %}
-                        {% assign score_value = model[column] %}
-                        <td class="score-cell">{% include score_circle.html score=score_value %}</td>
-                    {% elsif column == 'license' %}
-                        {% assign license = model[column] %}
-                        <td class="license-cell">{% include license_cell.html license=license %}</td>
-                    {% else %}
-                        <td>{{ model[column] }}</td>
-                    {% endif %}
-                    <!-- For a score of 3 -->
-                {% endfor %}
-            </tr>
+                {% if site.visible_models contains model.model %}
+                <tr>
+                    {% for column in site.visible_columns %}
+                        {% if column == 'model' %}
+                            <td><a href="{{ model.model_url }}" target="_blank">{{ model.model }}</a></td>
+                        {% elsif column == 'provider' %}
+                            <td><a href="{{ model.provider_url }}" target="_blank">{{ model.provider }}</a></td>
+                        {% elsif score_columns contains column %}
+                            {% assign score_value = model[column] %}
+                            <td class="score-cell">{% include score_circle.html score=score_value %}</td>
+                        {% elsif column == 'license' %}
+                            {% assign license = model[column] %}
+                            <td class="license-cell">{% include license_cell.html license=license %}</td>
+                        {% else %}
+                            <td>{{ model[column] }}</td>
+                        {% endif %}
+                        <!-- For a score of 3 -->
+                    {% endfor %}
+                </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
     </table>
