@@ -127,8 +127,23 @@ def test_leaderboard():
         **hf_object_params,
     )
 
+    mistral_small = LLMRouter.get_model(
+        model_name="mistral-small-instruct",
+        **hf_object_params,
+    )
+
+    mistral_large = LLMRouter.get_model(
+        model_name="mistral-large-instruct",
+        **hf_object_params,
+    )
+
     llama = LLMRouter.get_model(
         model_name="llama-3.1-8b-instruct",
+        **hf_object_params,
+    )
+
+    llama_large = LLMRouter.get_model(
+        model_name="llama-3.3-70b-instruct",
         **hf_object_params,
     )
 
@@ -263,7 +278,18 @@ def test_leaderboard():
 
     logging.info("Running comparison")
     leaderboard = Leaderboard(
-        llms=[mistral, llama, gpt_4o, gpt_4o_mini, falcon, phi, tinyllama],
+        llms=[
+            mistral,
+            mistral_small,
+            mistral_large,
+            llama,
+            llama_large,
+            gpt_4o,
+            gpt_4o_mini,
+            falcon,
+            phi,
+            tinyllama,
+        ],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches + tiny_benches,
         codecarbon_params=codecarbon_params,
         n_samples=None,
