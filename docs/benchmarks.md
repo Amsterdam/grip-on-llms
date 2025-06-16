@@ -14,11 +14,18 @@ Choice of Benchmarks and Implementation
 
 ### Reuse, Reduce, Recycle
 
-Whenever possible, we have a preference for using existing benchmarks and reusing the work and findings of experts in the field.
-Ideally, we would like to use benchmarks directly curated in Dutch, such as e.g. BZK's [Social Bias Benchmark](https://github.com/MinBZK/llm-benchmark/blob/main/benchmarks/social-bias/README.md).
+Whenever possible, we have a preference for using existing benchmarks and
+reusing the work and findings of experts in the field.
+Ideally, we would like to use benchmarks directly curated in Dutch, such as e.g. BZK's
+[Social Bias Benchmark](https://github.com/MinBZK/llm-benchmark/blob/main/benchmarks/social-bias/README.md).
 However, many existing benchmarks are only available in English.
 In these cases, we automatically translate the known benchmarks.
-Finally, if no suitable benchmark exists or meets our needs or quality standards, we (semi-)manually curate a benchmark from scratch.
+Unfortunately, translating is not always an ideal option
+as important aspects of the questions, such as their structure or content,
+might get lost in the translation process.
+A notable example are safety and inclusion benchmarks, where hateful speech or stereotypes
+might not translate well between languages and cultures.
+Thus, if no suitable benchmark exists or meets our needs or quality standards, we (semi-)manually curate a benchmark from scratch.
 
 
 Furthermore, we aim for an efficient and environmentally friendly implementation of benchmark.

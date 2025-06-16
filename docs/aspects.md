@@ -1,11 +1,20 @@
 Aspects & Task
 ============================
 
-Together with a panel of colleagues with diverse expertese, we identified a number of aspects which are important when selecting LLMs for different use cases.
+Together with a panel of colleagues with diverse expertise, we identified a number of aspects which are important when selecting LLMs for different use cases.
 We explore these aspects, their definition, as well as benchmarks which can be used to measure the desired model qualities or abilities.
-We aim to quantify LLMs' performance on these aspects in order to present a single final score and a simple overview on our [leaderboard](https://amsterdam.github.io/grip-on-llms/nl/).
-In this way, we try to support our colleagues in short-listing models for different use cases.
-We believe that further qualitative evaluation of the short-listed models must be performed on case by case basis, within the concrete context and together with domain experts and users.
+
+We aim to quantify LLMs' performance on these aspects
+in order to present a single final score and a simple overview on our
+[leaderboard](https://amsterdam.github.io/grip-on-llms/nl/).
+While we preserve the raw benchmark scores and plan to
+make them publicly available for inspections and technical deep-dives,
+we map the scores and visualize a single category in our leaderboard.
+In this way, we try to support our colleagues in short-listing models for different use cases
+without over-relying on minor performance differences on very specific benchmarks.
+We believe that further quantitative and qualitative evaluation of the short-listed models
+must be performed on case by case basis, within the concrete context
+and together with domain experts and users.
 
 So far, we've been working on exploring the following aspects:
 
