@@ -87,7 +87,7 @@ def test_leaderboard():
 
     # gpt_35_turbo = LLMRouter.get_model(
     #     provider="azure",
-    #     model_name="gpt-3.5-turbo",
+    #     model_name="gpt-35-turbo",
     #     api_endpoint=gpt_secrets["API_ENDPOINT"],
     #     api_key=gpt_secrets["API_KEY"],
     #     api_version=gpt_secrets["API_VERSION"],
@@ -263,11 +263,8 @@ def test_leaderboard():
 
     logging.info("Running comparison")
     leaderboard = Leaderboard(
-        # llms=[tinyllama],
         llms=[mistral, llama, gpt_4o, gpt_4o_mini, falcon, phi, tinyllama],
-        # llms=[gpt_4o_mini],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches + tiny_benches,
-        # benchmarks=tiny_benches,
         codecarbon_params=codecarbon_params,
         n_samples=None,
     )
