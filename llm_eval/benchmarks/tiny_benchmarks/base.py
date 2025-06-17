@@ -60,7 +60,6 @@ TRANSLATE_PROMPT = (
 language_mapping = {
     "NL": "Dutch",
     "EN": "English",
-    "BG": "Bulgarian",
 }
 
 
@@ -222,6 +221,7 @@ class BaseTinyBenchmark(BaseBenchmark):
         metadata = {
             "data_path": self.data_path,
             "language": self.language,
+            "translation_prompt": TRANSLATE_PROMPT if self.language == "NL" else "",
             # "prompt_template": PROMPT_TEMPLATES[self.prompt_type][self.language],
         }
         return metadata
