@@ -157,6 +157,46 @@ def test_leaderboard():
         **hf_object_params,
     )
 
+    olmo_small = LLMRouter.get_model(
+        model_name="olmo-7b-instruct",
+        **hf_object_params,
+    )
+
+    olmo_large = LLMRouter.get_model(
+        model_name="olmo-32b-instruct",
+        **hf_object_params,
+    )
+
+    eurollm_small = LLMRouter.get_model(
+        model_name="eurollm-9b-instruct",
+        **hf_object_params,
+    )
+
+    eurollm_large = LLMRouter.get_model(
+        model_name="eurollm-22b-instruct",
+        **hf_object_params,
+    )
+
+    qwen_small = LLMRouter.get_model(
+        model_name="qwen-8b",
+        **hf_object_params,
+    )
+
+    qwen_large = LLMRouter.get_model(
+        model_name="qwen-32b",
+        **hf_object_params,
+    )
+
+    gemma_small = LLMRouter.get_model(
+        model_name="gemma-12b-instruct",
+        **hf_object_params,
+    )
+
+    gemma_large = LLMRouter.get_model(
+        model_name="gemma-27b-instruct",
+        **hf_object_params,
+    )
+
     logging.info("Setting up benchmarks")
 
     # Run mmlu using the local dump
@@ -289,6 +329,14 @@ def test_leaderboard():
             falcon,
             phi,
             tinyllama,
+            olmo_small,
+            olmo_large,
+            eurollm_small,
+            eurollm_large,
+            qwen_small,
+            qwen_large,
+            gemma_small,
+            gemma_large,
         ],
         benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches + tiny_benches,
         codecarbon_params=codecarbon_params,
