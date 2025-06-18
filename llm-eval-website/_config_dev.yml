@@ -25,3 +25,11 @@ visible_models:
   - Llama-3.3-70B-Instruct
   - GPT-4o-mini
   - GPT-4o
+  - OLMo-2-1124-7B-Instruct
+  - OLMo-2-0325-32B-Instruct
+  - EuroLLM-9B-Instruct
+  - EuroLLM-22B-Instruct-Preview
+  - Qwen3-8B
+  - Qwen3-32B
+  - gemma-3-12b-it
+  - gemma-3-27b-it
