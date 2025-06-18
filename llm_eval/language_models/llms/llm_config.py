@@ -43,4 +43,36 @@ MODEL_MAPPING = {
         "id": "microsoft/Phi-4-mini-instruct",
         "kwargs": {},
     },
+    "olmo-7b-instruct": {
+        "id": "allenai/OLMo-2-1124-7B-Instruct",
+        "kwargs": {},
+    },
+    "olmo-32b-instruct": {
+        "id": "allenai/OLMo-2-0325-32B-Instruct",
+        "kwargs": {},
+    },
+    "eurollm-9b-instruct": {
+        "id": "utter-project/EuroLLM-9B-Instruct",
+        "kwargs": {},
+    },
+    "eurollm-22b-instruct": {
+        "id": "utter-project/EuroLLM-22B-Instruct-Preview",
+        "kwargs": {},
+    },
+    "qwen-8b": {
+        "id": "Qwen/Qwen3-8B",
+        "kwargs": {},
+    },
+    "qwen-32b": {
+        "id": "Qwen/Qwen3-32B",
+        "kwargs": {},
+    },
+    "gemma-12b-instruct": {
+        "id": "google/gemma-3-12b-it",
+        "kwargs": {},
+    },
+    "gemma-27b-instruct": {
+        "id": "google/gemma-3-27b-it",
+        "kwargs": {},
+    },
 }
