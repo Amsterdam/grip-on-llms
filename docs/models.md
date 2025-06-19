@@ -37,7 +37,7 @@ How to add models
 ### For all models:
 1. Check **compliance**:
    * Check whether the **license** allows us to use it following the guidelines below.
-   * Check whether **training data** poses privacy or copyright concerns (guidelines to follow)
+   * Check whether **training data** poses privacy or copyright concerns (guidelines below)
    * Check if the model **can be hosted or deployed** in our cloud environment
 2. Add to the **list of supported models** in this docs page
 3. Add to the **[leaderboard](/llm-eval-website/_data/models.json)** including information such as provider, costs, etc
@@ -86,3 +86,17 @@ To make informed decisions about which models to use based on their licenses, co
     *   Ensure that any use complies with applicable laws and regulations, including but not limited to:
         - **AI Act:** A regulatory framework proposed by the European Union to ensure safe and ethical use of AI technologies.
         - **GDPR (General Data Protection Regulation):** EU legislation focused on data protection and privacy, which impacts how AI models handle personal data.
+
+
+Checklist for Training Data
+-------------------------
+
+To make informed decisions about which models to use based on their licenses, consider the following checklist:
+1.  **Openess Training Data:**
+    1. Open. Provider shares the training data, everyone can see it.
+    2. Described. Provider described training data details in, for example, paper or Huggingface. 
+    3. Closed. Provider does not give any details about training data.
+2.  **Copyright & Private (if Training Data is Available):**
+    *   Does the provider describe any strategies to remove private or copyrighted data?
+3.  **Ethical Concerns:**
+    * Are there any trusthworthy resources describing unethical practies in collecting training data or annotating finetuning data?
