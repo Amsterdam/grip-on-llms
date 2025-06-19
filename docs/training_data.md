@@ -19,11 +19,11 @@ Without visibility into the underlying data it is impossible to interpret a mode
 
 We classify every model against three transparency levels:
 
-| Level         | Definition                                                                                                                                                | Leaderboard flag |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| **Open**      | The full corpus (or a faithful hash / pointer) is published under an open licence.                                                                        | *open* ✓         |
+| Level         | Definition                                                                                                                                              | Leaderboard flag |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| **Open**      | The full corpus is published under an open licence.                                                                        | *open* ✓         |
 | **Described** | The corpus is not released in full, but is documented in a paper, card, or Hugging Face model card with enough detail to understand scope and provenance. | *described* △    |
-| **Closed**    | No meaningful disclosure is provided.                                                                                                                     | *opaque* ✕       |
+| **Closed**    | No meaningful disclosure is provided.                                                                                                                   | *opaque* ✕       |
 
 These labels don't affect any technical score.
 
