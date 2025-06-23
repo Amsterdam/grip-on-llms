@@ -61,11 +61,19 @@ MODEL_MAPPING = {
     },
     "qwen-8b": {
         "id": "Qwen/Qwen3-8B",
-        "kwargs": {},
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     "qwen-32b": {
         "id": "Qwen/Qwen3-32B",
-        "kwargs": {},
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     "gemma-12b-instruct": {
         "id": "google/gemma-3-12b-it",
