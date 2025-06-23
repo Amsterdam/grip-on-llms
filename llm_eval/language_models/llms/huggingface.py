@@ -3,11 +3,14 @@ import gc
 import logging
 
 import torch
+import torch._dynamo
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.utils.exceptions import UnsupportedModelError
+
+torch._dynamo.disable()
 
 
 class HuggingFaceLLM(BaseLLM):
@@ -22,6 +25,7 @@ class HuggingFaceLLM(BaseLLM):
         self.tokenizer = None
         self.device = "cpu"
         self.system_prompt = None
+        self.model_config = MODEL_MAPPING[self.model_name]
 
     def _load_model(self, pause_tracker=True):
         """
@@ -35,14 +39,13 @@ class HuggingFaceLLM(BaseLLM):
         if self.model_name not in MODEL_MAPPING:
             raise UnsupportedModelError(self.model_name, MODEL_MAPPING.keys())
 
-        model_config = MODEL_MAPPING[self.model_name]
-        model_id = model_config["id"]
+        model_id = self.model_config["id"]
         kwargs = {
             "torch_dtype": torch.bfloat16,
             # "device_map": "auto",
             "token": self.hf_token,
         }
-        kwargs.update(model_config["kwargs"])
+        kwargs.update(self.model_config["kwargs"].get("loading", {}))
         self.system_prompt = kwargs.pop("system_prompt", None)
 
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -66,11 +69,14 @@ class HuggingFaceLLM(BaseLLM):
             conversation = []
         conversation.append([{"role": "user", "content": prompt}])
 
+        template_kwargs = self.model_config["kwargs"].get("template", {})
+
         input_ids = self.tokenizer.apply_chat_template(
             conversation,
             tokenize=True,
             add_generation_prompt=True,
             return_tensors="pt",
+            **template_kwargs,
         ).to(self.device)
 
         attention_mask = torch.ones(input_ids.shape).to(self.device)
