@@ -137,6 +137,11 @@ def test_leaderboard():
         **hf_object_params,
     )
 
+    mistral_large_quantized = LLMRouter.get_model(
+        model_name="mistral-large-instruct-quantized",
+        **hf_object_params,
+    )
+
     llama = LLMRouter.get_model(
         model_name="llama-3.1-8b-instruct",
         **hf_object_params,
@@ -322,6 +327,7 @@ def test_leaderboard():
             mistral,
             mistral_small,
             mistral_large,
+            mistral_large_quantized,
             llama,
             llama_large,
             gpt_4o,
@@ -338,9 +344,12 @@ def test_leaderboard():
             gemma_small,
             gemma_large,
         ],
-        benchmarks=[mmlu_nl_bench, arc_nl_bench] + simple_benches + summary_benches + tiny_benches,
+        benchmarks=tiny_benches
+        + simple_benches
+        + summary_benches
+        + [mmlu_nl_bench + arc_nl_bench],
         codecarbon_params=codecarbon_params,
-        n_samples=None,
+        n_samples=100,
     )
     leaderboard.run_comparison(results_path="leaderboard")
 

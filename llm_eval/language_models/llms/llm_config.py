@@ -23,6 +23,10 @@ MODEL_MAPPING = {
         "id": "mistralai/Mistral-Large-Instruct-2411",
         "kwargs": {},
     },
+    "mistral-large-instruct-quantized": {
+        "id": "TechxGenus/Mistral-Large-Instruct-2407-GPTQ",
+        "kwargs": {},
+    },
     "tiny-llama": {
         "id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
         "kwargs": {},
