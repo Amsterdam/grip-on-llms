@@ -20,10 +20,11 @@ So far, we've been working on exploring the following aspects:
 
 - **Inclusion**: WIP
 - **Reasoning abilities**: WIP
+- **[Costs](./costs.md)**: WIP, Costs for hosting and inference.
 - **[Factuality](./benchmarks_factuality.md)**: The model's ability to accurately answer objective knowledge-based questions about certain facts, such as those related to science or geography.
 - **[Honesty](./benchmarks_honesty.md)**: The model's ability to admit when they do not know something and to avoid confident fabrication (hallucination).
 - **Quality for Use Cases**: Quality assessment for specific tasks, e.g. [**Simplification**](./benchmarks_simplification.md), [**Summarization**](./benchmarks_summarization.md), TBA
-- **Training Data**: Information about the training datasets, including level of transparency, responsible collection and annotation, issues related to privacy or copyrights, level of inclusivity and representation of Dutch language and society.
+- **[Training Data](/.training_data.md)**: Information about the training datasets, including level of transparency, responsible collection and annotation, issues related to privacy or copyrights, level of inclusivity and representation of Dutch language and society.
 - [**Sustainability**](./sustainability.md): The impact of the model on the environment during its full life-cycle, from training to inference.
 
 
@@ -35,7 +36,6 @@ In the future, we plan to add the following aspects:
 - **Political Preferences**: Assessment of political biases.
 - **Safety**: Safety measures and risk mitigation.
 - **Support of Digital Autonomy**:
-- **Costs**: Costs for hosting and inference.
 - **Dutch Language**: Performance in Dutch language.
 - **Dutch Culture**: Knowledge about Dutch culture.
 - **Knowledge of Amsterdam**: Specific knowledge about Amsterdam and the municipality.
