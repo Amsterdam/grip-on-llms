@@ -20,10 +20,10 @@ which contains 57 tasks aimed at measuring world knowledge and problem-solving a
 
 - **[ARC-Challenge](https://huggingface.co/datasets/tinyBenchmarks/tinyAI2_arc):**
 Implementation of the tinyBenchmarks version of the  AI2’s Reasoning Challenge (ARC) benchmark,
-a common sense reasoning, multiple-choice question-answering dataset. [2]
+a common sense reasoning, multiple-choice question-answering dataset [2].
 
 - **[TruthfulQA](https://huggingface.co/datasets/tinyBenchmarks/tinyTruthfulQA):** Implementation of the tinyBenchmarks version of the TruthfulQA benchmark
-which measures whether an LLM is truthful in generating answers to questions [3]
+which measures whether an LLM is truthful in generating answers to questions [3].
 
 ### tinyBenchmarks Implementation
 
