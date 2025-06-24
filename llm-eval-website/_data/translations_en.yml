@@ -2,6 +2,7 @@ table_headers:
   model: Model
   provider: Provider
   license: License
+  data_openness: Training Data
   costs: Costs
   factuality: Factuality
   simplification: Simplification
@@ -15,6 +16,11 @@ license_options:
   open: Open
   restricted: Restricted
   commercial: Commercial
+
+data_openness_options:
+  open: Open
+  described: Described
+  closed: Closed
 
 page_title: LLM Overview
 mission: "To encourage the responsible use of Large Language Models, we create an overview of models, which can be used for Dutch municipal use cases."
@@ -77,3 +83,15 @@ score_explanation:
     outro: "
       We use CodeCarbon when we run all other benchmarks
       and then calculate an average score per model."
+  data_openness:
+    intro: |
+      Openly available datasets allow us to assess privacy risks and copyright concerns and
+      to analyze whether the dataset is inclusive and representative of our society and values.
+      We distinguish between the following categories:
+    example: |
+      <b>Open:</b> This model is fully transparent about its training data. The datasets are publicly available and can be inspected and analyzed.
+
+      <b>Described:</b> This model uses datasets that are not publicly available. However, the provider has documented important choises behind the collection process. They also describe key dataset characteristics.
+
+      <b>Closed:</b> This model is trained on data that was not disclosed or described. The provider shares at most the size of the dataset or only minimal information about the nature of underlying data (e.g. 'Web data').
+    outro:

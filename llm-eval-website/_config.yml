@@ -6,6 +6,7 @@ visible_columns:
   - model
   - provider
   - license
+  - data_openness
   - costs
   - energy_use
   - factuality

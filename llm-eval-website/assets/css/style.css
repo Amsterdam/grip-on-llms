@@ -204,6 +204,49 @@ th {
   line-height: 1;
 }
 
+.data-cell {
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.data-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.data-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.data-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.data-icon.open {
+  color: #00A03C;
+}
+
+.data-icon.described {
+  color: #FFE600;
+}
+
+.data-icon.closed {
+  color: #EC0000;
+}
+
+.data-label {
+  font-size: 16px;
+  color: #111;
+  line-height: 1;
+  /* margin-left: 2px; */
+}
 
 .score-cell {
   width: 150px;
