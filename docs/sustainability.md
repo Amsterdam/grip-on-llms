@@ -8,6 +8,8 @@ This documentation provides guidelines on using [CodeCarbon](https://codecarbon.
 
 Please note that certain LLMs, such as OpenAI's GPT models, were not included in the CodeCarbon assessment. Due to the lack of transparency regarding energy usage and other relevant data when using their API, it is not possible to make an accurate environmental impact assessment, resulting in null values for these models.
 
+We measure energy consumption (e.g., in kilowatt-hours) rather than carbon emissions to ensure consistency and comparability across benchmarks [1]. Carbon emissions can vary significantly depending on the carbon intensity of the energy grid at different physical locations. By focusing on energy consumption, we eliminate these location-based discrepancies and provide a more objective measure of efficiency.
+
 Additionally, we have not yet worked on the interpretability of the results obtained from these assessments. However, we plan to address this and incorporate interpretability features into the analysis by mid-2025. Furthermore, we aim to visualize the results using a dedicated dashboard to provide a clearer and more interactive representation of the environmental impact data.
 
 Prerequisites
@@ -31,8 +33,8 @@ Setup
         
     
 
-Measuring CO2-eq and Energy Usage
----------------------------------
+Measuring Energy Usage
+----------------------
 
 ### Step-by-Step Guide
 
@@ -53,7 +55,7 @@ Measuring CO2-eq and Energy Usage
         tracker.stop()
         
     
-5.  **Retrieve Results:** CodeCarbon will automatically log the CO2-eq emissions in kilograms and energy usage. You can access these logs to compare the environmental impact of each LLM. Obtain the CodeCarbon emissions logs as a dictionary:
+5.  **Retrieve Results:** CodeCarbon will automatically log the CO2-eq emissions in kilograms and energy usage. We use the energy use value to compare LLMs. You can access these logs to compare the environmental impact of each LLM. Obtain the CodeCarbon emissions logs as a dictionary:
 
         final_results = tracker.final_emissions_data.__dict__
     
@@ -78,9 +80,38 @@ Analyzing Results
 *   **Log Files:** CodeCarbon generates log files containing detailed information about CO2-eq emissions and energy usage.
 *   **Comparison:** Use these logs to compare the environmental impact of different LLMs based on their CO2-eq emissions and energy consumption.
 
+Evaluation Metrics
+-----------------------
+
+#TODO: (long story short: nothing works, but we use SARI for now)
+
+### Mapping to Categories
+
+Finally, we describe our methodology for mapping the raw scores from the benchmarks to the categories visualized in our [leaderboard](https://amsterdam.github.io/grip-on-llms).
+
+We currently calculate average energy use per benchmark. This is based on the total energy usage across all prompts in a benchmark (e.g. 100 prompts) and then averages it. The normalized energy usage is then categorized into five levels:
+
+
+|           | Average Energy use per benchmark (kWh)     | Level     |
+|-----------|:------------------|:----------|
+| <img src="https://readme-swatches.vercel.app/EC0000?style=circle" width="20" height="20" alt="Red Circle"> | >0.1   | Very Low   |
+| <img src="https://readme-swatches.vercel.app/FF9100?style=circle" width="20" height="20" alt="Orange Circle"> | 0.05-0.1  | Low        |
+| <img src="https://readme-swatches.vercel.app/FFE600?style=circle" width="20" height="20" alt="Yellow Circle"> | 0.025-0.05   | Medium     |
+| <img src="https://readme-swatches.vercel.app/BED200?style=circle" width="20" height="20" alt="Lime Circle"> | 0.015-0.025   | High       |
+| <img src="https://readme-swatches.vercel.app/00A03C?style=circle" width="20" height="20" alt="Green Circle"> | 0-0.015   | Very High  |
+
+### Future Considerations
+
+If a benchmark has significantly more prompts (e.g. 1000 prompts), it will disproportinately affect the average energy use. This makes comparisons between benchmarks inconsistent. In the near future, we will therefore divide the total energy usage by the number of prompts in the benchmarks before calculating the mean. We may also adjust the unit of measurement for readability purposes.
+
 Conclusion
 ----------
 
 By integrating CodeCarbon's (Offline)EmissionsTracker into your benchmarking process, you can effectively measure and compare the environmental impact of various large language models. This documentation serves as a basic guide to get started with tracking emissions and energy usage.
+
+References
+----------
+
+- [1]  ["AI Energy Score Leaderboard Documentation"](https://huggingface.github.io/AIEnergyScore/#disclosing-results).
 
 * * *
