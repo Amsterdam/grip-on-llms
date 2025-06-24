@@ -2,6 +2,7 @@ table_headers:
   model: Model
   provider: Aanbieder
   license: Licentie
+  data_openness: Training Data
   costs: Kosten
   factuality: Feitelijkheid
   simplification: Vereenvoudigen
@@ -15,6 +16,11 @@ license_options:
   open: Open
   restricted: Beperkt
   commercial: Commercieel
+
+data_openness_options:
+  open: Open
+  described: Beschreven
+  closed: Gesloten
 
 page_title: LLM Overzicht
 mission: "Om het verantwoord gebruik van LLM's te bevorderen, bieden wij een overzicht van modellen die ingezet kunnen worden voor Nederlandse gemeentelijke toepassingen."
@@ -75,4 +81,15 @@ score_explanation:
     outro: "
       Wij gebruiken CodeCarbon wanneer we alle andere benchmarks uitvoeren
       en berekenen vervolgens een gemiddelde score per model."
- 
+  data_openness:
+    intro: "
+      Open datasets maken het mogelijk om privacy- en auteursrechtelijke risico's te beoordelen.
+      Ze helpen ons ook te controleren of de dataset onze samenleving en waarden weerspiegelt.
+      We onderscheiden de volgende categorieën:"
+    example: |
+      <b>Open:</b> De provider van het model is volledig transparant over de trainingsgegevens. De datasets zijn openbaar beschikbaar en kunnen worden geïnspecteerd en geanalyseerd.
+
+      <b>Beschreven:</b> De model is getraind op datasets die niet openbaar beschikbaar zijn. De aanbieder heeft belangrijke keuzes bij het verzamelen van de data en de belangrijkste eigenschappen ervan gedocumenteerd.
+
+      <b>Gesloten:</b> De aanbieder heeft de training data niet gedeeld of beschreven. Hoogstens wordt de omvang van de dataset of minimale informatie over de aard van de onderliggende gegevens gedeeld (bijv. 'Webgegevens').
+    outro:

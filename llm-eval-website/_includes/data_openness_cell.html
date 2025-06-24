@@ -1,0 +1,25 @@
+{% assign data_openness = include.data_openness %}
+{% assign translations_key = 'translations_' | append: page.lang %}
+
+<div class="data-wrapper">
+  <span class="data-icon {{ data_openness }}">
+    {% if data_openness == 'open' %}
+    {% include SuccessFill.svg %}
+    {% elsif data_openness == 'described' %}
+    {% include InfoFill.svg %}
+    {% elsif data_openness == 'closed' %}
+    {% include ErrorFill.svg %}
+    {% endif %}
+  </span>
+  <!-- <span class="license-circle {{ data_openness }}"></span> -->
+  {% if data_link %}
+    <span class="data-label">
+      <a href="{{ data_link }}" target="_blank">
+        {{ site.data[translations_key].data_openness_options[data_openness] }}
+      </a>
+    </span>
+  {% else %}
+    <span class="data-label">{{ site.data[translations_key].data_openness_options[data_openness] }}</span>
+  {% endif %}
+
+</div>
