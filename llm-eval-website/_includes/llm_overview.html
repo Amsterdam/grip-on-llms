@@ -25,7 +25,14 @@
                         {% if column == 'model' %}
                             <td><a href="{{ model.model_url }}" target="_blank">{{ model.model }}</a></td>
                         {% elsif column == 'provider' %}
-                            <td><a href="{{ model.provider_url }}" target="_blank">{{ model.provider }}</a></td>
+                            <td class="provider-cell">
+                                <div class="provider-wrapper">
+                                    <span class="location-icon">
+                                        {% include icons/{{ model.location }}.svg %}
+                                    </span>
+                                    <a href="{{ model.provider_url }}" target="_blank">{{ model.provider }}</a>
+                                </div>
+                            </td>
                         {% elsif score_columns contains column %}
                             {% assign score_value = model[column] %}
                             <td class="score-cell">{% include score_circle.html score=score_value %}</td>
