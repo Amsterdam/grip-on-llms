@@ -8,7 +8,7 @@ A model’s behaviour is bounded by the corpus it was trained on.  An ideal data
 
 * personal data are handled in line with the GDPR and the AI Act;
 * copyrighted works are respected (or licensed);
-* Finetuning data is annotated in an ethical manner..
+* Finetuning data is annotated in an ethical manner.
 
 Without visibility into the underlying data it is impossible to interpret a model’s strengths, weaknesses, or compliance posture.
 
