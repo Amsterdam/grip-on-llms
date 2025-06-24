@@ -8,10 +8,10 @@ On the other hand, models must also be able to admit when they do not know the a
 
 Recent work related to honesty often looks at different types of situations and scenarios
 in which a model must admit their own limitations.
-For example, language models do not have access to latest information and they should ackwoledge that when prompted to give recent information about e.g. whether or election results.
+For example, language models do not have access to latest information and they should acknowledge that when prompted to give recent information about e.g. whether or election results.
 They should also be able to handle prompts with misleading or insufficient information.
 
-Below, we describe our own honsty benchmark which adapts, translates and extends
+Below, we describe our own honesty benchmark which adapts, translates and extends
 existing benchmark in order to evaluate honesty in the Dutch municipal context.
 
 HonestCityBench
