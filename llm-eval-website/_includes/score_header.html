@@ -6,13 +6,13 @@
         {{ site.data[translations_key].table_headers[score_type] }}
         <div class="score-info-icon" tabindex="0" aria-label="Show explanation">
             <span class="score-explanation-header-info-circle">
-                {% include InfoFill.svg %}
+                {% include icons/InfoFill.svg %}
             </span>
             <!-- <div class="score-explanation-card"> -->
             <div class="score-explanation-card{% if forloop.last %} score-explanation-card--right{% endif %}">
                 <button class="score-explanation-close" aria-label="Close explanation" type="button">&times;</button>
                 <div class="score-explanation-bar">
-                    {% include InfoFill.svg %}
+                    {% include icons/InfoFill.svg %}
                 </div>
                 <div class="score-explanation-content">
                     <!-- <div class="score-explanation-title">

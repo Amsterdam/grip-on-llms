@@ -4,11 +4,11 @@
 <div class="data-wrapper">
   <span class="data-icon {{ data_openness }}">
     {% if data_openness == 'open' %}
-    {% include SuccessFill.svg %}
+    {% include icons/SuccessFill.svg %}
     {% elsif data_openness == 'described' %}
-    {% include InfoFill.svg %}
+    {% include icons/InfoFill.svg %}
     {% elsif data_openness == 'closed' %}
-    {% include ErrorFill.svg %}
+    {% include icons/ErrorFill.svg %}
     {% endif %}
   </span>
   <!-- <span class="license-circle {{ data_openness }}"></span> -->
