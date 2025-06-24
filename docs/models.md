@@ -74,18 +74,17 @@ Checklist for Model Usage
 -------------------------
 
 To make informed decisions about which models to use based on their licenses, consider the following checklist:
-1.  **License Type:**
-    *   Apache 2.0 and MIT licenses generally allow for broad use, but always review specific terms.
-    *   Custom licenses require careful examination of terms and conditions.
-2.  **Redistribution and Modification:**
-    *   Ensure compliance with attribution and documentation requirements.
-    *   Check for any restrictions on redistribution or modification.
-3.  **Policy Compliance:**
-    *   Regularly review updates to both external Acceptable Use Policies (AUPs) and internal organizational policies to ensure ethical and responsible use of AI technologies. AUPs are guidelines that define how technologies can be used, specifying permitted and and prohibited actions to ensure compliance with industry standards and ethical guidelines. This includes staying informed about industry standards and any changes to our organization's policies, particularly those concerning generative AI. As of April 18, 2025, the use of genAI models is not permitted under our organization's policies, but this may change in the future.
-4.  **Legal Compliance:**
+1.  **Check the License Type:**
+    *   Identify the model's license (e.g. Apache 2.0 or MIT).
+    *   For custom licenses, consult legal experts to understand the terms.
+2.  **Review Redistribution:**
+    *   Check if you can share the model with others and whether the license must be included.
+3.  **Ensure Policy Compliance:**
+    *   Verify that the model complies to the organization's policies.
+4.  **Verify Legal Compliance:**
     *   Ensure that any use complies with applicable laws and regulations, including but not limited to:
-        - **AI Act:** A regulatory framework proposed by the European Union to ensure safe and ethical use of AI technologies.
-        - **GDPR (General Data Protection Regulation):** EU legislation focused on data protection and privacy, which impacts how AI models handle personal data.
+        - **AI Act (EU):** A regulatory framework proposed by the European Union to ensure safe and ethical use of AI technologies.
+        - **GDPR (EU):** EU legislation focused on data protection and privacy, which impacts how AI models handle personal data.
 
 
 Checklist for Training Data
