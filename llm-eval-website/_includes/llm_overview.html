@@ -38,7 +38,18 @@
                             <td class="score-cell">{% include score_circle.html score=score_value %}</td>
                         {% elsif column == 'license' %}
                             {% assign license = model[column] %}
-                            <td class="license-cell">{% include license_cell.html license=license %}</td>
+                            <td class="license-cell">
+                                <div class="license-wrapper">
+                                    <span class="license-circle {{ license }}"></span>
+                                    <span class="license-label">
+                                        <!-- {{ site.data[translations_key].license_options[license] }}
+                                        <br> (<a href="{{ model.license_link }}" target="_blank">{{ model.license_name }}</a>) -->
+                                        <a href="{{ model.license_link }}" target="_blank">
+                                            {{ site.data[translations_key].license_options[license] }}
+                                        </a>
+                                    </span>
+                                </div>
+                            </td>
                         {% elsif column == 'data_openness' %}
                             {% assign data_openness = model[column] %}
                             {% assign data_link = model["data_link"] %}
