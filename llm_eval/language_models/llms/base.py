@@ -42,8 +42,6 @@ class BaseLLM:
 
         # Count number of tokens
         if self.validate_tiktoken_model():
-            print("prompt", prompt)
-            print("response", response)
             n_input_tokens = self.count_tokens(prompt)
             n_output_tokens = self.count_tokens(response)
             self.token_data = {
