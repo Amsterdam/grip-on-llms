@@ -5,6 +5,7 @@ as well as some HuggingFace models.
 """
 from abc import abstractmethod
 
+import tiktoken
 from codecarbon import OfflineEmissionsTracker
 
 from llm_eval.utils.string_utils import (
@@ -27,6 +28,7 @@ class BaseLLM:
         self._model_name = model_name
         self._params = params
         self.tracker = None
+        self.token_data = None
         self.uses_api = uses_api
 
     def prompt(self, prompt, context=None, system=None, response_format=None):
@@ -37,6 +39,17 @@ class BaseLLM:
 
         # Generate the reposnse
         response = self._prompt(prompt, context, system, response_format)
+
+        # Count number of tokens
+        if self.validate_tiktoken_model():
+            print("prompt", prompt)
+            print("response", response)
+            n_input_tokens = self.count_tokens(prompt)
+            n_output_tokens = self.count_tokens(response)
+            self.token_data = {
+                "n_input_tokens": n_input_tokens,
+                "n_output_tokens": n_output_tokens,
+            }
 
         # Stop tracker for the llm itself
         if self.tracker:
@@ -71,6 +84,25 @@ class BaseLLM:
         except TrackerNotStartedError as e:
             print(f"TrackerNotStartedError: {e}")
             return None
+
+    def validate_tiktoken_model(self):
+        """Validate whether model is from OpenAi and can be passed by Tiktoken."""
+        try:
+            tiktoken.encoding_for_model(self.model_name)
+            return True
+        except KeyError:
+            return False
+
+    def count_tokens(self, text):
+        """Count number of tokens for given text."""
+        # Encode OpenAI model with Tiktoken
+        enc = tiktoken.encoding_for_model(self.model_name)
+
+        # Count number of tokens in text
+        tokens = enc.encode(text)
+        num_tokens = len(tokens)
+
+        return num_tokens
 
     @abstractmethod
     def _prompt(self, prompt, context=None, system=None, response_format=None):
