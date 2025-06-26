@@ -61,6 +61,7 @@ class Leaderboard:
                                     "system": get_system_metadata(),
                                 },
                                 "code_carbon": llm.get_carbon_data(),
+                                "n_tokens": llm.token_data,
                             },
                             "benchmark_results": benchmark_results,
                         }
