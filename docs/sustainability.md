@@ -94,11 +94,11 @@ We currently calculate average energy use per benchmark. This is based on the to
 
 |           | Average Energy use per benchmark (kWh)     | Level     |
 |-----------|:------------------|:----------|
-| <img src="https://readme-swatches.vercel.app/EC0000?style=circle" width="20" height="20" alt="Red Circle"> | >0.1   | Very Low   |
-| <img src="https://readme-swatches.vercel.app/FF9100?style=circle" width="20" height="20" alt="Orange Circle"> | 0.05-0.1  | Low        |
+| <img src="https://readme-swatches.vercel.app/EC0000?style=circle" width="20" height="20" alt="Red Circle"> | >0.1   | Very High   |
+| <img src="https://readme-swatches.vercel.app/FF9100?style=circle" width="20" height="20" alt="Orange Circle"> | 0.05-0.1  | High        |
 | <img src="https://readme-swatches.vercel.app/FFE600?style=circle" width="20" height="20" alt="Yellow Circle"> | 0.025-0.05   | Medium     |
-| <img src="https://readme-swatches.vercel.app/BED200?style=circle" width="20" height="20" alt="Lime Circle"> | 0.015-0.025   | High       |
-| <img src="https://readme-swatches.vercel.app/00A03C?style=circle" width="20" height="20" alt="Green Circle"> | 0-0.015   | Very High  |
+| <img src="https://readme-swatches.vercel.app/BED200?style=circle" width="20" height="20" alt="Lime Circle"> | 0.015-0.025   | Low       |
+| <img src="https://readme-swatches.vercel.app/00A03C?style=circle" width="20" height="20" alt="Green Circle"> | 0-0.015   | Very Low  |
 
 ### Future Considerations
 
