@@ -6,11 +6,12 @@
 
 A model’s behaviour is bounded by the corpus it was trained on.  An ideal dataset consists of the following aspects:
 
+* the data is publicly available, enabling us to analyze the data
 * personal data are handled in line with the GDPR and the AI Act;
 * copyrighted works are respected (or licensed);
-* Finetuning data is annotated in an ethical manner.
+* finetuning data is annotated in an ethical manner.
+* the data is inclusive and representative of our values and society 
 
-Without visibility into the underlying data it is impossible to interpret a model’s strengths, weaknesses, or compliance posture.
 
 ---
 
@@ -46,13 +47,8 @@ When trustworthy sources shows that a training corpus contains serious ethical v
 
 ---
 
-## Dutch language coverage
 
-Because we serve Dutch public‑sector use‑cases, we value corpora that include a substantial share of Dutch‑language material (original or translated).  Models that document Dutch coverage receive a **“NL‑supported”** icon.
-
----
-
-## Practical note on data‑subject requests
+## DISCLAIMER: Practical note on data‑subject requests
 
 Greater transparency comes with a practical obligation: if a citizen asks whether their personal data appear in a training corpus, we are *in principle* required to investigate.  In practice, present‑day foundation models are trained on hundreds of billions of tokens; reconstructing the presence (or absence) of a specific individual is not technically feasible with reasonable effort.  For that reason, our policy is to **acknowledge the request and explain the practical impossibility** of an exact answer, while pointing the requester to the model developer’s privacy contact.
 
