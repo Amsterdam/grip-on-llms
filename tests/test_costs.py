@@ -1,12 +1,21 @@
-"""Basic tests to calculate costs for different models"""
+"""Calculate costs for different models"""
 import json
 from collections import defaultdict
 from datetime import datetime
 
+import tiktoken
+
 # Load the file
-file_path = "leaderboard"
-with open(file_path, "r", encoding="utf-8") as f:
+with open("leaderboard_final", "r", encoding="utf-8") as f:
     data = json.load(f)
+
+# Included benchmarks
+included_benchmarks = {
+    "AmsterdamSimplification-detailed",
+    "INT_Duidelijke_Taal-detailed",
+    "CNNDailyMail",
+    "XSum",
+}
 
 # API pricing table ($ per 1k tokens)
 api_model_pricing = {
@@ -17,85 +26,113 @@ api_model_pricing = {
 # Current hourly GPU rates on Azure
 gpu_hourly_rates = {
     "Tesla T4": 0.66,
-    "A100": 9.55,
+    "H100": 9.08,
+    "Tesla V100-PCIE-16GB": 3.82,
 }
-
-results = defaultdict(lambda: defaultdict(dict))
 
 
 def parse_duration(start, end):
     """Parse duration in seconds per benchmark run."""
     fmt = "%Y-%m-%dT%H:%M:%SZ"
-    start_dt = datetime.strptime(start, fmt)
-    end_dt = datetime.strptime(end, fmt)
-    return (end_dt - start_dt).total_seconds()
+    start_time = datetime.strptime(start, fmt)
+    end_time = datetime.strptime(end, fmt)
+    return (end_time - start_time).total_seconds()
 
+
+def count_tokens(model_name, text):
+    """Count tokens using tiktoken for a given model and text."""
+    try:
+        enc = tiktoken.encoding_for_model(model_name)
+        return len(enc.encode(text))
+    except Exception:
+        return 0
+
+
+results = defaultdict(lambda: defaultdict(dict))
 
 # Process entries in leaderboard dataframe
 for entry in data:
     try:
-        model = entry.get("metadata", {}).get("llm", {}).get("model_name")
-        benchmark = entry.get("metadata", {}).get("benchmark", {}).get("name")
-        n_tokens = entry.get("metadata", {}).get("n_tokens")
-        n_samples = entry.get("metadata", {}).get("n_samples", 1)
-        run = entry.get("metadata", {}).get("run")
-        system = run.get("system", {}) if run else {}
-        gpu_info = system.get("device_info", {}).get("gpu", {})
-        device = gpu_info.get("device_name")
-        start_time = run.get("timestamp_bench_start") if run else None
-        end_time = run.get("timestamp_bench_end") if run else None
+        metadata = entry.get("metadata")
+        model = metadata.get("llm", {}).get("model_name")
+        benchmark = metadata.get("benchmark", {}).get("name")
+        if benchmark not in included_benchmarks:
+            continue
+
+        n_tokens = metadata.get("n_tokens")
+        run_output = entry.get("benchmark_results", {}).get("run_output", [])
+        n_samples = metadata.get("n_samples", 1)
+        run = metadata.get("run")
+        device = run.get("system", {}).get("device_info", {}).get("gpu", {}).get("device_name")
+        start_time, end_time = run.get("timestamp_bench_start"), run.get("timestamp_bench_end")
 
         if model in api_model_pricing:
-            if (
-                n_tokens
-                and n_tokens.get("n_input_tokens") is not None
-                and n_tokens.get("n_output_tokens") is not None
-            ):
-                tokens = results[benchmark].setdefault(
-                    model, {"type": "API", "input": [], "output": []}
-                )
-                tokens["input"] = n_tokens["n_input_tokens"]
-                tokens["output"] = n_tokens["n_output_tokens"]
-            else:
-                continue
+            n_input = n_tokens.get("n_input_tokens") if isinstance(n_tokens, dict) else None
+            n_output = n_tokens.get("n_output_tokens") if isinstance(n_tokens, dict) else None
+
+            if n_input is None or n_output is None:
+                inputs = [r.get("prompt") or r.get("source") for r in run_output]
+                outputs = [r.get("response") for r in run_output]
+                n_input = sum(count_tokens(model, p) for p in inputs if isinstance(p, str))
+                n_output = sum(count_tokens(model, o) for o in outputs if isinstance(o, str))
+
+            res = results[benchmark].setdefault(model, {"type": "API", "input": 0, "output": 0})
+            res["input"] += n_input
+            res["output"] += n_output
+
         else:
             duration = parse_duration(start_time, end_time)
             gpu_rate = gpu_hourly_rates.get(device)
-            if duration is not None and gpu_rate is not None:
-                cost = duration * (gpu_rate / 3600)
-                per_prompt_cost = cost / n_samples
-                durations = results[benchmark].setdefault(
-                    model, {"type": "Open Source", "costs": []}
-                )
-                durations["costs"].extend([per_prompt_cost] * n_samples)
+            if duration and gpu_rate:
+                cost = duration * gpu_rate / 3600
+                res = results[benchmark].setdefault(model, {"type": "Open Source", "costs": []})
+                res["costs"].extend([cost / n_samples] * n_samples)
             else:
                 continue
+
     except Exception as e:
         print(f"Skipping due to error: {e}")
         continue
 
 # Combine results from API and open source models
-final_results = {}
+cost_results = {}
 for benchmark, models in results.items():
-    final_results[benchmark] = {}
+    cost_results[benchmark] = {}
     for model, stats in models.items():
         if stats["type"] == "API":
-            avg_input = stats["input"]
-            avg_output = stats["output"]
             pricing = api_model_pricing[model]
-            cost_per_prompt = avg_input * (pricing["input"] / 1000) + avg_output * (
+            in_tokens, out_tokens = stats["input"], stats["output"]
+            cost_per_prompt = in_tokens * (pricing["input"] / 1000) + out_tokens * (
                 pricing["output"] / 1000
             )
-            final_results[benchmark][model] = {
+            cost_results[benchmark][model] = {
                 "type": "API",
-                "cost_per_prompt": cost_per_prompt,
+                "avg_input_tokens": round(in_tokens, 2),
+                "avg_output_tokens": round(out_tokens, 2),
+                "cost_per_prompt": round(cost_per_prompt, 6),
             }
         else:
-            n_samples = len(stats["costs"])
-            avg = sum(stats["costs"]) / n_samples
-            final_results[benchmark][model] = {
+            costs = stats["costs"]
+            cost_results[benchmark][model] = {
                 "type": "Open Source",
-                "avg_cost_per_prompt": avg,
+                "avg_cost_per_prompt": round(sum(costs) / len(costs), 6),
             }
 
-print(final_results)
+# Average cost per model across included benchmarks
+model_costs = defaultdict(lambda: {"total_cost": 0.0, "total_samples": 0})
+
+for models in cost_results.values():
+    for model, stats in models.items():
+        cost = stats.get("cost_per_prompt") or stats.get("avg_cost_per_prompt")
+        model_costs[model]["total_cost"] += cost
+        model_costs[model]["total_samples"] += 1
+
+# Compute average cost per model
+avg_costs_per_model = {}
+for model, values in model_costs.items():
+    total = values["total_cost"]
+    n_samples = values["total_samples"]
+    avg_costs_per_model[model] = round(total / n_samples, 6)
+
+costs_sorted = sorted(avg_costs_per_model.items(), key=lambda x: x[1])
+print(costs_sorted)
