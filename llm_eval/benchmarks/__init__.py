@@ -1,6 +1,7 @@
 """Initialization imports for benchmarks."""
 
 from .arc import ARC
+from .honesty import HonestCityBench
 from .mmlu import MMLU
 from .simplification import AmsterdamSimplification, INTDuidelijkeTaal
 from .social_bias import BZKSocialBias, DutchBBQ, DutchCrowSPairs
@@ -19,4 +20,5 @@ __all__ = [
     "TinyARC",
     "TinyMMLU",
     "TinyTruthfulQA",
+    "HonestCityBench",
 ]
