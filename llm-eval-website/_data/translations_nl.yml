@@ -93,3 +93,15 @@ score_explanation:
 
       <b>Gesloten:</b> De aanbieder heeft de training data niet gedeeld of beschreven. Hoogstens wordt de omvang van de dataset of minimale informatie over de aard van de onderliggende gegevens gedeeld (bijv. 'Webgegevens').
     outro:
+  costs:
+    intro: "
+      Om LLMs eenvoudig te vergelijken, berekenen we de gemiddelde kosten per prompt op basis van een specifieke cloudprovider.
+      Dit schatten we door te meten hoeveel het kost om resultaten te genereren voor taken met open antwoorden, zoals vereenvoudiging of samenvatting.
+      De methode hangt af van of het model lokaal draait of via een API wordt benaderd.
+      "
+    example: |
+      <b>Lokale modellen:</b> Voor modellen die we kunnen downloaden en lokaal kunnen draaien, meten we hoe lang ze nodig hebben om taken uit te voeren, en vermenigvuldigen dit met de kosten van de gebruikte machine. Alle tests worden uitgevoerd op H100 GPU's in West-Europa om de resultaten consistent en vergelijkbaar te houden.
+
+      <b>API-modellen:</b> Voor modellen die via een API worden benaderd, worden de kosten meestal berekend op basis van "tokens" (delen van woorden). We berekenen het aantal invoer- en uitvoertokens om de gemiddelde kosten per prompt te bepalen.
+    outro: |
+      We geven de gemiddelde kosten <b>per 1000 prompts</b> weer.
