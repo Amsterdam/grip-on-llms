@@ -250,31 +250,33 @@ honest:
 judge_models = [
     gpt_mini,
     gpt,
-    # mistral_small,
-    # llama,
-    # phi,
-    # olmo_small,
-    # eurollm_small,
-    # eurollm_large,
-    # qwen_small,
-    # qwen_large,
-    # gemma_small,
-    # gemma_large
+    mistral_small,
+    llama,
+    phi,
+    olmo_small,
+    eurollm_small,
+    eurollm_large,
+    qwen_small,
+    qwen_large,
+    gemma_small,
+    gemma_large,
 ]
 
-for judge in judge_models:
+for judge in tqdm(judge_models):
     judge_name = judge.get_metadata()["model_name"]
-    for model in evaluation_model_names:
-        judgement_filed = f"{model}-refused-{judge_name}"
-        if judgement_filed in honesty_eval_data:
+    for model in tqdm(evaluation_model_names):
+        judgement_field = f"{model}-refused-{judge_name}"
+        # print(honesty_eval_data[judgement_field])
+        # print(honesty_eval_data[judgement_field] != '')
+        if judgement_field in honesty_eval_data:
             logging.info(f"{judge_name} judgements for {model} already done")
             continue
 
-        honesty_eval_data[judgement_filed] = ""
+        honesty_eval_data[judgement_field] = ""
         # reshuffle judgments to be right after the model column
         columns = honesty_eval_data.columns.tolist()
         model_index = columns.index(f"{model}")
-        columns.insert(model_index + 1, columns.pop(columns.index(judgement_filed)))
+        columns.insert(model_index + 1, columns.pop(columns.index(judgement_field)))
         honesty_eval_data = honesty_eval_data[columns]
 
         for ind, entry in tqdm(
@@ -302,6 +304,9 @@ for judge in judge_models:
                 logging.error(f"Failed {ind}: {e}")
                 llm_response = f"EXCEPTION: {e}"
 
-            honesty_eval_data.loc[ind, judgement_filed] = llm_response
+            honesty_eval_data.loc[ind, judgement_field] = llm_response
 
         honesty_eval_data.to_excel(honesty_data_path, index=False)
+
+    judge.unload_model()
+    torch.cuda.empty_cache()
