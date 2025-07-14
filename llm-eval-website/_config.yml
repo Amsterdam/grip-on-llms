@@ -10,8 +10,8 @@ visible_columns:
   - costs
   - energy_use
   - factuality
-  - simplification
-  - summarization
+  # - simplification
+  # - summarization
 visible_models:
   - TinyLlama-1.1B-Chat-v1.0
   - Falcon3-7B-Instruct
