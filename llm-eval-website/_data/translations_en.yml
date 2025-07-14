@@ -95,3 +95,18 @@ score_explanation:
 
       <b>Closed:</b> This model is trained on data that was not disclosed or described. The provider shares at most the size of the dataset or only minimal information about the nature of underlying data (e.g. 'Web data').
     outro:
+  costs:
+    intro: "
+      To allow for an intuitive comparison of LLMs, we calculate their avarage price per prompt
+      based on the pricing of a specific cloud provider.
+      We estimate it by measuring how much it costs to generate the responses for
+      open-ended generation tasks such as simplification or summarization.
+      We measure costs in two different ways, depending on whether we run a model locally or access it via an API.
+      "
+    example: |
+      <b>Local models:</b> For models which we can download and run locally, we track how long it takes for them to complete different benchmarks. Then we multiple by the price of the machine we used. To ensure consistent and comparable results, we run all of our experiments on H100 GPUs located in West Europe.
+
+      <b>API:</b> For models which we access via an API, we usually pay per "token" (that is, per generated (part of a) word). For these models, we calculate the number of input and output tokens to calculate average price per prompt.
+    outro: |
+      Finally, we report average price <b>per 1000 prompts</b>.
+
