@@ -97,7 +97,7 @@ score_explanation:
     intro: "
       Om LLMs eenvoudig te vergelijken, berekenen we de gemiddelde kosten per prompt op basis van een specifieke cloudprovider.
       Dit schatten we door te meten hoeveel het kost om resultaten te genereren voor taken met open antwoorden, zoals vereenvoudiging of samenvatting.
-      De methode hangt af van of het model lokaal draait of via een API wordt benaderd.
+      De berekeningsmethode hangt af van of het model lokaal draait of via een API wordt benaderd.
       "
     example: |
       <b>Lokale modellen:</b> Voor modellen die we kunnen downloaden en lokaal kunnen draaien, meten we hoe lang ze nodig hebben om taken uit te voeren, en vermenigvuldigen dit met de kosten van de gebruikte machine. Alle tests worden uitgevoerd op H100 GPU's in West-Europa om de resultaten consistent en vergelijkbaar te houden.
