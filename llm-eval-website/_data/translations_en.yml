@@ -101,7 +101,7 @@ score_explanation:
       based on the pricing of a specific cloud provider.
       We estimate this by measuring the cost of generating responses for
       open-ended generation tasks such as simplification or summarization.
-      The method depends on whether the model runs locally or is accessed via API.
+      The calculation method depends on whether the model runs locally or is accessed via API.
       "
     example: |
       <b>Local models:</b> For models we can download and run locally, we track how long they take to complete tasks and multiply this by the cost of the machine used. All experiments are done on H100 GPUs in West Europe to ensure consistent results.
