@@ -5,7 +5,6 @@ as well as some HuggingFace models.
 """
 from abc import abstractmethod
 
-import tiktoken
 from codecarbon import OfflineEmissionsTracker
 
 from llm_eval.utils.string_utils import (
@@ -28,9 +27,7 @@ class BaseLLM:
         self._model_name = model_name
         self._params = params
         self.tracker = None
-        self.token_data = None
         self.uses_api = uses_api
-        self.tokens_total = {"input_tokens": 0, "output_tokens": 0}
 
     def prompt(self, prompt, context=None, system=None, response_format=None):
         """Starts and stops code carbon tracker, and gets response from model."""
@@ -44,19 +41,6 @@ class BaseLLM:
         # Stop tracker for the llm itself
         if self.tracker:
             self.tracker.stop()
-
-        # Count number of tokens
-        if self.validate_tiktoken_model():
-            n_input_tokens = self.count_tokens(prompt)
-            n_output_tokens = self.count_tokens(response)
-
-            self.token_totals["input_tokens"] += n_input_tokens
-            self.token_totals["output_tokens"] += n_output_tokens
-
-            self.token_data = {
-                "n_input_tokens": n_input_tokens,
-                "n_output_tokens": n_output_tokens,
-            }
 
         # If a specific format is desired, post-process accordingly
         if response_format == "multiple_choice":
@@ -87,25 +71,6 @@ class BaseLLM:
         except TrackerNotStartedError as e:
             print(f"TrackerNotStartedError: {e}")
             return None
-
-    def validate_tiktoken_model(self):
-        """Validate whether model is from OpenAi and can be passed by Tiktoken."""
-        try:
-            tiktoken.encoding_for_model(self.model_name)
-            return True
-        except KeyError:
-            return False
-
-    def count_tokens(self, text):
-        """Count number of tokens for given text."""
-        # Encode OpenAI model with Tiktoken
-        enc = tiktoken.encoding_for_model(self.model_name)
-
-        # Count number of tokens in text
-        tokens = enc.encode(text)
-        num_tokens = len(tokens)
-
-        return num_tokens
 
     @abstractmethod
     def _prompt(self, prompt, context=None, system=None, response_format=None):
@@ -144,11 +109,3 @@ class BaseLLM:
             "params": self.params,
         }
         return metadata
-
-    def get_token_data(self):
-        """Get total number of tokens from stored data."""
-        return self.token_totals()
-
-    def reset_token_data(self):
-        """Reset token data after each benchmark."""
-        self.token_totals = {"input_tokens": 0, "output_tokens": 0}
