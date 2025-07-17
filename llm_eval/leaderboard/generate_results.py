@@ -42,7 +42,6 @@ class Leaderboard:
                     self.codecarbon_params["project_name"] = f"{benchmark.name}-{llm.model_name}"
                     llm.initialize_carbon_tracking(self.codecarbon_params)
 
-                    llm.reset_token_data()
                     start_time = datetime.now()
                     benchmark_results = benchmark.eval(llm, n_samples=self.n_samples)
 
@@ -62,7 +61,6 @@ class Leaderboard:
                                     "system": get_system_metadata(),
                                 },
                                 "code_carbon": llm.get_carbon_data(),
-                                "n_tokens": llm.get_token_data(),
                             },
                             "benchmark_results": benchmark_results,
                         }
