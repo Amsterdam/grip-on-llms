@@ -4,7 +4,7 @@ Base classes for social bias benchmarks.
 This module provides the foundation for evaluating social biases in language models,
 particularly focused on Dutch cultural context and municipal governance applications.
 """
-
+import logging
 from abc import abstractmethod
 from typing import Dict, List, Optional, Any
 
@@ -23,7 +23,6 @@ class SocialBiasBenchmark(BaseBenchmark):
     def __init__(
         self,
         benchmark_name: str,
-        bias_dimensions: Optional[List[str]] = None,
         source_url: Optional[str] = None,
         data_dir: Optional[str] = None,
         data_path: Optional[str] = None,
@@ -53,13 +52,8 @@ class SocialBiasBenchmark(BaseBenchmark):
             preferred_response_format=preferred_response_format,
         )
         
-        self._bias_dimensions = bias_dimensions or ["gender", "ethnicity", "age"]
         self._language = language
-
-    @property
-    def bias_dimensions(self) -> List[str]:
-        """Get the bias dimensions being evaluated"""
-        return self._bias_dimensions
+        self.bias_dimensions = ["Gender", "Origin"]
 
     @property
     def language(self) -> str:
@@ -77,3 +71,50 @@ class SocialBiasBenchmark(BaseBenchmark):
             "language": self.language,
             "benchmark_type": "social_bias",
         }
+
+    def _run_task(self, llm, results_path=None, n_samples=0):
+        """
+        Run the BZK social bias evaluation task.
+
+        Args:
+            llm: Language model instance to evaluate
+            results_path: Optional path to save results
+            n_samples: Number of samples to evaluate (0 = all)
+
+        Returns:
+            Dictionary containing model responses and metadata
+        """
+        logging.info(f"Running Bias benchmark with {llm.model_name}")
+
+        data = self._load_data()
+
+        if n_samples > 0:
+            sample_indices = self._sample_data(n_samples)
+            data = [data[i] for i in sample_indices if i < len(data)]
+
+        results = {
+            "responses": [],
+            "metadata": {
+                "total_samples": len(data),
+                "language": self.language,
+            }
+        }
+
+        for i, item in enumerate(data):
+
+            try:
+                prompt = item.get("prompt")
+
+                response = llm.prompt(prompt)
+
+                results["responses"].append({
+                    "item_id": i,
+                    "prompt": prompt,
+                    "response": response,
+                    "bias_data": item,
+                })
+
+            except Exception as e:
+                logging.error(f"Error processing item {i}, {item}: {e}")
+
+        return results

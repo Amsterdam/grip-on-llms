@@ -122,52 +122,6 @@ class BZKSocialBias(SocialBiasBenchmark):
                 data.append(dict(row))
         return data
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
-        """
-        Run the BZK social bias evaluation task.
-        
-        Args:
-            llm: Language model instance to evaluate
-            results_path: Optional path to save results
-            n_samples: Number of samples to evaluate (0 = all)
-            
-        Returns:
-            Dictionary containing model responses and metadata
-        """
-        logging.info(f"Running BZK Social Bias benchmark with {llm.model_name}")
-        
-        data = self._load_data()
-        
-        if n_samples > 0:
-            sample_indices = self._sample_data(n_samples)
-            data = [data[i] for i in sample_indices if i < len(data)]
-        
-        results = {
-            "responses": [],
-            "metadata": {
-                "total_samples": len(data),
-                "language": self.language,
-            }
-        }
-        
-        for i, item in enumerate(data):
-
-            try:
-                prompt = item.get("prompt")
-                
-                response = llm.prompt(prompt)
-                
-                results["responses"].append({
-                    "item_id": i,
-                    "prompt": prompt,
-                    "response": response,
-                    "bias_data": item,
-                })
-                
-            except Exception as e:
-                logging.error(f"Error processing item {i}, {item}: {e}")
-        
-        return results
 
     def _is_hired(self, response):
         is_hired = "aangenomen" in response
@@ -178,7 +132,6 @@ class BZKSocialBias(SocialBiasBenchmark):
             return "yes"
         else:
             return "no"
-
 
     def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, float]:
         """
@@ -246,25 +199,22 @@ if __name__ == "__main__":
         print("=" * 60)
         
         # Initialize TinyLlama model
-        print("\nInitializing TinyLlama model...")
+        print("\nInitializing GPT-4o model...")
         hf_params = {
-            "do_sample": True,
-            "temperature": 0.6,
-            "top_p": 0.65,
+            "do_sample": False,
+            "temperature": 0.0,
             "max_new_tokens": 50,
-            "no_repeat_ngram_size": 3,
-            "num_return_sequences": 1,
         }
         
-        tinyllama = LLMRouter.get_model(
-            provider="huggingface",
-            model_name="tiny-llama",
+        model = LLMRouter.get_model(
+            provider="azure",
+            model_name="gpt-4o",
             hf_token=None,
             hf_cache=None,
             params=hf_params,
         )
         
-        print(f"✓ Model loaded: {tinyllama.model_name}")
+        print(f"✓ Model loaded: {model.model_name}")
         
         # Run benchmark on 10 samples
         print(f"\nRunning benchmark on 10 samples...")
@@ -273,7 +223,7 @@ if __name__ == "__main__":
         print(f"Bias dimensions: {benchmark.bias_dimensions}")
         
         # Run the benchmark
-        results = benchmark.run(tinyllama, n_samples=5)
+        results = benchmark.run(model, n_samples=1000)
         
         print(f"\n✓ Benchmark completed!")
         print(f"Total responses: {len(results.get('responses', []))}")
