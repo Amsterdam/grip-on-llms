@@ -5,8 +5,10 @@ This module provides the foundation for evaluating social biases in language mod
 particularly focused on Dutch cultural context and municipal governance applications.
 """
 import logging
+import random
 from abc import abstractmethod
 from typing import Dict, List, Optional, Any
+import pprint
 
 from llm_eval.benchmarks.base import BaseBenchmark
 
@@ -84,7 +86,6 @@ class SocialBiasBenchmark(BaseBenchmark):
         Returns:
             Dictionary containing model responses and metadata
         """
-        logging.info(f"Running Bias benchmark with {llm.model_name}")
 
         data = self._load_data()
 
