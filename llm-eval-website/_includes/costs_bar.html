@@ -1,0 +1,22 @@
+{% comment %}
+Cost bar include for displaying model costs with colored progress bars
+Parameters:
+- cost: Raw cost value (e.g. "4.51")
+- category: Cost category 1-5 (1=green, 2= 3=yellow, 4=orange, 5=red)
+- percentage: Width percentage for the bar (0-100)
+{% endcomment %}
+
+{% assign costs = include.costs %}
+{% assign costs_category = include.costs_category | plus: 0 %}
+{% assign costs_percent = include.costs_percent | plus: 0 %}
+
+{% if score == -1 %}
+    unknown
+{% else %}
+    <div class="costs-container">
+        <div class="costs-bar">
+            <div class="costs-fill costs-category-{{ costs_category }}" style="width: {{ costs_percent }}%"></div>
+        </div>
+        <span class="costs-value">{{ costs }}</span>
+  </div>
+{% endif %}
