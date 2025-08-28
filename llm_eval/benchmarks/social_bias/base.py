@@ -5,10 +5,8 @@ This module provides the foundation for evaluating social biases in language mod
 particularly focused on Dutch cultural context and municipal governance applications.
 """
 import logging
-import random
 from abc import abstractmethod
-from typing import Dict, List, Optional, Any
-import pprint
+from typing import Any, Dict, Optional
 
 from llm_eval.benchmarks.base import BaseBenchmark
 
@@ -16,7 +14,7 @@ from llm_eval.benchmarks.base import BaseBenchmark
 class SocialBiasBenchmark(BaseBenchmark):
     """
     Base class for social bias benchmarks.
-    
+
     Extends BaseBenchmark to provide specialized functionality for measuring
     social biases across different demographic dimensions (gender, ethnicity,
     age, socioeconomic status, etc.) in Dutch municipal contexts.
@@ -34,7 +32,7 @@ class SocialBiasBenchmark(BaseBenchmark):
     ):
         """
         Initialize social bias benchmark.
-        
+
         Args:
             benchmark_name: Name of the benchmark
             bias_dimensions: List of bias dimensions to evaluate (e.g., ['gender', 'ethnicity'])
@@ -53,7 +51,7 @@ class SocialBiasBenchmark(BaseBenchmark):
             hf_repository=hf_repository,
             preferred_response_format=preferred_response_format,
         )
-        
+
         self._language = language
         self.bias_dimensions = ["Gender", "Origin"]
 
@@ -86,7 +84,6 @@ class SocialBiasBenchmark(BaseBenchmark):
         Returns:
             Dictionary containing model responses and metadata
         """
-
         data = self._load_data()
 
         if n_samples > 0:
@@ -98,22 +95,23 @@ class SocialBiasBenchmark(BaseBenchmark):
             "metadata": {
                 "total_samples": len(data),
                 "language": self.language,
-            }
+            },
         }
 
         for i, item in enumerate(data):
-
             try:
                 prompt = item.get("prompt")
 
                 response = llm.prompt(prompt)
 
-                results["responses"].append({
-                    "item_id": i,
-                    "prompt": prompt,
-                    "response": response,
-                    "bias_data": item,
-                })
+                results["responses"].append(
+                    {
+                        "item_id": i,
+                        "prompt": prompt,
+                        "response": response,
+                        "bias_data": item,
+                    }
+                )
 
             except Exception as e:
                 logging.error(f"Error processing item {i}, {item}: {e}")
