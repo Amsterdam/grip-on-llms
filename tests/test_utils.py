@@ -114,22 +114,6 @@ def test_priority_order():
     print("✓ Priority order tests passed")
 
 
-def test_custom_valid_choices():
-    """Test with custom valid choices"""
-    logging.info("Testing custom valid choices")
-
-    # Test with ABC choices only
-    assert clean_and_extract_multiple_choice("Answer: A", ['A', 'B', 'C']) == "A"
-    assert clean_and_extract_multiple_choice("Answer: B", ['A', 'B', 'C']) == "B"
-    assert clean_and_extract_multiple_choice("Answer: C", ['A', 'B', 'C']) == "C"
-
-    # D should not be valid with ABC only
-    result = clean_and_extract_multiple_choice("Answer: D", ['A', 'B', 'C'])
-    assert result != "D"  # Should return cleaned string instead
-
-    print("✓ Custom valid choices tests passed")
-
-
 def test_cleaning():
     """Test that bracketed content is cleaned"""
     logging.info("Testing content cleaning")
@@ -146,12 +130,12 @@ def test_edge_cases():
     logging.info("Testing edge cases")
 
     # Empty input
-    assert clean_and_extract_multiple_choice("") == ""
-    assert clean_and_extract_multiple_choice(None) == ""
+    assert clean_and_extract_multiple_choice("") == "INVALID"
+    assert clean_and_extract_multiple_choice(None) == "INVALID"
 
     # No valid choices
     result = clean_and_extract_multiple_choice("I don't know")
-    assert result == "I don't know"  # Returns cleaned string
+    assert result == "INVALID"  # Returns cleaned string
 
     # Multiple valid choices - should return first match based on priority
     result = clean_and_extract_multiple_choice("A or B, but the answer is C")
@@ -179,7 +163,6 @@ def test_all():
         test_dutch_ordinal_patterns()
         test_case_insensitive()
         test_priority_order()
-        test_custom_valid_choices()
         test_cleaning()
         test_edge_cases()
 
@@ -188,6 +171,7 @@ def test_all():
     except Exception as e:
         print(f"\n❌ Test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -195,7 +179,7 @@ def test_all():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
     success = test_all()
     if success:

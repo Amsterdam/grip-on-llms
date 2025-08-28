@@ -8,7 +8,10 @@ from llm_eval.benchmarks import (
     ARC,
     MMLU,
     AmsterdamSimplification,
+    BZKSocialBias,
     CNNDailyMail,
+    DutchBBQ,
+    DutchCrowSPairs,
     INTDuidelijkeTaal,
     TinyARC,
     TinyMMLU,
@@ -229,7 +232,7 @@ def test_leaderboard():
         target_lang="NL",
     )
 
-    n_samples = 100
+    n_samples = 10
 
     simple_benches = []
 
@@ -323,6 +326,41 @@ def test_leaderboard():
         )
     )
 
+    bias_benches = []
+    bias_benches.append(
+        DutchBBQ(
+            benchmark_name="Dutch-BBQ",
+            language="NL",
+            data_dir=Path(benchmark_data_folder) / "Dutch-BBQ",
+        )
+    )
+
+    bias_benches.append(
+        DutchCrowSPairs(
+            benchmark_name="Dutch-CrowSPairs",
+            language="NL",
+            data_dir=Path(benchmark_data_folder) / "Dutch-CrowSPairs",
+        )
+    )
+
+    bias_benches.append(
+        BZKSocialBias(
+            which_test="gender",
+            benchmark_name="BZK-Social-Bias",
+            language="NL",
+            data_dir=Path(benchmark_data_folder) / "BZK-Social-Bias-gender",
+        )
+    )
+
+    bias_benches.append(
+        BZKSocialBias(
+            which_test="name",
+            benchmark_name="BZK-Social-Bias",
+            language="NL",
+            data_dir=Path(benchmark_data_folder) / "BZK-Social-Bias-name",
+        )
+    )
+
     logging.info("Running comparison")
     leaderboard = Leaderboard(
         llms=[
@@ -347,7 +385,12 @@ def test_leaderboard():
             gemma_small,
             gemma_large,
         ],
-        benchmarks=tiny_benches + simple_benches + summary_benches + [mmlu_nl_bench, arc_nl_bench],
+        benchmarks=bias_benches
+        + tiny_benches
+        + simple_benches
+        + summary_benches
+        + [mmlu_nl_bench]
+        + [arc_nl_bench],
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )

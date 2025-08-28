@@ -16,7 +16,7 @@ class LLMResponse:
     exception: Optional[str] = None
 
 
-def clean_and_extract_multiple_choice(input_string):
+def clean_and_extract_multiple_choice(input_string):  # noqa
     """
     Parse multiple choice response using comprehensive regex patterns.
 
@@ -37,7 +37,7 @@ def clean_and_extract_multiple_choice(input_string):
     if not input_string:
         return "INVALID"
 
-    valid_choices = ['A', 'B', 'C', 'D', 'E']
+    valid_choices = ["A", "B", "C", "D", "E"]
 
     # Remove everything between [] and <> (including the brackets)
     response_clean = re.sub(r"\[.*?\]|\<.*?\>", "", input_string)
@@ -48,8 +48,7 @@ def clean_and_extract_multiple_choice(input_string):
 
     # Try patterns in order of priority
     for pattern in patterns:
-        matches = re.finditer(pattern, response_clean,
-                              re.IGNORECASE | re.MULTILINE)
+        matches = re.finditer(pattern, response_clean, re.IGNORECASE | re.MULTILINE)
         for match in matches:
             label = match.group(1).upper()
             if label in valid_choices:
@@ -57,19 +56,18 @@ def clean_and_extract_multiple_choice(input_string):
 
     # Special handling for Dutch responses
     dutch_patterns = [
-        (r'\b(?:eerste|1e)\b.*\b(?:optie|keuze)\b', 'A'),
-        (r'\b(?:tweede|2e)\b.*\b(?:optie|keuze)\b', 'B'),
-        (r'\b(?:derde|3e)\b.*\b(?:optie|keuze)\b', 'C'),
-        (r'\b(?:vierde|4e)\b.*\b(?:optie|keuze)\b', 'D'),
+        (r"\b(?:eerste|1e)\b.*\b(?:optie|keuze)\b", "A"),
+        (r"\b(?:tweede|2e)\b.*\b(?:optie|keuze)\b", "B"),
+        (r"\b(?:derde|3e)\b.*\b(?:optie|keuze)\b", "C"),
+        (r"\b(?:vierde|4e)\b.*\b(?:optie|keuze)\b", "D"),
     ]
 
     for pattern, label in dutch_patterns:
-        if (re.search(pattern, response_clean, re.IGNORECASE)
-                and label in valid_choices):
+        if re.search(pattern, response_clean, re.IGNORECASE) and label in valid_choices:
             return label
 
     # Final fallback: look for any single letter that's a valid choice
-    single_letters = re.findall(r'\b([A-Z])\b', response_clean.upper())
+    single_letters = re.findall(r"\b([A-Z])\b", response_clean.upper())
     for letter in single_letters:
         if letter in valid_choices:
             return letter
@@ -81,23 +79,19 @@ def _get_choice_patterns():
     """Get regex patterns for choice extraction in order of priority."""
     return [
         # 1. Explicit answer formats - highest priority
-        r'\b(?:antwoord|answer|keuze|choice|optie|option)\s*(?:is\s*)?([A-D])\b',
-        r'\b(?:ik\s+kies\s+(?:voor\s+)?|i\s+choose\s+)([A-D])\b',
-        r'\b(?:het\s+(?:juiste\s+)?antwoord\s+is\s+)([A-D])\b',
-        r'\b(?:the\s+(?:correct\s+)?answer\s+is\s+)([A-D])\b',
-
+        r"\b(?:antwoord|answer|keuze|choice|optie|option)\s*(?:is\s*)?([A-D])\b",
+        r"\b(?:ik\s+kies\s+(?:voor\s+)?|i\s+choose\s+)([A-D])\b",
+        r"\b(?:het\s+(?:juiste\s+)?antwoord\s+is\s+)([A-D])\b",
+        r"\b(?:the\s+(?:correct\s+)?answer\s+is\s+)([A-D])\b",
         # 2. Answer: format - high priority
-        r'\bAnswer:\s*([A-D])[\.\)\,\;]?\s*(?:\s|$)',
-
+        r"\bAnswer:\s*([A-D])[\.\)\,\;]?\s*(?:\s|$)",
         # 3. Single letter with common punctuation - high priority
-        r'\b([A-D])[\)\.\:\,\;]\s*(?:\s|$)',
-
+        r"\b([A-D])[\)\.\:\,\;]\s*(?:\s|$)",
         # 4. Single letter at start of line/response - medium priority
-        r'^([A-D])\b',
-        r'\n([A-D])\b',
-
+        r"^([A-D])\b",
+        r"\n([A-D])\b",
         # 5. Single letter with word boundaries - lower priority
-        r'\b([A-D])\b',
+        r"\b([A-D])\b",
     ]
 
 
