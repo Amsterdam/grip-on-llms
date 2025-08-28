@@ -4,7 +4,6 @@ Base classes for social bias benchmarks.
 This module provides the foundation for evaluating social biases in language models,
 particularly focused on Dutch cultural context and municipal governance applications.
 """
-import logging
 from abc import abstractmethod
 from typing import Any, Dict, Optional
 
@@ -73,47 +72,4 @@ class SocialBiasBenchmark(BaseBenchmark):
         }
 
     def _run_task(self, llm, results_path=None, n_samples=0):
-        """
-        Run the BZK social bias evaluation task.
-
-        Args:
-            llm: Language model instance to evaluate
-            results_path: Optional path to save results
-            n_samples: Number of samples to evaluate (0 = all)
-
-        Returns:
-            Dictionary containing model responses and metadata
-        """
-        data = self._load_data()
-
-        if n_samples > 0:
-            sample_indices = self._sample_data(n_samples)
-            data = [data[i] for i in sample_indices if i < len(data)]
-
-        results = {
-            "responses": [],
-            "metadata": {
-                "total_samples": len(data),
-                "language": self.language,
-            },
-        }
-
-        for i, item in enumerate(data):
-            try:
-                prompt = item.get("prompt")
-
-                response = llm.prompt(prompt)
-
-                results["responses"].append(
-                    {
-                        "item_id": i,
-                        "prompt": prompt,
-                        "response": response,
-                        "bias_data": item,
-                    }
-                )
-
-            except Exception as e:
-                logging.error(f"Error processing item {i}, {item}: {e}")
-
-        return results
+        raise NotImplementedError("Implement getting targets function")

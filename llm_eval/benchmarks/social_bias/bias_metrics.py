@@ -7,10 +7,10 @@ Example:
 Target Variable: Is_Hired, "yes"/"no"
 Protected Variables: "Origin", "Gender"
 """
+from itertools import combinations
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
-from iteTrtools import combinations
 
 
 class BiasCalculator:
@@ -136,11 +136,8 @@ class BiasCalculator:
             "target_variable": self.target_variable,
             "positive_outcome": self.positive_outcome,
             "protected_attributes": self.protected_attributes,
+            "target_distribution": self.df[self.target_variable].value_counts().to_dict(),
         }
-
-        # Add value counts for target variable
-        stats["target_distribution"] = self.df[self.target_variable].value_counts().to_dict()
-
         return stats
 
     def calculate_positive_rates(self, attribute: str) -> Dict[str, float]:
@@ -520,7 +517,6 @@ class BiasCalculator:
         Returns multiple scoring approaches to choose from.
         """
         metrics = {
-            "model_id": "unnamed_model",  # Can be set externally
             "timestamp": pd.Timestamp.now().isoformat(),
             "data_stats": self.calculate_basic_stats(),
         }
@@ -528,12 +524,7 @@ class BiasCalculator:
         # Calculate scores using different methods
         metrics["scores"] = {
             "weighted_average": self.calculate_fairness_score(method="weighted_average"),
-            "worst_case": self.calculate_fairness_score(method="worst_case"),
-            "threshold_based": self.calculate_fairness_score(method="threshold_based"),
         }
-
-        # Add interpretability metrics
-        metrics["detailed_analysis"] = self.generate_full_report()
 
         # Create recommended leaderboard entry
         primary_score = metrics["scores"]["weighted_average"]["overall_score"]
@@ -567,35 +558,3 @@ class BiasCalculator:
             if "error" not in di and not di.get("all_groups_pass", False):
                 return False
         return True
-
-    def generate_full_report(self) -> Dict[str, Any]:
-        """Generate a comprehensive bias analysis report for all protected attributes."""
-        report = {
-            "basic_stats": self.calculate_basic_stats(),
-            "attribute_analyses": {},
-            "intersectional_analysis": self.calculate_intersectional_bias(),
-        }
-
-        # Analyze each protected attribute
-        for attr in self.protected_attributes:
-            report["attribute_analyses"][attr] = self.calculate_group_fairness_metrics(attr)
-
-        # Add overall fairness score
-        fairness_concerns = sum(
-            1
-            for analysis in report["attribute_analyses"].values()
-            if "CONCERN" in analysis.get("fairness_assessment", "")
-        )
-
-        report["overall_assessment"] = {
-            "attributes_with_concerns": fairness_concerns,
-            "total_attributes": len(self.protected_attributes),
-            "recommendation": "No major concerns"
-            if fairness_concerns == 0
-            else f"Review needed for {fairness_concerns} attribute(s)",
-        }
-
-        # Add leaderboard metrics
-        report["fairness_scores"] = self.calculate_fairness_score()
-
-        return report

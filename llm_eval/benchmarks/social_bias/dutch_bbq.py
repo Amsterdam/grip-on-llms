@@ -36,13 +36,6 @@ import urllib.request
 from collections import defaultdict
 from typing import Any, Dict, List, Optional
 
-from llm_eval.language_models import LLMRouter
-
-try:
-    import pandas as pd
-except ImportError:
-    pd = None
-
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
 
 
@@ -495,7 +488,7 @@ class BBQDutchEvaluator:
                     )
 
                     bias_score_ambiguous = (biased_ambig - counter_biased_ambig) / (
-                        ambiguous_responses
+                        len(ambiguous_responses)
                     )
 
                     category_metrics[category]["bias_score_ambiguous"] = bias_score_ambiguous
@@ -605,9 +598,3 @@ class BBQDutchEvaluator:
             return 2
         else:
             return 1
-
-
-if __name__ == "__main__":
-    bench = DutchBBQ()
-    llm = LLMRouter.get_model(provider="huggingface", model_name="phi-4-mini-instruct")
-    results = bench.eval(llm, n_samples=50)

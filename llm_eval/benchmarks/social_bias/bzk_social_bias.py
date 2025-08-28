@@ -63,12 +63,8 @@ import logging
 import urllib.request
 from typing import Any, Dict, List, Optional
 
-from llm_eval.language_models import LLMRouter
+import pandas as pd
 
-try:
-    import pandas as pd
-except ImportError:
-    pd = None
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
 from llm_eval.benchmarks.social_bias.bias_metrics import BiasCalculator
 
@@ -202,6 +198,52 @@ class BZKSocialBias(SocialBiasBenchmark):
         else:
             return "no"
 
+    def _run_task(self, llm, results_path=None, n_samples=0):
+        """
+        Run the BZK social bias evaluation task.
+
+        Args:
+            llm: Language model instance to evaluate
+            results_path: Optional path to save results
+            n_samples: Number of samples to evaluate (0 = all)
+
+        Returns:
+            Dictionary containing model responses and metadata
+        """
+        data = self._load_data()
+
+        if n_samples > 0:
+            sample_indices = self._sample_data(n_samples)
+            data = [data[i] for i in sample_indices if i < len(data)]
+
+        results = {
+            "responses": [],
+            "metadata": {
+                "total_samples": len(data),
+                "language": self.language,
+            },
+        }
+
+        for i, item in enumerate(data):
+            try:
+                prompt = item.get("prompt")
+
+                response = llm.prompt(prompt)
+
+                results["responses"].append(
+                    {
+                        "item_id": i,
+                        "prompt": prompt,
+                        "response": response,
+                        "bias_data": item,
+                    }
+                )
+
+            except Exception as e:
+                logging.error(f"Error processing item {i}, {item}: {e}")
+
+        return results
+
     def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, float]:
         """
         Calculate bias scores for each dimension.
@@ -231,16 +273,33 @@ class BZKSocialBias(SocialBiasBenchmark):
             positive_outcome="yes",  # Explicitly specify what counts as positive
             unknown_values=["unknown"],
         )
-        bias_calculator.print_summary()
 
-        # Get full report
-        full_report = bias_calculator.generate_full_report()
+        # Create comprehensive results with all individual metrics for interpretability
+        results = {}
 
-        # Get leaderboard metrics and add to report
-        leaderboard_metrics = bias_calculator.calculate_bias_leaderboard_metrics()
-        full_report["leaderboard_metrics"] = leaderboard_metrics
+        # Basic statistics
+        results["basic_stats"] = bias_calculator.calculate_basic_stats()
 
-        return full_report
+        # Individual metrics for each protected attribute
+        results["individual_metrics"] = {}
+        for attr in self.protected_variables:
+            results["individual_metrics"][attr] = {
+                "demographic_parity": bias_calculator.calculate_demographic_parity(attr),
+                "disparate_impact": bias_calculator.calculate_disparate_impact(attr),
+                "statistical_parity": bias_calculator.calculate_statistical_parity(attr),
+                "equalized_odds": bias_calculator.calculate_equalized_odds(attr),
+                "positive_rates": bias_calculator.calculate_positive_rates(attr),
+            }
+
+        # Intersectional analysis
+        results["intersectional_analysis"] = bias_calculator.calculate_intersectional_bias()
+
+        # Overall fairness scores
+        results["fairness_scores"] = bias_calculator.calculate_fairness_score()
+
+        # Leaderboard metrics for ranking/comparison
+        results["leaderboard_metrics"] = bias_calculator.calculate_bias_leaderboard_metrics()
+        return results
 
     def _get_hashing_data_for_sampling(self) -> List[str]:
         """
@@ -256,11 +315,3 @@ class BZKSocialBias(SocialBiasBenchmark):
             f"{item.get('demographic_group', '')}"
             for item in data
         ]
-
-
-if __name__ == "__main__":
-    bench = BZKSocialBias(which_test="name")
-    llm = LLMRouter.get_model(provider="huggingface", model_name="phi-4-mini-instruct")
-    results = bench.eval(llm, n_samples=30)
-    bench = BZKSocialBias(which_test="name")
-    results = bench.eval(llm, n_samples=30)
