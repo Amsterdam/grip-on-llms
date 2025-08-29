@@ -33,6 +33,10 @@
                                     <a href="{{ model.provider_url }}" target="_blank">{{ model.provider }}</a>
                                 </div>
                             </td>
+                        {% elsif column == 'costs' %}
+                            <td class="costs-cell">
+                                {% include costs_bar.html costs=model.costs costs_category=model.costs_category costs_percent=model.costs_percent %}
+                            </td>
                         {% elsif score_columns contains column %}
                             {% assign score_value = model[column] %}
                             <td class="score-cell">{% include score_circle.html score=score_value %}</td>

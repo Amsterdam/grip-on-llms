@@ -583,3 +583,43 @@ th {
   max-height: 90vh;
   overflow-y: auto;
 }
+
+/* Costs bar styles */
+.costs-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 120px;
+}
+
+.costs-bar {
+    flex: 1;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.costs-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    min-width: 5%
+}
+
+.costs-value {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 13px;
+    min-width: 40px;
+    text-align: right;
+  }
+
+/* Cost category colors */
+.costs-category-1 { background: #00A03C; }
+.costs-category-2 { background: #BED200; }
+.costs-category-3 { background: #FFE600; }
+.costs-category-4 { background: #FF9100; }
+.costs-category-5 { background: #EC0000; }
+.costs-category-6 { background: #B70000; }
