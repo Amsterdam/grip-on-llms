@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
+from tqdm import tqdm
 
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
 
@@ -282,7 +283,7 @@ class DutchCrowSPairs(SocialBiasBenchmark):
             },
         }
 
-        for i, item in enumerate(data):
+        for i, item in enumerate(tqdm(data)):
             try:
                 # Generate multiple choice question
                 mc_question = self._generate_multiple_choice_question(item)

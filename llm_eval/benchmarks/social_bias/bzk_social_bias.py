@@ -64,6 +64,7 @@ import urllib.request
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
+from tqdm import tqdm
 
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
 from llm_eval.benchmarks.social_bias.bias_metrics import BiasCalculator
@@ -224,7 +225,7 @@ class BZKSocialBias(SocialBiasBenchmark):
             },
         }
 
-        for i, item in enumerate(data):
+        for i, item in enumerate(tqdm(data)):
             try:
                 prompt = item.get("prompt")
 

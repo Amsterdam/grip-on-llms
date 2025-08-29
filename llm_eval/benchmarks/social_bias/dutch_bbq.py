@@ -36,6 +36,8 @@ import urllib.request
 from collections import defaultdict
 from typing import Any, Dict, List, Optional
 
+from tqdm import tqdm
+
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
 
 
@@ -257,7 +259,7 @@ class DutchBBQ(SocialBiasBenchmark):
                 "bias_categories": self.bias_categories,
             },
         }
-        for i, item in enumerate(data):
+        for i, item in enumerate(tqdm(data)):
             try:
                 # Generate multiple choice question
                 mc_question = self._generate_multiple_choice_question(item)
