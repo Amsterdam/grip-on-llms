@@ -1,4 +1,5 @@
 """Basic tests to check whether a benchmark works as expected."""
+
 import logging
 from pathlib import Path
 
@@ -186,7 +187,9 @@ def test_summarization_gpt():
                 max_translation_entries=N_SAMPLES + 5,
             )
             summarization_bench.eval(
-                gpt, f"results/results_{bench_name}-{prompt_type}-{language}", n_samples=N_SAMPLES
+                gpt,
+                f"results/results_{bench_name}-{prompt_type}-{language}",
+                n_samples=N_SAMPLES,
             )
 
             bench_name = "XSum"
@@ -200,7 +203,9 @@ def test_summarization_gpt():
                 max_translation_entries=N_SAMPLES + 5,
             )
             summarization_bench.eval(
-                gpt, f"results/results_{bench_name}-{prompt_type}-{language}", n_samples=N_SAMPLES
+                gpt,
+                f"results/results_{bench_name}-{prompt_type}-{language}",
+                n_samples=N_SAMPLES,
             )
 
 
