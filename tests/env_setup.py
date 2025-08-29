@@ -1,4 +1,5 @@
 """Setup key vault connection and azure authentication"""
+
 import json
 import logging
 import os
@@ -54,7 +55,10 @@ def get_hf_secrets():
     hf_token_key = f"hf-token-{key_vault_name}"
     hf_token = key_vault.get_secret(hf_token_key)
 
-    return {"HF_TOKEN": hf_token}
+    return {
+        "HF_TOKEN": hf_token,
+        "HF_CACHE": hf_cache,  # Include cache path from global variable
+    }
 
 
 def get_gpt_secrets():
