@@ -34,13 +34,35 @@ MODEL_MAPPING = {
     "mistral-large-instruct-quantized": {
         "id": "TechxGenus/Mistral-Large-Instruct-2407-GPTQ",
         "h100_profile": "xlarge",  # Quantized version of large model
-        "kwargs": {},
+        "kwargs": {
+            "loading": {
+                "quantization": "gptq",
+            },
+        },
+    },
+    "Qwen3-32B-AWQ": {
+        "id": "Qwen/Qwen3-32B-AWQ",
+        "h100_profile": "large",  # Quantized version of large model
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     # TINY MODELS (1B-3B) - H100 "tiny" profile
     "tiny-llama": {
         "id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
         "h100_profile": "tiny",  # 1.1B parameters
         "kwargs": {},
+    },
+    "Llama-3.3-70B-quantized": {
+        "id": "shuyuej/Llama-3.3-70B-Instruct-GPTQ",
+        "h100_profile": "large",  # 1.1B parameters
+        "kwargs": {
+            "loading": {
+                "quantization": "gptq_marlin",
+            }
+        },
     },
     "llama-3.2-3b-instruct": {
         "id": "meta-llama/Llama-3.2-3B-Instruct",
@@ -63,6 +85,16 @@ MODEL_MAPPING = {
     "phi-4-mini-instruct": {
         "id": "microsoft/Phi-4-mini-instruct",
         "h100_profile": "tiny",  # ~14B parameters (but very efficient architecture)
+        "kwargs": {},
+    },
+    "gpt-oss-120b": {
+        "id": "openai/gpt-oss-120b",
+        "h100_profile": "large",
+        "kwargs": {},
+    },
+    "gpt-oss-20b": {
+        "id": "openai/gpt-oss-20b",
+        "h100_profile": "medium",
         "kwargs": {},
     },
     # SMALL MODELS (3B-8B) - H100 "small" profile

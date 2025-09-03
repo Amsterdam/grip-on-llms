@@ -33,7 +33,10 @@ key_vault = KeyVault(kv_uri, azure_credential)
 
 # Change HuggingFace cache to shared storage account folder
 hf_cache = key_vault.get_secret("gp-hf-cache")
+vllm_cache = key_vault.get_secret("gp-vllm-cache")
+
 os.environ["HF_HOME"] = hf_cache
+os.environ["VLLM_CACHE_ROOT"] = vllm_cache
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
