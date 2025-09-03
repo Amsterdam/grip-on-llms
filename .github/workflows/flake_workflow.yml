@@ -26,10 +26,31 @@ jobs:
         curl -sSL https://install.python-poetry.org | python3 -
         export PATH="$HOME/.local/bin:$PATH"
 
-    - name: Free Disk Space (Ubuntu)
-      uses: jlumbroso/free-disk-space@main
-      with:
-        tool-cache: true
+    - name: Free up disk space
+      run: |
+        echo "Before cleanup:"
+        df -h
+        
+        # Remove Android SDK (~12GB) - usually the biggest
+        sudo rm -rf /usr/local/lib/android
+        
+        # Remove CodeQL (~6GB)
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        
+        # Remove Haskell GHC (~2.5GB)
+        sudo rm -rf /opt/ghc
+        
+        # Remove Java JDKs (~2GB)
+        sudo rm -rf /usr/lib/jvm/*
+        
+        # Remove .NET (~1.7GB)
+        sudo rm -rf /usr/share/dotnet
+        
+        # Clean apt cache
+        sudo apt-get clean
+        
+        echo "After cleanup:"
+        df -h
 
     - name: Cache Poetry dependencies
       uses: actions/cache@v4
@@ -43,7 +64,6 @@ jobs:
 
     - name: Install dependencies
       run: |
-        poetry config virtualenvs.in-project true
         poetry install --no-interaction --no-root
 
     - name: flake
