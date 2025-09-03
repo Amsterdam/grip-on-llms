@@ -100,6 +100,7 @@ class VLLMLlm(BaseLLM):
         model_loading_kwargs = {
             k: v for k, v in loading_kwargs.items() if k not in ["system_prompt"]
         }
+
         vllm_kwargs.update(model_loading_kwargs)
 
         # Remove any None values and ensure proper types
@@ -151,7 +152,6 @@ class VLLMLlm(BaseLLM):
         if "do_sample" in self.params:
             if not self.params["do_sample"]:
                 vllm_params["temperature"] = 0.0  # Force greedy sampling
-
         return SamplingParams(**vllm_params)
 
     def _format_prompt(self, prompt: str) -> str:

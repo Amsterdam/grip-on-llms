@@ -1,7 +1,10 @@
-from tests.env_setup import get_hf_secrets
-from huggingface_hub import snapshot_download
+"""Download a model from huggingface without loading it, possible on a cpu"""
 import argparse
 import sys
+
+from huggingface_hub import snapshot_download
+
+from tests.env_setup import get_hf_secrets
 
 
 def download_model(url):
@@ -17,7 +20,6 @@ def download_model(url):
 
 if __name__ == "__main__":
     get_hf_secrets()
-
 
     parser = argparse.ArgumentParser(description="Download models from HuggingFace Hub")
     parser.add_argument("url", type=str, help="Name of model to download, eg 'openai/gpt-oss-20b'")
