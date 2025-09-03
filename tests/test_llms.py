@@ -67,12 +67,13 @@ if __name__ == "__main__":
     # test_hf(test_prompt)
 
     models = [
-        "tiny-llama",
-        "phi-4-mini-instruct",
-        "llama-3.1-8b-instruct",
-        "falcon3-7b-instruct",
-        "mistral-7b-instruct-v0.3",
-        "llama-3.2-3b-instruct",
+        "gpt-oss-120b",
+        # "tiny-llama",
+        # "phi-4-mini-instruct",
+        # "llama-3.1-8b-instruct",
+        # "falcon3-7b-instruct",
+        # "mistral-7b-instruct-v0.3",
+        # "llama-3.2-3b-instruct",
     ]
 
     for model in models:
