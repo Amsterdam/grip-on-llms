@@ -12,6 +12,7 @@ from llm_eval.benchmarks import (
     CNNDailyMail,
     DutchBBQ,
     DutchCrowSPairs,
+    HonestCityBench,
     INTDuidelijkeTaal,
     TinyARC,
     TinyMMLU,
@@ -359,6 +360,37 @@ def test_leaderboard():
             language="NL",
             data_dir=Path(benchmark_data_folder) / "BZK-Social-Bias-name",
         )
+
+    gpt_judge_params = {
+        "temperature": 0,
+        "top_p": 1,
+        # Don't penalize to ensure greedy decoding
+        "frequency_penalty": 0,
+        "presence_penalty": 0,
+        "n": 1,
+        # "stop": None,
+        "max_tokens": 20,
+    }
+
+    # Separate judge model to limig tokens and avoid accumulating codecarbon duration
+    gpt_4o_mini_judge = LLMRouter.get_model(
+        provider="azure",
+        model_name="gpt-4o-mini",
+        api_endpoint=gpt_secrets["API_ENDPOINT"],
+        api_key=gpt_secrets["API_KEY"],
+        api_version=gpt_secrets["API_VERSION"],
+        params=gpt_judge_params,
+        uses_api=True,
+    )
+
+    # Run HonestCity using the local version
+    benchmark_name = "HonestCity"
+    data_path = Path(benchmark_data_folder) / benchmark_name / "honest_city_final_annotated.xlsx"
+    honest_city_bench = HonestCityBench(
+        benchmark_name,
+        data_path=data_path,
+        # Need to add qwen and gemma
+        llm_judges=[gpt_4o_mini_judge],
     )
 
     logging.info("Running comparison")
@@ -391,6 +423,7 @@ def test_leaderboard():
         + summary_benches
         + [mmlu_nl_bench]
         + [arc_nl_bench],
+        + [mmlu_nl_bench + arc_nl_bench + honest_city_bench],
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )
