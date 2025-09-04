@@ -72,6 +72,29 @@ class BaseLLM:
             print(f"TrackerNotStartedError: {e}")
             return None
 
+    def process_batch(
+        self, prompts, batch_size=None, context=None, system=None, response_format=None
+    ):
+        """Process a batch of prompts"""
+        if not batch_size:
+            return [self.prompt(prompt, context, system, response_format) for prompt in prompts]
+        else:
+            batch = []
+            responses = []
+            for prompt in prompts:
+                batch.append(prompt)
+                if len(batch) == batch_size:
+                    responses += [
+                        self.prompt(prompt, context, system, response_format) for prompt in batch
+                    ]
+                    batch = []
+        # flush
+        if batch:
+            responses += [
+                self.prompt(prompt, context, system, response_format) for prompt in batch
+            ]
+        return responses
+
     @abstractmethod
     def _prompt(self, prompt, context=None, system=None, response_format=None):
         """Function to prompt model should always be implemented"""

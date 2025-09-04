@@ -11,6 +11,7 @@ from vllm.transformers_utils.tokenizer import get_tokenizer
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.utils.exceptions import UnsupportedModelError
+from llm_eval.utils.string_utils import clean_and_extract_multiple_choice
 
 
 class VLLMLlm(BaseLLM):
@@ -212,7 +213,6 @@ class VLLMLlm(BaseLLM):
 
         # Create sampling parameters
         sampling_params = self._create_sampling_params()
-
         # Generate response
         outputs = self.model.generate([formatted_prompt], sampling_params)
 
@@ -224,30 +224,54 @@ class VLLMLlm(BaseLLM):
 
         return response
 
-    def generate_batch(
-        self, prompts: List[str], sampling_params: Optional[SamplingParams] = None
-    ) -> List[str]:
+    def process_batch(  # noqa Overwrite base function
+        self,
+        prompts: List[str],
+        batch_size: int,
+        context: Optional[str] = None,
+        system: Optional[str] = None,
+        response_format: Optional[str] = None,
+    ):
         """
         Generate responses for multiple prompts in a batch.
 
         Args:
             prompts: List of prompts to generate responses for
-            sampling_params: vLLM sampling parameters
-
+            batch_size: In what size the data should be processed
+            context: Additional context (unused in current implementation)
+            system: System prompt override (unused in current implementation)
+            response_format: Expected response format (unused in current implementation)
         Returns:
             List of generated responses
         """
         if not self.model:
             self._load_model(pause_tracker=True)
 
-        if sampling_params is None:
-            sampling_params = self._create_sampling_params()
+        sampling_params = self._create_sampling_params()
 
         # Format all prompts
         formatted_prompts = [self._format_prompt(prompt) for prompt in prompts]
 
+        if self.tracker:
+            self.tracker.start()
+
         # Generate responses in batch
-        outputs = self.model.generate(formatted_prompts, sampling_params)
+        if batch_size is None:
+            outputs = self.model.generate(formatted_prompts, sampling_params)
+        else:
+            outputs = []
+            batch = []
+            for prompt in formatted_prompts:
+                batch.append(prompt)
+                if len(batch) == batch_size:
+                    outputs.extend(self.model.generate(batch, sampling_params))
+                    batch = []
+            # flush
+            if batch:
+                outputs.extend(self.model.generate(batch, sampling_params))
+
+        if self.tracker:
+            self.tracker.stop()
 
         # Extract responses
         responses = []
@@ -256,6 +280,9 @@ class VLLMLlm(BaseLLM):
                 responses.append(output.outputs[0].text)
             else:
                 responses.append("")
+
+        if response_format == "multiple_choice":
+            responses = [clean_and_extract_multiple_choice(response) for response in responses]
 
         return responses
 

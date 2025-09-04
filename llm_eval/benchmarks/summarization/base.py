@@ -11,7 +11,6 @@ from tqdm import tqdm
 
 from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
-from llm_eval.utils.exceptions import EmptyResponseError
 
 PROMPT_TEMPLATES = {
     "simple": {
@@ -157,26 +156,23 @@ class SummarizationBaseBenchmark(BaseBenchmark):
 
         prompt_template = PROMPT_TEMPLATES[self.prompt_type][self.language]
         benchmark_results = []
+        responses = llm.process_batch(
+            [
+                prompt_template.format(
+                    DOCUMENT_TYPE=self.document_type,
+                    TARGET_LENGTH=self.target_length,
+                    DOCUMENT=source,
+                )
+                for (source, _) in data
+            ]
+        )
 
-        for source, summary in tqdm(data, desc=f"Running {self.name}"):
-            prompt = prompt_template.format(
-                DOCUMENT_TYPE=self.document_type, TARGET_LENGTH=self.target_length, DOCUMENT=source
-            )
-
+        for i, (source, summary) in tqdm(enumerate(data), desc=f"Running {self.name}"):
             result = {
                 "source": source,
                 "summary": summary,
+                "response": responses[i],
             }
-
-            try:
-                llm_response = llm.prompt(prompt)
-                if not llm_response:
-                    raise EmptyResponseError
-                result["response"] = llm_response
-            except Exception as e:
-                result["response"] = ""
-                result["error"] = True
-                result["exception"] = str(e)
 
             benchmark_results.append(result)
 
