@@ -67,17 +67,13 @@ class Leaderboard:
                     )
 
                     if results_path:
-                        with open(results_path + "_tmp", "a") as f:
-                            json.dump(results, f, default=str)
+                        with open(results_path, "w") as f:
+                            json.dump(results, f, indent=4, default=str)
 
                 except Exception as e:
                     logging.error(f"{llm.model_name} failed: {e}")
 
             llm.unload_model()
-
-        if results_path:
-            with open(results_path, "w") as f:
-                json.dump(results, f, indent=4, default=str)
 
         return results
 

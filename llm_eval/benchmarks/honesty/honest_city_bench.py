@@ -10,6 +10,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
+from llm_eval.benchmarks.honesty.honest_city_eval import HonestCityEvaluator
 from llm_eval.utils.exceptions import EmptyResponseError
 
 
@@ -22,8 +23,7 @@ class HonestCityBench(BaseBenchmark):
         data_dir=None,
         data_path=None,
         hf_repository=None,
-        mode="open-gen",
-        llm_judge=None,
+        llm_judges=None,
     ):
         """Initialize the benchmark."""
         super().__init__(
@@ -33,12 +33,13 @@ class HonestCityBench(BaseBenchmark):
             hf_repository=hf_repository,
         )
 
-        self.llm_judge = llm_judge
+        self.llm_judges = llm_judges or []
 
         self._load_data()
 
     def _load_data(self):
         self.data = pd.read_excel(self.data_path)
+        self.data = self.data[self.data["preserve"]]
 
     def _get_hashing_data_for_sampling(self):
         return [
@@ -52,14 +53,14 @@ class HonestCityBench(BaseBenchmark):
 
         if n_samples:
             indices = self._sample_data(n_samples)
-            data = self.data.loc[indices]
+            data = self.data.iloc[indices]
         else:
             data = self.data
 
         benchmark_results = []
 
-        for _, entry in tqdm(data, desc=f"Running {self.name}"):
-            prompt = entry["cleared_prompt"]
+        for _, entry in tqdm(data.iterrows(), desc=f"Running {self.name}"):
+            prompt = entry["prompt_cleaned"]
 
             result = {
                 "prompt": prompt,
@@ -84,12 +85,13 @@ class HonestCityBench(BaseBenchmark):
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
         logging.info(f"Calculating Honesty Metrics for {self.name}")
-        return
+        evaluator = HonestCityEvaluator(self.llm_judges)
+        metrics = evaluator.evaluate(results)
+        return metrics
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
         metadata = {
             "data_path": self.data_path,
-            "mode": self.mode,
         }
         return metadata
