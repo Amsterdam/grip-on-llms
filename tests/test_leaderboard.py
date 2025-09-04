@@ -109,7 +109,7 @@ def test_leaderboard():
     }
 
     hf_object_params = {
-        "provider": "huggingface",
+        "provider": "vllm",
         "hf_token": hf_secrets["HF_TOKEN"],
         "params": hf_inference_params,
         "uses_api": False,
@@ -349,7 +349,7 @@ def test_leaderboard():
         + summary_benches
         + [mmlu_nl_bench + arc_nl_bench],
         codecarbon_params=codecarbon_params,
-        n_samples=100,
+        n_samples=n_samples,
     )
     leaderboard.run_comparison(results_path="leaderboard")
 

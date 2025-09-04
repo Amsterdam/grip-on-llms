@@ -9,7 +9,6 @@ from tqdm import tqdm
 
 from llm_eval.benchmarks.metrics import tiny_scores
 from llm_eval.benchmarks.tiny_benchmarks.base import BaseTinyBenchmark
-from llm_eval.utils.exceptions import EmptyResponseError
 
 ANSWERS = {
     0: "A",
@@ -89,27 +88,18 @@ class BaseTinyMultipleChoiceBenchmark(BaseTinyBenchmark):
         prompt_template = PROMPT_TEMPLATES[self.language]
         benchmark_results = []
 
-        for input, target in tqdm(data, desc=f"Running {self.name}"):
+        responses = llm.process_batch(
+            [prompt_template.format(question=input) for input, target in data],
+            response_format=self.preferred_response_format,
+        )
+
+        for i, (input, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
             result = {
                 "input": input,
                 "target": target,
+                "response": responses[i],
             }
-
-            prompt = prompt_template.format(question=input)
-
-            try:
-                llm_response = llm.prompt(prompt, response_format=self.preferred_response_format)
-                if not llm_response:
-                    raise EmptyResponseError
-                result["response"] = llm_response
-                result["correct"] = llm_response.strip().lower() == target.strip().lower()
-            except Exception as e:
-                result["response"] = ""
-                result["error"] = True
-                result["exception"] = str(e)
-                result["correct"] = False
             benchmark_results.append(result)
-
         return benchmark_results
 
     def _calculate_metric(self, results=None):
