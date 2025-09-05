@@ -21,6 +21,7 @@ References:
 arXiv preprint arXiv:2009.03300 (2020).
 """
 import json
+from dataclasses import asdict
 
 import requests
 from tqdm import tqdm
@@ -127,16 +128,17 @@ class MMLU(BaseBenchmark):
             for entry in data
         ]
         responses = llm.process_batch(prompts, response_format=self.preferred_response_format)
+
         for i, entry in tqdm(enumerate(data), total=len(data)):
             expected_answer = entry["answer"]
+            response = asdict(responses[i])
 
             result = {
-                "prompt": prompts[i],
                 "expected": expected_answer,
-                "response": responses[i],
-                "correct": prompts[i].strip().lower() == expected_answer.strip().lower(),
+                "correct": response["processed_response"].strip().lower()
+                == expected_answer.strip().lower(),
             }
-            benchmark_results.append(result)
+            benchmark_results.append(response | result)
         return benchmark_results
 
     def _calculate_metric(self, results=None):

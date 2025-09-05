@@ -6,6 +6,7 @@ The base class handles the default templ
 
 import logging
 from abc import abstractmethod
+from dataclasses import asdict
 
 from tqdm import tqdm
 
@@ -142,13 +143,12 @@ class SimplificationBaseBenchmark(BaseBenchmark):
         )
 
         for i, (source, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+            response = asdict(responses[i])
             result = {
                 "source": source,
                 "target": target,
-                "response": responses[i],
             }
-            benchmark_results.append(result)
-
+            benchmark_results.append(response | result)
         return benchmark_results
 
     def _calculate_metric(self, results=None):

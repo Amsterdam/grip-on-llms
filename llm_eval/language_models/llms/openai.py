@@ -4,6 +4,7 @@ import logging
 from openai import AzureOpenAI
 
 from llm_eval.language_models.llms.base import BaseLLM
+from llm_eval.utils.string_utils import LLMResponse
 
 
 class OpenAILLM(BaseLLM):
@@ -29,55 +30,61 @@ class OpenAILLM(BaseLLM):
 
         return client
 
-    def _prompt(self, prompt, context=None, system=None, force_format=None):
+    def _prompt(self, prompt, context=None, system=None, force_format=None):  # noqa
         """Prompt model by optionally providing a custom system prompt or context"""
         if not self.client:
             self.client = self._get_client()
 
-        conversation = []
+        response = LLMResponse()
+        response.raw_prompt = prompt
+        try:
+            conversation = []
+            if system:
+                conversation.append({"role": "system", "content": system})
 
-        if system:
-            conversation.append({"role": "system", "content": system})
+            if context:
+                conversation.append({"role": "system", "content": context})
 
-        if context:
-            conversation.append({"role": "system", "content": context})
+            conversation.append({"role": "user", "content": prompt})
+            response.formatted_prompt = conversation
 
-        conversation.append({"role": "user", "content": prompt})
+            if force_format:
+                if force_format == "json":
+                    answer = self.client.chat.completions.create(
+                        model=self.model_name,
+                        messages=conversation,
+                        **self.params,
+                        response_format={"type": "json_object"},
+                    )
 
-        if force_format:
-            if force_format == "json":
-                response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=conversation,
-                    **self.params,
-                    response_format={"type": "json_object"},
-                )
+                # Handled by base class
+                elif force_format == "multiple_choice":
+                    answer = self.client.chat.completions.create(
+                        model=self.model_name,
+                        messages=conversation,
+                        **self.params,
+                    )
 
-            # Handled by base class
-            elif force_format == "multiple_choice":
-                response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=conversation,
-                    **self.params,
-                )
+                else:
+                    raise NotImplementedError(
+                        "Currently there is no support for special formats other than json"
+                    )
 
             else:
-                raise NotImplementedError(
-                    "Currently there is no support for special formats other than json"
+                answer = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=conversation,
+                    **self.params,
                 )
 
-        else:
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=conversation,
-                **self.params,
-            )
-
-        finish_reason = response.choices[0].finish_reason
-        if finish_reason != "stop":
-            logging.info(f"Finish reason: {finish_reason}")
-
-        return response.choices[0].message.content
+            finish_reason = answer.choices[0].finish_reason
+            if finish_reason != "stop":
+                logging.info(f"Finish reason: {finish_reason}")
+            response.raw_response = answer.choices[0].message.content
+        except Exception as e:
+            response.exception = str(e)
+            response.error = True
+        return response
 
     def unload_model(self):
         """Unload model on demand to free up memory and reduce resource usage"""
