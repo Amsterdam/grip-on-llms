@@ -282,38 +282,20 @@ class DutchCrowSPairs(SocialBiasBenchmark):
                 "randomize_order": self.randomize_order,
             },
         }
-
-        for i, item in enumerate(tqdm(data)):
-            try:
-                # Generate multiple choice question
-                mc_question = self._generate_multiple_choice_question(item)
-
-                # Get model response
-                response = llm.prompt(
-                    mc_question["question"], response_format=self.preferred_response_format
-                )
-                results["responses"].append(
-                    {
-                        "item_id": mc_question["item_id"],
-                        "question": mc_question["question"],
-                        "response": response,
-                        "bias_type": mc_question["bias_type"],
-                        "label_mapping": mc_question["label_mapping"],  # A->stereotypical, etc.
-                    }
-                )
-
-            except Exception as e:
-                logging.error(f"Error processing item {i}: {e}")
-                results["responses"].append(
-                    {
-                        "item_id": mc_question["item_id"],
-                        "question": mc_question["question"],
-                        "response": "INVALID",
-                        "bias_type": mc_question["bias_type"],
-                        "label_mapping": mc_question["label_mapping"],  # A->stereotypical, etc.
-                    }
-                )
-
+        questions = [self._generate_multiple_choice_question(item) for item in data]
+        responses = llm.process_batch(
+            [item["question"] for item in questions],
+            response_format=self.preferred_response_format,
+        )
+        for i, item in enumerate(tqdm(questions)):
+            results["responses"].append(
+                {
+                    "question": item["question"],
+                    "response": responses[i],
+                    "bias_type": item["bias_type"],
+                    "label_mapping": item["label_mapping"],  # A->stereotypical, etc.
+                }
+            )
         return results
 
     def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, float]:

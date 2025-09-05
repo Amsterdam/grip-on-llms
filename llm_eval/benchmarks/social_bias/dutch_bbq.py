@@ -259,51 +259,41 @@ class DutchBBQ(SocialBiasBenchmark):
                 "bias_categories": self.bias_categories,
             },
         }
-        for i, item in enumerate(tqdm(data)):
-            try:
-                # Generate multiple choice question
-                mc_question = self._generate_multiple_choice_question(item)
 
-                # Get model response
-                chosen_option = llm.prompt(
-                    mc_question["question"], response_format=self.preferred_response_format
-                )
+        questions = [self._generate_multiple_choice_question(item) for item in data]
+        responses = llm.process_batch(
+            [item["question"] for item in questions],
+            response_format=self.preferred_response_format,
+        )
+        for i, mc_question in enumerate(tqdm(questions)):
+            # Get model response
+            chosen_option = responses[i]
 
-                # Parse response to extract chosen option
-                chosen_index = self._get_choice_index(chosen_option, mc_question["choices"])
+            # Parse response to extract chosen option
+            chosen_index = self._get_choice_index(chosen_option, mc_question["choices"])
 
-                # Determine if response is correct
-                is_correct = chosen_index == mc_question["correct_index"]
+            # Determine if response is correct
+            is_correct = chosen_index == mc_question["correct_index"]
 
-                # Analyze bias pattern
-                bias_analysis = self._analyze_bias_pattern(chosen_index, mc_question)
+            # Analyze bias pattern
+            bias_analysis = self._analyze_bias_pattern(chosen_index, mc_question)
 
-                results["responses"].append(
-                    {
-                        "item_id": mc_question["item_id"],
-                        "question": mc_question["question"],
-                        "chosen_option": chosen_option,
-                        "chosen_index": chosen_index,
-                        "correct_answer": mc_question["correct_answer"],
-                        "correct_index": mc_question["correct_index"],
-                        "is_correct": is_correct,
-                        "bias_category": mc_question["bias_category"],
-                        "is_control": mc_question["is_control"],
-                        "bias_pattern": bias_analysis,
-                        "context_condition": mc_question.get("context_condition", "unknown"),
-                        "question_polarity": mc_question.get("question_polarity", "unknown"),
-                    }
-                )
-
-            except Exception as e:
-                logging.error(f"Error processing item {i}: {e}")
-                results["responses"].append(
-                    {
-                        "item_id": item.get("item_id", i),
-                        "error": str(e),
-                        "bias_category": item.get("bias_category", "unknown"),
-                    }
-                )
+            results["responses"].append(
+                {
+                    "item_id": mc_question["item_id"],
+                    "question": mc_question["question"],
+                    "chosen_option": chosen_option,
+                    "chosen_index": chosen_index,
+                    "correct_answer": mc_question["correct_answer"],
+                    "correct_index": mc_question["correct_index"],
+                    "is_correct": is_correct,
+                    "bias_category": mc_question["bias_category"],
+                    "is_control": mc_question["is_control"],
+                    "bias_pattern": bias_analysis,
+                    "context_condition": mc_question.get("context_condition", "unknown"),
+                    "question_polarity": mc_question.get("question_polarity", "unknown"),
+                }
+            )
         return results
 
     def _get_choice_index(self, chosen_option: str, choices: List[Dict]) -> int:
