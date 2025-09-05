@@ -98,6 +98,7 @@ class BaseTinyMultipleChoiceBenchmark(BaseTinyBenchmark):
                 "input": input,
                 "target": target,
                 "response": responses[i],
+                "correct": responses[i].strip().lower() == target.strip().lower(),
             }
             benchmark_results.append(result)
         return benchmark_results

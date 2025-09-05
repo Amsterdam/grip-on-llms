@@ -95,8 +95,6 @@ class LLMRouter:
             profile_override = model_config.get("h100_profile")
 
             vllm_config = get_optimal_vllm_config(model_id, profile_override=profile_override)
-            profile_used = vllm_config.get("_profile_name", "auto")
-            logging.info(f"Using H100 profile '{profile_used}' for {model_name}")
 
             # Override with user-specified parameters
             if gpu_memory_utilization is not None:

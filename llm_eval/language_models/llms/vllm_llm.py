@@ -59,7 +59,7 @@ class VLLMLlm(BaseLLM):
         self.vllm_config = vllm_config or {}  # Store H100 configuration
         self.model_config = MODEL_MAPPING[self.model_name]
 
-    def _load_model(self, pause_tracker: bool = True):
+    def _load_model(self, pause_tracker: bool = True):  # noqa
         """Load model using vLLM."""
         logging.info(f"Loading {self.model_name} with vLLM")
         if self.tracker and pause_tracker:
@@ -69,7 +69,15 @@ class VLLMLlm(BaseLLM):
             raise UnsupportedModelError(self.model_name, MODEL_MAPPING.keys())
 
         model_id = self.model_config["id"]
+
         loading_kwargs = self.model_config["kwargs"].get("loading", {})
+        self.template_kwargs = self.model_config["kwargs"].get("template", {})
+        if self.template_kwargs:
+            self.tokenizer = get_tokenizer(model_id)
+
+        if "mistral" in model_id.lower():
+            loading_kwargs["tokenizer_mode"] = "mistral"
+
         self.system_prompt = loading_kwargs.pop("system_prompt", None)
 
         # Start with H100-optimized configuration
@@ -108,7 +116,6 @@ class VLLMLlm(BaseLLM):
         vllm_kwargs = {k: v for k, v in vllm_kwargs.items() if v is not None}
 
         self.model = LLM(**vllm_kwargs)
-        self.tokenizer = get_tokenizer(model_id, tokenizer_mode="auto")
 
         if self.tracker and pause_tracker:
             self.tracker.start()
@@ -165,26 +172,20 @@ class VLLMLlm(BaseLLM):
         Returns:
             Formatted prompt string
         """
-        # Build conversation
-        if self.system_prompt:
-            conversation = [{"role": "system", "content": self.system_prompt}]
+        if self.template_kwargs:
+            if self.system_prompt:
+                conversation = [{"role": "system", "content": self.system_prompt}]
+            else:
+                conversation = []
+            conversation.append({"role": "user", "content": prompt})
+            formatted_prompt = self.tokenizer.apply_chat_template(
+                conversation, tokenize=False, add_generation_prompt=True, **self.template_kwargs
+            )
+            return formatted_prompt
         else:
-            conversation = []
-        conversation.append({"role": "user", "content": prompt})
-
-        # Try to use tokenizer's chat template
-        if hasattr(self.tokenizer, "apply_chat_template"):
-            try:
-                template_kwargs = self.model_config["kwargs"].get("template", {})
-                formatted_prompt = self.tokenizer.apply_chat_template(
-                    conversation,
-                    tokenize=False,
-                    add_generation_prompt=True,
-                    **template_kwargs,
-                )
-                return formatted_prompt
-            except Exception as e:
-                raise Exception(f"Failed to apply chat template: {e}")
+            if self.system_prompt:
+                prompt = self.system_promt + "\n\n" + prompt
+            return prompt
 
     def _prompt(
         self,
@@ -214,7 +215,7 @@ class VLLMLlm(BaseLLM):
         # Create sampling parameters
         sampling_params = self._create_sampling_params()
         # Generate response
-        outputs = self.model.generate([formatted_prompt], sampling_params)
+        outputs = self.model.generate(formatted_prompt, sampling_params)
 
         if not outputs or not outputs[0].outputs:
             return ""
@@ -227,7 +228,7 @@ class VLLMLlm(BaseLLM):
     def process_batch(  # noqa Overwrite base function
         self,
         prompts: List[str],
-        batch_size: int,
+        batch_size: Optional[int] = None,
         context: Optional[str] = None,
         system: Optional[str] = None,
         response_format: Optional[str] = None,
@@ -258,7 +259,6 @@ class VLLMLlm(BaseLLM):
         # Generate responses in batch
         if batch_size is None:
             outputs = self.model.generate(formatted_prompts, sampling_params)
-        else:
             outputs = []
             batch = []
             for prompt in formatted_prompts:

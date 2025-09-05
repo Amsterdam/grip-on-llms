@@ -126,9 +126,7 @@ class MMLU(BaseBenchmark):
             )
             for entry in data
         ]
-        responses = llm.process_batch(
-            prompts, preferred_response_format=self.preferred_response_format
-        )
+        responses = llm.process_batch(prompts, response_format=self.preferred_response_format)
         for i, entry in tqdm(enumerate(data), total=len(data)):
             expected_answer = entry["answer"]
 

@@ -151,6 +151,7 @@ def test_leaderboard():
         model_name="llama-3.3-70b-instruct",
         **hf_object_params,
     )
+    llama_quantized = LLMRouter.get_model(model_name="Llama-3.3-70B-quantized", **hf_object_params)
 
     phi = LLMRouter.get_model(
         model_name="phi-4-mini-instruct",
@@ -227,7 +228,7 @@ def test_leaderboard():
         target_lang="NL",
     )
 
-    n_samples = 100
+    n_samples = 25
 
     simple_benches = []
 
@@ -263,7 +264,7 @@ def test_leaderboard():
     # for prompt_type in ["detailed", "simple"]:
     for prompt_type in ["detailed"]:
         # for language in ["NL", "EN"]
-        for sum_lang in ["NL"]:
+        for sum_lang in ["EN"]:
             bench_name = "CNNDailyMail"
             data_dir = Path(benchmark_data_folder) / bench_name
             summary_benches.append(
@@ -292,7 +293,7 @@ def test_leaderboard():
 
     tiny_benches = []
 
-    tiny_benches_lang = "NL"
+    tiny_benches_lang = "EN"
 
     tiny_benches.append(
         TinyMMLU(
@@ -330,6 +331,7 @@ def test_leaderboard():
             mistral_large_quantized,
             llama,
             llama_large,
+            llama_quantized,
             gpt_4o,
             gpt_4o_mini,
             falcon,
@@ -344,10 +346,7 @@ def test_leaderboard():
             gemma_small,
             gemma_large,
         ],
-        benchmarks=tiny_benches
-        + simple_benches
-        + summary_benches
-        + [mmlu_nl_bench + arc_nl_bench],
+        benchmarks=tiny_benches + simple_benches + summary_benches + [mmlu_nl_bench, arc_nl_bench],
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )
