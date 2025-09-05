@@ -8,11 +8,11 @@ Understanding and measuring bias is particularly important for municipal AI appl
 Current Benchmarks
 -----------------------
 
-We've implemented bias evaluation using both translated international benchmarks and locally developed datasets specifically designed for Dutch municipal contexts:
+We've implemented bias evaluation using both translated international benchmarks and locally developed datasets specifically designed for Dutch municipal contexts. We use these ones, since these are the only one existing at this point to our knowledge:
 
 - **[BZK Social Bias](https://github.com/renateburema/master_thesis):** A specialized benchmark developed by Renate Burema for the Ministry of the Interior and Kingdom Relations (BZK). This benchmark evaluates bias in AI-assisted hiring processes, focusing on discrimination based on origin (nationality) and gender within Dutch employment contexts [1]. The benchmark uses job application scenarios to measure how models respond to candidates from different demographic backgrounds.
 
-- **[Dutch CrowdPairs](https://arxiv.org/abs/2507.16442):** Dutch adaptation of the CrowdPairs methodology for measuring social bias through sentence comparison tasks [2, 3]. This benchmark presents pairs of sentences containing stereotypical vs. anti-stereotypical content across multiple bias dimensions including race, gender, religion, age, nationality, sexual orientation, physical appearance, and socioeconomic status. The benchmark asks models to determine which sentence is more likely to occur in daily life.
+- **[Dutch CrowS-Pairs](https://arxiv.org/abs/2507.16442):** Dutch adaptation of the CrowS-Pairs methodology for measuring social bias through sentence comparison tasks [2, 3]. This benchmark presents pairs of sentences containing stereotypical vs. anti-stereotypical content across multiple bias dimensions including race, gender, religion, age, nationality, sexual orientation, physical appearance, and socioeconomic status. The benchmark asks models to determine which sentence is more likely to occur in daily life.
 
 - **[Dutch BBQ (BiasQA)](https://arxiv.org/pdf/2406.07243):** Dutch version of the BiasQA benchmark that evaluates social biases through contextual question answering [4, 5]. This benchmark presents ambiguous scenarios followed by questions that could reveal biased assumptions about different demographic groups. The benchmark measures whether language models make stereotypical inferences when information is incomplete, focusing on age, disability status, gender identity, physical appearance, socioeconomic status, and sexual orientation.
 
@@ -30,9 +30,9 @@ The BZK benchmark simulates hiring scenarios where models must decide whether to
 
 **Target Variable:** Binary hiring decision ("aangenomen" vs "afgewezen")
 
-### Dutch CrowdPairs Implementation
+### Dutch CrowS-Pairs Implementation
 
-The Dutch CrowdPairs benchmark uses a multiple-choice format to evaluate bias preferences:
+The Dutch CrowS-Pairs benchmark uses a multiple-choice format to evaluate bias preferences:
 
 **Design Choices:**
 - Multiple-choice questions asking "which sentence is most likely to occur in daily life?"
@@ -111,7 +111,7 @@ We implement comprehensive fairness metrics adapted from algorithmic bias litera
 **Comprehensive Bias Metrics:**
 - Individual bias scores for each protected attribute
 
-### Dutch CrowdPairs Metrics
+### Dutch CrowS-Pairs Metrics
 
 **Primary Evaluation:**
 
@@ -194,7 +194,7 @@ weights = {
 | <img src="https://readme-swatches.vercel.app/BED200?style=circle" width="20" height="20" alt="Lime Circle"> | 80-90   | High       | Good fairness across most metrics |
 | <img src="https://readme-swatches.vercel.app/00A03C?style=circle" width="20" height="20" alt="Green Circle"> | 90-100   | Very High  | Excellent fairness, minimal bias detected |
 
-For Dutch CrowdPairs, scoring is based on proximity to 50% (no preference):
+For Dutch CrowS-Pairs, scoring is based on proximity to 50% (no preference):
 
 |           | Bias Score Range  | Level     | Interpretation |
 |-----------|:------------------|:----------|:---------------|
