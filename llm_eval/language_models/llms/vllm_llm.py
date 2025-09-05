@@ -11,7 +11,11 @@ from vllm.transformers_utils.tokenizer import get_tokenizer
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.utils.exceptions import UnsupportedModelError
-from llm_eval.utils.string_utils import clean_and_extract_multiple_choice
+from llm_eval.utils.string_utils import (
+    LLMResponse,
+    clean_and_extract_multiple_choice,
+    clean_and_extract_open_text_answers,
+)
 
 
 class VLLMLlm(BaseLLM):
@@ -193,7 +197,7 @@ class VLLMLlm(BaseLLM):
         context: Optional[str] = None,
         system: Optional[str] = None,
         response_format: Optional[str] = None,
-    ) -> str:
+    ) -> LLMResponse:
         """
         Prompt model using vLLM.
 
@@ -209,8 +213,11 @@ class VLLMLlm(BaseLLM):
         if not self.model:
             self._load_model(pause_tracker=True)
 
+        response = LLMResponse()
+        response.raw_prompt = prompt
         # Format the prompt
         formatted_prompt = self._format_prompt(prompt)
+        response.formatted_prompt = formatted_prompt
 
         # Create sampling parameters
         sampling_params = self._create_sampling_params()
@@ -218,11 +225,12 @@ class VLLMLlm(BaseLLM):
         outputs = self.model.generate(formatted_prompt, sampling_params)
 
         if not outputs or not outputs[0].outputs:
-            return ""
+            response.error = True
+            response.exception = "Empty response"
+            return response
 
         # Extract the generated text
-        response = outputs[0].outputs[0].text
-
+        response.raw_response = outputs[0].outputs[0].text
         return response
 
     def process_batch(  # noqa Overwrite base function
@@ -232,7 +240,7 @@ class VLLMLlm(BaseLLM):
         context: Optional[str] = None,
         system: Optional[str] = None,
         response_format: Optional[str] = None,
-    ):
+    ) -> List[LLMResponse]:
         """
         Generate responses for multiple prompts in a batch.
 
@@ -259,6 +267,7 @@ class VLLMLlm(BaseLLM):
         # Generate responses in batch
         if batch_size is None:
             outputs = self.model.generate(formatted_prompts, sampling_params)
+        else:
             outputs = []
             batch = []
             for prompt in formatted_prompts:
@@ -275,15 +284,24 @@ class VLLMLlm(BaseLLM):
 
         # Extract responses
         responses = []
-        for output in outputs:
+        for i, output in enumerate(outputs):
+            response = LLMResponse()
+            response.raw_response = prompts[i]
+            response.formatted_prompt = formatted_prompts[i]
             if output.outputs:
-                responses.append(output.outputs[0].text)
+                response.raw_response = output.outputs[0].text
+                if response_format == "multiple_choice":
+                    response.processed_response = clean_and_extract_multiple_choice(
+                        response.raw_response
+                    )
+                else:
+                    response.processed_response = clean_and_extract_open_text_answers(
+                        response.raw_response
+                    )
             else:
-                responses.append("")
-
-        if response_format == "multiple_choice":
-            responses = [clean_and_extract_multiple_choice(response) for response in responses]
-
+                response.error = True
+                response.exception = "Empty response"
+            responses.append(response)
         return responses
 
     def unload_model(self):

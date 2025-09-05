@@ -34,6 +34,7 @@ arXiv preprint arXiv:2402.14992 (2024).
 """
 import logging
 from abc import abstractmethod
+from dataclasses import asdict
 
 from datasets import load_dataset
 from tqdm import tqdm
@@ -197,14 +198,9 @@ class BaseTinyBenchmark(BaseBenchmark):
             [input for input, target in data], response_format=self.preferred_response_format
         )
 
-        for i, (input, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
-            result = {
-                "input": input,
-                "target": target,
-                "response": responses[i],
-            }
+        for i, (_, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+            result = asdict(responses[i]) | {"target": target}
             benchmark_results.append(result)
-
         return benchmark_results
 
     @abstractmethod

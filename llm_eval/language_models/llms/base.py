@@ -4,10 +4,12 @@ Currently supports the OpenAI models on Azure
 as well as some HuggingFace models.
 """
 from abc import abstractmethod
+from typing import List
 
 from codecarbon import OfflineEmissionsTracker
 
 from llm_eval.utils.string_utils import (
+    LLMResponse,
     clean_and_extract_multiple_choice,
     clean_and_extract_open_text_answers,
 )
@@ -29,7 +31,7 @@ class BaseLLM:
         self.tracker = None
         self.uses_api = uses_api
 
-    def prompt(self, prompt, context=None, system=None, response_format=None):
+    def prompt(self, prompt, context=None, system=None, response_format=None) -> LLMResponse:
         """Starts and stops code carbon tracker, and gets response from model."""
         # Start carbon tracker
         if self.tracker:
@@ -44,9 +46,9 @@ class BaseLLM:
 
         # If a specific format is desired, post-process accordingly
         if response_format == "multiple_choice":
-            response = clean_and_extract_multiple_choice(response)
+            response.processed_response = clean_and_extract_multiple_choice(response)
         else:
-            response = clean_and_extract_open_text_answers(response)
+            response.processed_response = clean_and_extract_open_text_answers(response)
 
         return response
 
@@ -74,29 +76,12 @@ class BaseLLM:
 
     def process_batch(
         self, prompts, batch_size=None, context=None, system=None, response_format=None
-    ):
+    ) -> List[LLMResponse]:
         """Process a batch of prompts"""
-        if not batch_size:
-            return [self.prompt(prompt, context, system, response_format) for prompt in prompts]
-        else:
-            batch = []
-            responses = []
-            for prompt in prompts:
-                batch.append(prompt)
-                if len(batch) == batch_size:
-                    responses += [
-                        self.prompt(prompt, context, system, response_format) for prompt in batch
-                    ]
-                    batch = []
-        # flush
-        if batch:
-            responses += [
-                self.prompt(prompt, context, system, response_format) for prompt in batch
-            ]
-        return responses
+        return [self.prompt(prompt, context, system, response_format) for prompt in prompts]
 
     @abstractmethod
-    def _prompt(self, prompt, context=None, system=None, response_format=None):
+    def _prompt(self, prompt, context=None, system=None, response_format=None) -> LLMResponse:
         """Function to prompt model should always be implemented"""
         raise NotImplementedError("Implement _prompt function")
 

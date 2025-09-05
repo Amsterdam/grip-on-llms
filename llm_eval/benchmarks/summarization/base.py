@@ -6,6 +6,7 @@ The base class handles the default templating, calculating metrics, etc.
 
 import logging
 from abc import abstractmethod
+from dataclasses import asdict
 
 from tqdm import tqdm
 
@@ -168,13 +169,13 @@ class SummarizationBaseBenchmark(BaseBenchmark):
         )
 
         for i, (source, summary) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+            response = asdict(responses[i])
             result = {
                 "source": source,
                 "summary": summary,
-                "response": responses[i],
             }
 
-            benchmark_results.append(result)
+            benchmark_results.append(response | result)
 
         return benchmark_results
 

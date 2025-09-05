@@ -5,6 +5,8 @@ This is the implementation of common functionality such as
 templating the question and corresponding A/B/C/D answers,
 as well as running the task itself and calculating metrics.
 """
+from dataclasses import asdict
+
 from tqdm import tqdm
 
 from llm_eval.benchmarks.metrics import tiny_scores
@@ -93,14 +95,14 @@ class BaseTinyMultipleChoiceBenchmark(BaseTinyBenchmark):
             response_format=self.preferred_response_format,
         )
 
-        for i, (input, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+        for i, (_, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+            response = asdict(responses[i]) | {"target": target}
             result = {
-                "input": input,
                 "target": target,
-                "response": responses[i],
-                "correct": responses[i].strip().lower() == target.strip().lower(),
+                "correct": response["processed_response"].strip().lower()
+                == target.strip().lower(),
             }
-            benchmark_results.append(result)
+            benchmark_results.append(response | result)
         return benchmark_results
 
     def _calculate_metric(self, results=None):

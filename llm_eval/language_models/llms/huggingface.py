@@ -9,6 +9,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.utils.exceptions import UnsupportedModelError
+from llm_eval.utils.string_utils import LLMResponse
 
 torch._dynamo.disable()
 
@@ -63,11 +64,14 @@ class HuggingFaceLLM(BaseLLM):
         if not self.model:
             self._load_model(pause_tracker=True)
 
+        response = LLMResponse()
+        response.raw_prompt = prompt
         if self.system_prompt:
             conversation = [{"role": "system", "content": self.system_prompt}]
         else:
             conversation = []
         conversation.append([{"role": "user", "content": prompt}])
+        response.formatted_prompt = conversation
 
         template_kwargs = self.model_config["kwargs"].get("template", {})
 
@@ -89,10 +93,10 @@ class HuggingFaceLLM(BaseLLM):
             # return_full_text=False,
             **self.params,
         )
-        response = self.tokenizer.decode(
+        output_text = self.tokenizer.decode(
             output[0][input_ids.shape[-1] :], skip_special_tokens=True
         )
-
+        response.raw_prompt = output_text
         return response
 
     def unload_model(self):
