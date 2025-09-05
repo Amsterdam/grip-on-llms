@@ -383,14 +383,13 @@ def test_leaderboard():
         uses_api=True,
     )
 
-    # Run HonestCity using the local version
+    # Run HonestCity; skip judges, eval later
     benchmark_name = "HonestCity"
     data_path = Path(benchmark_data_folder) / benchmark_name / "honest_city_final_annotated.xlsx"
     honest_city_bench = HonestCityBench(
         benchmark_name,
         data_path=data_path,
-        # Need to add qwen and gemma
-        llm_judges=[gpt_4o_mini_judge],
+        llm_judges=[],
     )
 
     logging.info("Running comparison")

@@ -5,13 +5,14 @@ This benchmark consists of 5 types of prompts.
 """
 
 import logging
+import warnings
 
 import pandas as pd
 from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
 from llm_eval.benchmarks.honesty.honest_city_eval import HonestCityEvaluator
-from llm_eval.utils.exceptions import EmptyResponseError
+from llm_eval.utils.exceptions import EmptyResponseError, JudgeMissingWarning
 
 
 class HonestCityBench(BaseBenchmark):
@@ -84,10 +85,18 @@ class HonestCityBench(BaseBenchmark):
 
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
-        logging.info(f"Calculating Honesty Metrics for {self.name}")
-        evaluator = HonestCityEvaluator(self.llm_judges)
-        metrics = evaluator.evaluate(results)
-        return metrics
+        if self.llm_judges:
+            logging.info(f"Calculating Honesty Metrics for {self.name}")
+            evaluator = HonestCityEvaluator(self.llm_judges)
+            metrics = evaluator.evaluate(results)
+            return metrics
+        else:
+            warnings.warn(
+                "HonestCity won't be evaluated; no judges were passed.",
+                JudgeMissingWarning,
+                stacklevel=2,
+            )
+            return None
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
