@@ -9,6 +9,14 @@ class EmptyResponseError(Exception):
         super().__init__(self.message)
 
 
+class ParsingError(Exception):
+    """Exception raised when parsing failed and a specific pattern wasn't found."""
+
+    def __init__(self, message="Parsing failed. Specific pattern wasn't found."):
+        self.message = message
+        super().__init__(self.message)
+
+
 class UnsupportedModelError(Exception):
     """Exception raised for unsupported models."""
 
@@ -38,3 +46,11 @@ class TranslatorMissingError(ValueError):
         if self.language:
             error_msg += f"Ensure {self.language} support"
         return error_msg
+
+
+class JudgeMissingWarning(Warning):
+    """Warning issued when judges were not provided for a benchmark using llm-based eval."""
+
+    def __init__(self, message="No judges provided at task running time."):
+        self.message = message
+        super().__init__(self.message)
