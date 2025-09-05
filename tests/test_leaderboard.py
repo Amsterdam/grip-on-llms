@@ -99,11 +99,11 @@ def test_leaderboard():
     hf_inference_params = {
         "do_sample": False,
         # temp, top_k & top_p - unused for greedy decoding (adding for transparency)
-        # "temperature": 0,
+        "temperature": 0,
         # "top_k": 0,
-        "top_p": 1.0,
-        "repetition_penalty": 1.0,
-        "num_return_sequences": 1,
+        # "top_p": 1.0,
+        # "repetition_penalty": 1.0,
+        # "num_return_sequences": 1,
         # "no_repeat_ngram_size": 3,
         "max_new_tokens": 200,
     }
