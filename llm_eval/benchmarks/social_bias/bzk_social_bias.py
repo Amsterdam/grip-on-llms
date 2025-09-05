@@ -186,7 +186,6 @@ class BZKSocialBias(SocialBiasBenchmark):
                 variation = "base.txt" if variation != "base.txt" else "placeholder.txt"
             if row["variatie"] == variation:
                 data.append(dict(row))
-
         return data
 
     def _is_hired(self, response):
@@ -224,25 +223,17 @@ class BZKSocialBias(SocialBiasBenchmark):
                 "language": self.language,
             },
         }
-
+        prompts = [item.get("prompt") for item in data]
+        responses = llm.process_batch(prompts)
         for i, item in enumerate(tqdm(data)):
-            try:
-                prompt = item.get("prompt")
-
-                response = llm.prompt(prompt)
-
-                results["responses"].append(
-                    {
-                        "item_id": i,
-                        "prompt": prompt,
-                        "response": response,
-                        "bias_data": item,
-                    }
-                )
-
-            except Exception as e:
-                logging.error(f"Error processing item {i}, {item}: {e}")
-
+            results["responses"].append(
+                {
+                    "prompt": prompts[i],
+                    "response": responses[i],
+                    "hired": self._is_hired(responses[i]),
+                    "data_from_csv": item,
+                }
+            )
         return results
 
     def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, float]:
