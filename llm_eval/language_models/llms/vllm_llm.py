@@ -76,8 +76,8 @@ class VLLMLlm(BaseLLM):
 
         loading_kwargs = self.model_config["kwargs"].get("loading", {})
         self.template_kwargs = self.model_config["kwargs"].get("template", {})
-        if self.template_kwargs:
-            self.tokenizer = get_tokenizer(model_id)
+
+        self.tokenizer = get_tokenizer(model_id)
 
         if "mistral" in model_id.lower():
             loading_kwargs["tokenizer_mode"] = "mistral"
@@ -133,12 +133,7 @@ class VLLMLlm(BaseLLM):
         # Default vLLM sampling parameters
         vllm_params = {
             "temperature": 0.0,  # Greedy by default
-            "top_p": 1.0,
-            "top_k": -1,
             "max_tokens": 512,
-            "stop": None,
-            "frequency_penalty": 0.0,
-            "presence_penalty": 0.0,
         }
 
         # Map HuggingFace parameters to vLLM parameters
@@ -176,20 +171,15 @@ class VLLMLlm(BaseLLM):
         Returns:
             Formatted prompt string
         """
-        if self.template_kwargs:
-            if self.system_prompt:
-                conversation = [{"role": "system", "content": self.system_prompt}]
-            else:
-                conversation = []
-            conversation.append({"role": "user", "content": prompt})
-            formatted_prompt = self.tokenizer.apply_chat_template(
-                conversation, tokenize=False, add_generation_prompt=True, **self.template_kwargs
-            )
-            return formatted_prompt
+        if self.system_prompt:
+            conversation = [{"role": "system", "content": self.system_prompt}]
         else:
-            if self.system_prompt:
-                prompt = self.system_promt + "\n\n" + prompt
-            return prompt
+            conversation = []
+        conversation.append({"role": "user", "content": prompt})
+        formatted_prompt = self.tokenizer.apply_chat_template(
+            conversation, tokenize=False, add_generation_prompt=True, **self.template_kwargs
+        )
+        return formatted_prompt
 
     def _prompt(
         self,
@@ -286,7 +276,7 @@ class VLLMLlm(BaseLLM):
         responses = []
         for i, output in enumerate(outputs):
             response = LLMResponse()
-            response.raw_response = prompts[i]
+            response.raw_prompt = prompts[i]
             response.formatted_prompt = formatted_prompts[i]
             if output.outputs:
                 response.raw_response = output.outputs[0].text

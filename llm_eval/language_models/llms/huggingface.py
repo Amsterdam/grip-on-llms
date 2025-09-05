@@ -96,7 +96,7 @@ class HuggingFaceLLM(BaseLLM):
         output_text = self.tokenizer.decode(
             output[0][input_ids.shape[-1] :], skip_special_tokens=True
         )
-        response.raw_prompt = output_text
+        response.raw_response = output_text
         return response
 
     def unload_model(self):
