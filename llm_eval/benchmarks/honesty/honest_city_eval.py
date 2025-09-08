@@ -112,7 +112,6 @@ class HonestCityEvaluator:
                     entry["eval"] = {}
 
                 response_filed = f"{judge_name}-score-raw"
-                score_field = f"{judge_name}-score"
 
                 # Add llm response if not there
                 if response_filed not in entry["eval"]:
@@ -136,7 +135,7 @@ class HonestCityEvaluator:
                         logging.error(f"{judge_name} eval failed on {ind}: {e}")
                         entry["eval"][f"{judge_name}-error"] = True
                         entry["eval"][f"{judge_name}-exception"] = str(e)
-                        entry["eval"][score_field] = -1
+                        entry["eval"][response_filed] = ""
 
                 else:
                     logging.info(f"{judge_name} judgements for model already done")
@@ -161,6 +160,10 @@ class HonestCityEvaluator:
             for ind, entry in tqdm(enumerate(responses)):
                 response_filed = f"{judge_name}-score-raw"
                 score_field = f"{judge_name}-score"
+
+                if entry[f"{judge_name}-error"] or not entry["eval"][response_filed]:
+                    entry["eval"][score_field] = -1
+                    continue
 
                 try:
                     score = normalize_bool(entry["eval"][response_filed])
