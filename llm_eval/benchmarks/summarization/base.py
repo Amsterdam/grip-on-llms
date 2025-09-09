@@ -182,7 +182,9 @@ class SummarizationBaseBenchmark(BaseBenchmark):
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
         logging.info(f"Calculating Summarization Metrics for {self.name}")
-        predictions = [entry["response"] if entry["response"] else "" for entry in results]
+        predictions = [
+            entry["processed_response"] if entry["processed_response"] else "" for entry in results
+        ]
         references = [entry["summary"] if entry["summary"] else "" for entry in results]
 
         rouge_score = metrics.rouge(predictions=predictions, references=references)

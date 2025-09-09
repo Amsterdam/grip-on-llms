@@ -154,7 +154,7 @@ class SimplificationBaseBenchmark(BaseBenchmark):
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
         logging.info(f"Calculating Simplification Metrics for {self.name}")
-        predictions = [entry["response"] for entry in results]
+        predictions = [entry["processed_response"] for entry in results]
         sources = [entry["source"] for entry in results]
         references = [entry["target"] for entry in results]
 
