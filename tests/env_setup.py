@@ -1,4 +1,5 @@
 """Setup key vault connection and azure authentication"""
+
 import json
 import logging
 import os
@@ -32,7 +33,10 @@ key_vault = KeyVault(kv_uri, azure_credential)
 
 # Change HuggingFace cache to shared storage account folder
 hf_cache = key_vault.get_secret("gp-hf-cache")
+vllm_cache = key_vault.get_secret("gp-vllm-cache")
+
 os.environ["HF_HOME"] = hf_cache
+os.environ["VLLM_CACHE_ROOT"] = vllm_cache
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -54,7 +58,10 @@ def get_hf_secrets():
     hf_token_key = f"hf-token-{key_vault_name}"
     hf_token = key_vault.get_secret(hf_token_key)
 
-    return {"HF_TOKEN": hf_token}
+    return {
+        "HF_TOKEN": hf_token,
+        "HF_CACHE": hf_cache,  # Include cache path from global variable
+    }
 
 
 def get_gpt_secrets():

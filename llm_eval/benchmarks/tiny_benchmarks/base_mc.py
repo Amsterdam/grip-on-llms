@@ -5,11 +5,12 @@ This is the implementation of common functionality such as
 templating the question and corresponding A/B/C/D answers,
 as well as running the task itself and calculating metrics.
 """
+from dataclasses import asdict
+
 from tqdm import tqdm
 
 from llm_eval.benchmarks.metrics import tiny_scores
 from llm_eval.benchmarks.tiny_benchmarks.base import BaseTinyBenchmark
-from llm_eval.utils.exceptions import EmptyResponseError
 
 ANSWERS = {
     0: "A",
@@ -89,27 +90,19 @@ class BaseTinyMultipleChoiceBenchmark(BaseTinyBenchmark):
         prompt_template = PROMPT_TEMPLATES[self.language]
         benchmark_results = []
 
-        for input, target in tqdm(data, desc=f"Running {self.name}"):
+        responses = llm.process_batch(
+            [prompt_template.format(question=input) for input, target in data],
+            response_format=self.preferred_response_format,
+        )
+
+        for i, (_, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+            response = asdict(responses[i]) | {"target": target}
             result = {
-                "input": input,
                 "target": target,
+                "correct": response["processed_response"].strip().lower()
+                == target.strip().lower(),
             }
-
-            prompt = prompt_template.format(question=input)
-
-            try:
-                llm_response = llm.prompt(prompt, response_format=self.preferred_response_format)
-                if not llm_response:
-                    raise EmptyResponseError
-                result["response"] = llm_response
-                result["correct"] = llm_response.strip().lower() == target.strip().lower()
-            except Exception as e:
-                result["response"] = ""
-                result["error"] = True
-                result["exception"] = str(e)
-                result["correct"] = False
-            benchmark_results.append(result)
-
+            benchmark_results.append(response | result)
         return benchmark_results
 
     def _calculate_metric(self, results=None):

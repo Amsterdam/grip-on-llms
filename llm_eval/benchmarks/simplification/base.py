@@ -6,12 +6,12 @@ The base class handles the default templ
 
 import logging
 from abc import abstractmethod
+from dataclasses import asdict
 
 from tqdm import tqdm
 
 from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
-from llm_eval.utils.exceptions import EmptyResponseError
 
 PROMPT_TEMPLATES = {
     "simple": {
@@ -135,34 +135,26 @@ class SimplificationBaseBenchmark(BaseBenchmark):
         prompt_template = PROMPT_TEMPLATES[self.prompt_type][self.language]
         benchmark_results = []
 
-        for source, target in tqdm(data, desc=f"Running {self.name}"):
-            prompt = prompt_template.format(
-                GRANULARITY=self.granularity, LEVEL=self.level, TEXT=source
-            )
+        responses = llm.process_batch(
+            [
+                prompt_template.format(GRANULARITY=self.granularity, LEVEL=self.level, TEXT=source)
+                for source, target in data
+            ]
+        )
 
+        for i, (source, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+            response = asdict(responses[i])
             result = {
                 "source": source,
                 "target": target,
             }
-
-            try:
-                llm_response = llm.prompt(prompt)
-                if not llm_response:
-                    raise EmptyResponseError
-                result["response"] = llm_response
-            except Exception as e:
-                result["response"] = ""
-                result["error"] = True
-                result["exception"] = str(e)
-
-            benchmark_results.append(result)
-
+            benchmark_results.append(response | result)
         return benchmark_results
 
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
         logging.info(f"Calculating Simplification Metrics for {self.name}")
-        predictions = [entry["response"] for entry in results]
+        predictions = [entry["processed_response"] for entry in results]
         sources = [entry["source"] for entry in results]
         references = [entry["target"] for entry in results]
 

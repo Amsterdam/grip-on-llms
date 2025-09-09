@@ -31,12 +31,12 @@ arXiv preprint arXiv:1803.05457 (2018).
 """
 
 import json
+from dataclasses import asdict
 
 import requests
 from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
-from llm_eval.utils.exceptions import EmptyResponseError
 
 prompt_template = (
     # "The following is a multiple choice question.\n"
@@ -132,36 +132,28 @@ class ARC(BaseBenchmark):
             data = self.data
 
         benchmark_results = []
-        for entry in tqdm(data):
-            prompt = prompt_template.format(
+        prompts = [
+            prompt_template.format(
                 instruction=entry["instruction"],
                 option_a=entry["option_a"],
                 option_b=entry["option_b"],
                 option_c=entry["option_c"],
                 option_d=entry["option_d"],
             )
+            for entry in data
+        ]
+        responses = llm.process_batch(prompts, response_format=self.preferred_response_format)
 
+        for i, entry in tqdm(enumerate(data), total=len(data)):
             expected_answer = entry["answer"]
-
+            response = asdict(responses[i])
             result = {
-                "prompt": prompt,
                 "expected": expected_answer,
+                "correct": response["processed_response"].strip().lower()
+                == expected_answer.strip().lower(),
             }
 
-            try:
-                llm_response = llm.prompt(prompt, response_format=self.preferred_response_format)
-                if not llm_response:
-                    raise EmptyResponseError
-                result["response"] = llm_response
-                result["correct"] = llm_response.strip().lower() == expected_answer.strip().lower()
-            except Exception as e:
-                result["response"] = ""
-                result["error"] = True
-                result["exception"] = str(e)
-                result["correct"] = False
-
-            benchmark_results.append(result)
-
+            benchmark_results.append(response | result)
         return benchmark_results
 
     def _calculate_metric(self, results=None):

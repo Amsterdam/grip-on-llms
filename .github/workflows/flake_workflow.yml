@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: [3.11]
 
     steps:
     - uses: actions/checkout@v3
@@ -26,10 +26,38 @@ jobs:
         curl -sSL https://install.python-poetry.org | python3 -
         export PATH="$HOME/.local/bin:$PATH"
 
+    - name: Free up disk space
+      run: |
+        echo "Before cleanup:"
+        df -h
+        
+        # Remove Android SDK (~12GB) - usually the biggest
+        sudo rm -rf /usr/local/lib/android
+        
+        # Remove CodeQL (~6GB)
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        
+        # Remove Haskell GHC (~2.5GB)
+        sudo rm -rf /opt/ghc
+        
+        # Remove Java JDKs (~2GB)
+        sudo rm -rf /usr/lib/jvm/*
+        
+        # Remove .NET (~1.7GB)
+        sudo rm -rf /usr/share/dotnet
+        
+        # Clean apt cache
+        sudo apt-get clean
+        
+        echo "After cleanup:"
+        df -h
+
     - name: Cache Poetry dependencies
       uses: actions/cache@v4
       with:
-        path: .venv
+        path: |
+          .venv
+          ~/.cache/pypoetry
         key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
         restore-keys: |
           ${{ runner.os }}-poetry-

@@ -34,12 +34,13 @@ arXiv preprint arXiv:2402.14992 (2024).
 """
 import logging
 from abc import abstractmethod
+from dataclasses import asdict
 
 from datasets import load_dataset
 from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
-from llm_eval.utils.exceptions import EmptyResponseError, TranslatorMissingError
+from llm_eval.utils.exceptions import TranslatorMissingError
 
 TRANSLATE_PROMPT = (
     "Below is a formatted prompt for an LLM benchmark.\n"
@@ -193,23 +194,13 @@ class BaseTinyBenchmark(BaseBenchmark):
 
         benchmark_results = []
 
-        for input, target in tqdm(data, desc=f"Running {self.name}"):
-            result = {
-                "input": input,
-                "target": target,
-            }
-            try:
-                llm_response = llm.prompt(input, response_format=self.preferred_response_format)
-                if not llm_response:
-                    raise EmptyResponseError
-                result["response"] = llm_response
-            except Exception as e:
-                result["response"] = ""
-                result["error"] = True
-                result["exception"] = str(e)
-                result["correct"] = False
-            benchmark_results.append(result)
+        responses = llm.process_batch(
+            [input for input, target in data], response_format=self.preferred_response_format
+        )
 
+        for i, (_, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+            result = asdict(responses[i]) | {"target": target}
+            benchmark_results.append(result)
         return benchmark_results
 
     @abstractmethod

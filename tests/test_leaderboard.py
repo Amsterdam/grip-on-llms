@@ -99,8 +99,8 @@ def test_leaderboard():
     hf_inference_params = {
         "do_sample": False,
         # temp, top_k & top_p - unused for greedy decoding (adding for transparency)
-        # "temperature": 0,
-        # "top_k": 0,
+        "temperature": 0,
+        "top_k": 0,
         "top_p": 1.0,
         "repetition_penalty": 1.0,
         "num_return_sequences": 1,
@@ -109,7 +109,8 @@ def test_leaderboard():
     }
 
     hf_object_params = {
-        "provider": "huggingface",
+        "provider": "vllm",
+        # "provider": "huggingface",
         "hf_token": hf_secrets["HF_TOKEN"],
         "params": hf_inference_params,
         "uses_api": False,
@@ -151,6 +152,7 @@ def test_leaderboard():
         model_name="llama-3.3-70b-instruct",
         **hf_object_params,
     )
+    llama_quantized = LLMRouter.get_model(model_name="Llama-3.3-70B-quantized", **hf_object_params)
 
     phi = LLMRouter.get_model(
         model_name="phi-4-mini-instruct",
@@ -330,6 +332,7 @@ def test_leaderboard():
             mistral_large_quantized,
             llama,
             llama_large,
+            llama_quantized,
             gpt_4o,
             gpt_4o_mini,
             falcon,
@@ -344,12 +347,9 @@ def test_leaderboard():
             gemma_small,
             gemma_large,
         ],
-        benchmarks=tiny_benches
-        + simple_benches
-        + summary_benches
-        + [mmlu_nl_bench + arc_nl_bench],
+        benchmarks=tiny_benches + simple_benches + summary_benches + [mmlu_nl_bench, arc_nl_bench],
         codecarbon_params=codecarbon_params,
-        n_samples=100,
+        n_samples=n_samples,
     )
     leaderboard.run_comparison(results_path="leaderboard")
 

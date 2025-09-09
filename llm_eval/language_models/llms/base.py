@@ -3,11 +3,14 @@ Module for handling of LLMs and prompting them.
 Currently supports the OpenAI models on Azure
 as well as some HuggingFace models.
 """
+import logging
 from abc import abstractmethod
+from typing import List
 
 from codecarbon import OfflineEmissionsTracker
 
 from llm_eval.utils.string_utils import (
+    LLMResponse,
     clean_and_extract_multiple_choice,
     clean_and_extract_open_text_answers,
 )
@@ -25,11 +28,11 @@ class BaseLLM:
 
     def __init__(self, model_name, uses_api, params):
         self._model_name = model_name
-        self._params = params
+        self._params = self.get_mapped_params(params)
         self.tracker = None
         self.uses_api = uses_api
 
-    def prompt(self, prompt, context=None, system=None, response_format=None):
+    def prompt(self, prompt, context=None, system=None, response_format=None) -> LLMResponse:
         """Starts and stops code carbon tracker, and gets response from model."""
         # Start carbon tracker
         if self.tracker:
@@ -44,11 +47,46 @@ class BaseLLM:
 
         # If a specific format is desired, post-process accordingly
         if response_format == "multiple_choice":
-            response = clean_and_extract_multiple_choice(response)
+            response.processed_response = clean_and_extract_multiple_choice(response.raw_response)
         else:
-            response = clean_and_extract_open_text_answers(response)
+            response.processed_response = clean_and_extract_open_text_answers(
+                response.raw_response
+            )
 
         return response
+
+    def process_batch(
+        self, prompts, batch_size=None, context=None, system=None, response_format=None
+    ) -> List[LLMResponse]:
+        """Process a batch of prompts"""
+        if self.tracker:
+            self.tracker.start()
+
+        # Generate the reposnse
+        responses = self._process_batch(
+            prompts=prompts,
+            batch_size=batch_size,
+            context=context,
+            system=system,
+            response_format=response_format,
+        )
+
+        # Stop tracker for the llm itself
+        if self.tracker:
+            self.tracker.stop()
+
+        # If a specific format is desired, post-process accordingly
+        for response in responses:
+            if response_format == "multiple_choice":
+                response.processed_response = clean_and_extract_multiple_choice(
+                    response.raw_response
+                )
+            else:
+                response.processed_response = clean_and_extract_open_text_answers(
+                    response.raw_response
+                )
+
+        return responses
 
     def initialize_carbon_tracking(self, codecarbon_params=dict):
         """Tracks emissions offline using code carbon."""
@@ -56,7 +94,7 @@ class BaseLLM:
             if not self.uses_api:
                 self.tracker = OfflineEmissionsTracker(**codecarbon_params)
         except ValueError as e:
-            print(f"ValueError: {e}")
+            logging.error(f"ValueError: {e}")
             return None
 
     def get_carbon_data(self):
@@ -69,13 +107,26 @@ class BaseLLM:
             final_results = self.tracker.final_emissions_data.__dict__
             return final_results
         except TrackerNotStartedError as e:
-            print(f"TrackerNotStartedError: {e}")
+            logging.error(f"TrackerNotStartedError: {e}")
             return None
 
+    def get_mapped_params(self, params):
+        """Return mapped params if subclass defines map_params, else raw params"""
+        if hasattr(self, "_map_params"):
+            params = self._map_params(params)
+        return params
+
     @abstractmethod
-    def _prompt(self, prompt, context=None, system=None, response_format=None):
+    def _prompt(self, prompt, context=None, system=None, response_format=None) -> LLMResponse:
         """Function to prompt model should always be implemented"""
         raise NotImplementedError("Implement _prompt function")
+
+    @abstractmethod
+    def _process_batch(
+        self, prompts, batch_size=None, context=None, system=None, response_format=None
+    ) -> List[LLMResponse]:
+        """Function to batch prompt model should always be implemented"""
+        raise NotImplementedError("Implement _process_batch function")
 
     @property
     def model_name(self):

@@ -6,12 +6,12 @@ The base class handles the default templating, calculating metrics, etc.
 
 import logging
 from abc import abstractmethod
+from dataclasses import asdict
 
 from tqdm import tqdm
 
 from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
-from llm_eval.utils.exceptions import EmptyResponseError
 
 PROMPT_TEMPLATES = {
     "simple": {
@@ -157,35 +157,34 @@ class SummarizationBaseBenchmark(BaseBenchmark):
 
         prompt_template = PROMPT_TEMPLATES[self.prompt_type][self.language]
         benchmark_results = []
+        responses = llm.process_batch(
+            [
+                prompt_template.format(
+                    DOCUMENT_TYPE=self.document_type,
+                    TARGET_LENGTH=self.target_length,
+                    DOCUMENT=source,
+                )
+                for (source, _) in data
+            ]
+        )
 
-        for source, summary in tqdm(data, desc=f"Running {self.name}"):
-            prompt = prompt_template.format(
-                DOCUMENT_TYPE=self.document_type, TARGET_LENGTH=self.target_length, DOCUMENT=source
-            )
-
+        for i, (source, summary) in tqdm(enumerate(data), desc=f"Running {self.name}"):
+            response = asdict(responses[i])
             result = {
                 "source": source,
                 "summary": summary,
             }
 
-            try:
-                llm_response = llm.prompt(prompt)
-                if not llm_response:
-                    raise EmptyResponseError
-                result["response"] = llm_response
-            except Exception as e:
-                result["response"] = ""
-                result["error"] = True
-                result["exception"] = str(e)
-
-            benchmark_results.append(result)
+            benchmark_results.append(response | result)
 
         return benchmark_results
 
     def _calculate_metric(self, results=None):
         """Given results, calculate desired score"""
         logging.info(f"Calculating Summarization Metrics for {self.name}")
-        predictions = [entry["response"] if entry["response"] else "" for entry in results]
+        predictions = [
+            entry["processed_response"] if entry["processed_response"] else "" for entry in results
+        ]
         references = [entry["summary"] if entry["summary"] else "" for entry in results]
 
         rouge_score = metrics.rouge(predictions=predictions, references=references)
