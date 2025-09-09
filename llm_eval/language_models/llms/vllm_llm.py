@@ -11,11 +11,7 @@ from vllm.transformers_utils.tokenizer import get_tokenizer
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.utils.exceptions import UnsupportedModelError
-from llm_eval.utils.string_utils import (
-    LLMResponse,
-    clean_and_extract_multiple_choice,
-    clean_and_extract_open_text_answers,
-)
+from llm_eval.utils.string_utils import LLMResponse
 
 
 class VLLMLlm(BaseLLM):
@@ -223,7 +219,7 @@ class VLLMLlm(BaseLLM):
         response.raw_response = outputs[0].outputs[0].text
         return response
 
-    def process_batch(  # noqa Overwrite base function
+    def _process_batch(
         self,
         prompts: List[str],
         batch_size: Optional[int] = None,
@@ -251,9 +247,6 @@ class VLLMLlm(BaseLLM):
         # Format all prompts
         formatted_prompts = [self._format_prompt(prompt) for prompt in prompts]
 
-        if self.tracker:
-            self.tracker.start()
-
         # Generate responses in batch
         if batch_size is None:
             outputs = self.model.generate(formatted_prompts, sampling_params)
@@ -269,9 +262,6 @@ class VLLMLlm(BaseLLM):
             if batch:
                 outputs.extend(self.model.generate(batch, sampling_params))
 
-        if self.tracker:
-            self.tracker.stop()
-
         # Extract responses
         responses = []
         for i, output in enumerate(outputs):
@@ -280,17 +270,10 @@ class VLLMLlm(BaseLLM):
             response.formatted_prompt = formatted_prompts[i]
             if output.outputs:
                 response.raw_response = output.outputs[0].text
-                if response_format == "multiple_choice":
-                    response.processed_response = clean_and_extract_multiple_choice(
-                        response.raw_response
-                    )
-                else:
-                    response.processed_response = clean_and_extract_open_text_answers(
-                        response.raw_response
-                    )
             else:
                 response.error = True
                 response.exception = "Empty response"
+                response.raw_response = ""
             responses.append(response)
         return responses
 

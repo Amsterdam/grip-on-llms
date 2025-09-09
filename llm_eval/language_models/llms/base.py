@@ -54,6 +54,39 @@ class BaseLLM:
 
         return response
 
+    def process_batch(
+        self, prompts, batch_size=None, context=None, system=None, response_format=None
+    ) -> List[LLMResponse]:
+        """Process a batch of prompts"""
+        if self.tracker:
+            self.tracker.start()
+
+        # Generate the reposnse
+        responses = self._process_batch(
+            prompts=prompts,
+            batch_size=batch_size,
+            context=context,
+            system=system,
+            response_format=response_format,
+        )
+
+        # Stop tracker for the llm itself
+        if self.tracker:
+            self.tracker.stop()
+
+        # If a specific format is desired, post-process accordingly
+        for response in responses:
+            if response_format == "multiple_choice":
+                response.processed_response = clean_and_extract_multiple_choice(
+                    response.raw_response
+                )
+            else:
+                response.processed_response = clean_and_extract_open_text_answers(
+                    response.raw_response
+                )
+
+        return responses
+
     def initialize_carbon_tracking(self, codecarbon_params=dict):
         """Tracks emissions offline using code carbon."""
         try:
@@ -76,16 +109,17 @@ class BaseLLM:
             print(f"TrackerNotStartedError: {e}")
             return None
 
-    def process_batch(
-        self, prompts, batch_size=None, context=None, system=None, response_format=None
-    ) -> List[LLMResponse]:
-        """Process a batch of prompts"""
-        return [self.prompt(prompt, context, system, response_format) for prompt in prompts]
-
     @abstractmethod
     def _prompt(self, prompt, context=None, system=None, response_format=None) -> LLMResponse:
         """Function to prompt model should always be implemented"""
         raise NotImplementedError("Implement _prompt function")
+
+    @abstractmethod
+    def _process_batch(
+        self, prompts, batch_size=None, context=None, system=None, response_format=None
+    ) -> List[LLMResponse]:
+        """Function to batch prompt model should always be implemented"""
+        raise NotImplementedError("Implement _process_batch function")
 
     @property
     def model_name(self):

@@ -1,6 +1,7 @@
 """Support for locally-hosted HuggingFace models."""
 import gc
 import logging
+from typing import List
 
 import torch
 import torch._dynamo
@@ -98,6 +99,12 @@ class HuggingFaceLLM(BaseLLM):
         )
         response.raw_response = output_text
         return response
+
+    def _process_batch(
+        self, prompts, batch_size=None, context=None, system=None, response_format=None
+    ) -> List[LLMResponse]:
+        """Process a batch of prompts"""
+        return [self._prompt(prompt, context, system, response_format) for prompt in prompts]
 
     def unload_model(self):
         """Unload model on demand to free up memory"""
