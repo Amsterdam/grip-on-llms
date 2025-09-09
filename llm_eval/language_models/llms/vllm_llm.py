@@ -9,6 +9,7 @@ from vllm import LLM, SamplingParams
 from vllm.transformers_utils.tokenizer import get_tokenizer
 
 from llm_eval.language_models.llms.base import BaseLLM
+from llm_eval.language_models.llms.chat_template import create_chat_handler
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.utils.exceptions import UnsupportedModelError
 from llm_eval.utils.string_utils import LLMResponse
@@ -58,6 +59,7 @@ class VLLMLlm(BaseLLM):
         self.trust_remote_code = trust_remote_code
         self.vllm_config = vllm_config or {}  # Store H100 configuration
         self.model_config = MODEL_MAPPING[self.model_name]
+        self.chat_handler = None
 
     def _load_model(self, pause_tracker: bool = True):  # noqa
         """Load model using vLLM."""
@@ -71,9 +73,12 @@ class VLLMLlm(BaseLLM):
         model_id = self.model_config["id"]
 
         loading_kwargs = self.model_config["kwargs"].get("loading", {})
-        self.template_kwargs = self.model_config["kwargs"].get("template", {})
+        template_kwargs = self.model_config["kwargs"].get("template", {})
 
         self.tokenizer = get_tokenizer(model_id)
+
+        # With tokenizer initialized, set all eos tokens and params
+        self._set_eos_tokens()
 
         if "mistral" in model_id.lower():
             loading_kwargs["tokenizer_mode"] = "mistral"
@@ -117,65 +122,67 @@ class VLLMLlm(BaseLLM):
 
         self.model = LLM(**vllm_kwargs)
 
+        self.chat_handler = create_chat_handler(
+            "vllm", self.tokenizer, None, self.system_prompt, template_kwargs
+        )
+
         if self.tracker and pause_tracker:
             self.tracker.start()
 
-    def _create_sampling_params(self) -> SamplingParams:
+    def _map_params(self, params) -> SamplingParams:
         """
         Create vLLM SamplingParams from the model parameters.
-
         Maps common generation parameters to vLLM SamplingParams.
         """
-        # Default vLLM sampling parameters
+        # These are expected to be explicitly passed
         vllm_params = {
-            "temperature": 0.0,  # Greedy by default
-            "max_tokens": 512,
+            "skip_special_tokens": True,
+            "include_stop_str_in_output": False,
+            # "truncate_prompt_tokens": True,
+            "temperature": params.get("temperature"),
+            "top_p": params.get("top_p"),
+            "top_k": params.get("top_k"),
+            "max_tokens": params.get("max_new_tokens") or params.get("max_length"),
         }
 
-        # Map HuggingFace parameters to vLLM parameters
-        param_mapping = {
-            "temperature": "temperature",
-            "top_p": "top_p",
-            "top_k": "top_k",
-            "max_new_tokens": "max_tokens",
-            "max_length": "max_tokens",
-            "repetition_penalty": "frequency_penalty",
-            "do_sample": None,  # Handled via temperature
-        }
-
-        for hf_param, vllm_param in param_mapping.items():
-            if hf_param in self.params and vllm_param is not None:
-                if hf_param == "repetition_penalty":
-                    # Convert repetition penalty to frequency penalty
-                    vllm_params[vllm_param] = self.params[hf_param] - 1.0
-                else:
-                    vllm_params[vllm_param] = self.params[hf_param]
+        # Map repetition_penalty → frequency_penalty approximation
+        if "repetition_penalty" in params:
+            vllm_params["frequency_penalty"] = params["repetition_penalty"] - 1.0
+        # frequency/presence_penalty map directly if provided
+        if "frequency_penalty" in params:
+            vllm_params["frequency_penalty"] = params["frequency_penalty"]
+        if "presence_penalty" in params:
+            vllm_params["presence_penalty"] = params["presence_penalty"]
 
         # Handle do_sample parameter
-        if "do_sample" in self.params:
-            if not self.params["do_sample"]:
-                vllm_params["temperature"] = 0.0  # Force greedy sampling
+        if "do_sample" in params and not params["do_sample"]:
+            vllm_params["temperature"] = 0.0
+
         return SamplingParams(**vllm_params)
 
-    def _format_prompt(self, prompt: str) -> str:
-        """
-        Format the prompt using chat template if available.
+    def _set_eos_tokens(self):
+        """Set EOS tokens and IDs in sampling params for generation"""
+        # With tokenizer initialized, adjust EOS
+        eos_str = self.tokenizer.decode([self.tokenizer.eos_token_id])
 
-        Args:
-            prompt: The user prompt
+        basic_special_tokens = list(getattr(self.tokenizer, "all_special_tokens", []))
+        additional_special_tokens = list(getattr(self.tokenizer, "additional_special_tokens", []))
+        known_special_tokens = ["[INST]", "###", "\n\n[INST]"]
 
-        Returns:
-            Formatted prompt string
-        """
-        if self.system_prompt:
-            conversation = [{"role": "system", "content": self.system_prompt}]
-        else:
-            conversation = []
-        conversation.append({"role": "user", "content": prompt})
-        formatted_prompt = self.tokenizer.apply_chat_template(
-            conversation, tokenize=False, add_generation_prompt=True, **self.template_kwargs
+        # Combine all stop strings, filter to avoid None or empty
+        all_tokens = (
+            [eos_str] + additional_special_tokens + basic_special_tokens + known_special_tokens
         )
-        return formatted_prompt
+
+        # Convert all stop strings into token IDs
+        stop_token_ids = []
+        for s in all_tokens:
+            token_ids = self.tokenizer.encode(s, add_special_tokens=False)
+            if len(token_ids) == 1:  # Only keep single-token stops
+                stop_token_ids.append(token_ids[0])
+
+        self.params.stop = (self.params.stop or []) + all_tokens
+        self.params.stop_token_ids = stop_token_ids
 
     def _prompt(
         self,
@@ -202,13 +209,13 @@ class VLLMLlm(BaseLLM):
         response = LLMResponse()
         response.raw_prompt = prompt
         # Format the prompt
-        formatted_prompt = self._format_prompt(prompt)
+        conversation = self.chat_handler.format_conversation(prompt, context, system)
+        formatted_prompt = self.chat_handler.apply_chat_template_for_generation(conversation)
         response.formatted_prompt = formatted_prompt
 
-        # Create sampling parameters
-        sampling_params = self._create_sampling_params()
+        print(self.params)
         # Generate response
-        outputs = self.model.generate(formatted_prompt, sampling_params)
+        outputs = self.model.generate(formatted_prompt, self.params)
 
         if not outputs or not outputs[0].outputs:
             response.error = True
@@ -242,25 +249,28 @@ class VLLMLlm(BaseLLM):
         if not self.model:
             self._load_model(pause_tracker=True)
 
-        sampling_params = self._create_sampling_params()
-
         # Format all prompts
-        formatted_prompts = [self._format_prompt(prompt) for prompt in prompts]
+        conversations = [
+            self.chat_handler.format_conversation(prompt, context, system) for prompt in prompts
+        ]
+        formatted_prompts = [
+            self.chat_handler.apply_chat_template_for_generation(conv) for conv in conversations
+        ]
 
         # Generate responses in batch
         if batch_size is None:
-            outputs = self.model.generate(formatted_prompts, sampling_params)
+            outputs = self.model.generate(formatted_prompts, self.params)
         else:
             outputs = []
             batch = []
             for prompt in formatted_prompts:
                 batch.append(prompt)
                 if len(batch) == batch_size:
-                    outputs.extend(self.model.generate(batch, sampling_params))
+                    outputs.extend(self.model.generate(batch, self.params))
                     batch = []
             # flush
             if batch:
-                outputs.extend(self.model.generate(batch, sampling_params))
+                outputs.extend(self.model.generate(batch, self.params))
 
         # Extract responses
         responses = []
@@ -285,6 +295,7 @@ class VLLMLlm(BaseLLM):
             del self.model
         self.model = None
         self.tokenizer = None
+        self.chat_handler = None
         gc.collect()
 
     def get_metadata(self):

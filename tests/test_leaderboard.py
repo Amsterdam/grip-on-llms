@@ -100,16 +100,17 @@ def test_leaderboard():
         "do_sample": False,
         # temp, top_k & top_p - unused for greedy decoding (adding for transparency)
         "temperature": 0,
-        # "top_k": 0,
-        # "top_p": 1.0,
-        # "repetition_penalty": 1.0,
-        # "num_return_sequences": 1,
+        "top_k": 0,
+        "top_p": 1.0,
+        "repetition_penalty": 1.0,
+        "num_return_sequences": 1,
         # "no_repeat_ngram_size": 3,
         "max_new_tokens": 200,
     }
 
     hf_object_params = {
         "provider": "vllm",
+        # "provider": "huggingface",
         "hf_token": hf_secrets["HF_TOKEN"],
         "params": hf_inference_params,
         "uses_api": False,
@@ -228,7 +229,7 @@ def test_leaderboard():
         target_lang="NL",
     )
 
-    n_samples = 25
+    n_samples = 100
 
     simple_benches = []
 
@@ -264,7 +265,7 @@ def test_leaderboard():
     # for prompt_type in ["detailed", "simple"]:
     for prompt_type in ["detailed"]:
         # for language in ["NL", "EN"]
-        for sum_lang in ["EN"]:
+        for sum_lang in ["NL"]:
             bench_name = "CNNDailyMail"
             data_dir = Path(benchmark_data_folder) / bench_name
             summary_benches.append(
@@ -293,7 +294,7 @@ def test_leaderboard():
 
     tiny_benches = []
 
-    tiny_benches_lang = "EN"
+    tiny_benches_lang = "NL"
 
     tiny_benches.append(
         TinyMMLU(

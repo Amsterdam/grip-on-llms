@@ -27,7 +27,7 @@ class BaseLLM:
 
     def __init__(self, model_name, uses_api, params):
         self._model_name = model_name
-        self._params = params
+        self._params = self.get_mapped_params(params)
         self.tracker = None
         self.uses_api = uses_api
 
@@ -108,6 +108,12 @@ class BaseLLM:
         except TrackerNotStartedError as e:
             print(f"TrackerNotStartedError: {e}")
             return None
+
+    def get_mapped_params(self, params):
+        """Return mapped params if subclass defines map_params, else raw params"""
+        if hasattr(self, "_map_params"):
+            params = self._map_params(params)
+        return params
 
     @abstractmethod
     def _prompt(self, prompt, context=None, system=None, response_format=None) -> LLMResponse:
