@@ -3,6 +3,7 @@ Module for handling of LLMs and prompting them.
 Currently supports the OpenAI models on Azure
 as well as some HuggingFace models.
 """
+import logging
 from abc import abstractmethod
 from typing import List
 
@@ -93,7 +94,7 @@ class BaseLLM:
             if not self.uses_api:
                 self.tracker = OfflineEmissionsTracker(**codecarbon_params)
         except ValueError as e:
-            print(f"ValueError: {e}")
+            logging.error(f"ValueError: {e}")
             return None
 
     def get_carbon_data(self):
@@ -106,7 +107,7 @@ class BaseLLM:
             final_results = self.tracker.final_emissions_data.__dict__
             return final_results
         except TrackerNotStartedError as e:
-            print(f"TrackerNotStartedError: {e}")
+            logging.error(f"TrackerNotStartedError: {e}")
             return None
 
     def get_mapped_params(self, params):

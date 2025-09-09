@@ -3,6 +3,7 @@ Standard vLLM profiles optimized for different model sizes on H100-80GB
 Covers 1B to ~80B parameters with optimal settings for each tier
 """
 
+import logging
 from typing import Any, Dict, Optional
 
 
@@ -203,6 +204,6 @@ def get_optimal_vllm_config(model_name: str, profile_override: str = "small") ->
 
     profile_name = profile_override
 
-    print(f"Using H100 profile '{profile_name}' for {model_name}")
+    logging.info(f"Using H100 profile '{profile_name}' for {model_name}")
 
     return config

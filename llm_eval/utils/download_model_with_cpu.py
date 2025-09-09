@@ -1,5 +1,6 @@
 """Download a model from huggingface without loading it, possible on a cpu"""
 import argparse
+import logging
 import sys
 
 from huggingface_hub import snapshot_download
@@ -10,11 +11,11 @@ from tests.env_setup import get_hf_secrets
 def download_model(url):
     """Download model without loading it from huggingface"""
     try:
-        print(f"Downloading model: {url}")
+        logging.info(f"Downloading model: {url}")
         snapshot_download(url)
-        print(f"Successfully downloaded: {url}")
+        logging.info(f"Successfully downloaded: {url}")
     except Exception as e:
-        print(f"Error downloading model {url}: {e}")
+        logging.error(f"Error downloading model {url}: {e}")
         sys.exit(1)
 
 

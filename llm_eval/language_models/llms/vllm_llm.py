@@ -213,7 +213,6 @@ class VLLMLlm(BaseLLM):
         formatted_prompt = self.chat_handler.apply_chat_template_for_generation(conversation)
         response.formatted_prompt = formatted_prompt
 
-        print(self.params)
         # Generate response
         outputs = self.model.generate(formatted_prompt, self.params)
 
