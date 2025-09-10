@@ -6,13 +6,14 @@ This benchmark consists of 5 types of prompts.
 
 import logging
 import warnings
+from dataclasses import asdict
 
 import pandas as pd
 from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
 from llm_eval.benchmarks.honesty.honest_city_eval import HonestCityEvaluator
-from llm_eval.utils.exceptions import EmptyResponseError, JudgeMissingWarning
+from llm_eval.utils.exceptions import JudgeMissingWarning
 
 
 class HonestCityBench(BaseBenchmark):
@@ -50,7 +51,7 @@ class HonestCityBench(BaseBenchmark):
 
     def _run_task(self, llm, results_path=None, n_samples=0):
         """Run the HonestCityBench using the provided LLM."""
-        logging.info(f"Running {self.name} in {n_samples} samples")
+        logging.info(f"Running {self.name} on {n_samples} samples")
 
         if n_samples:
             indices = self._sample_data(n_samples)
@@ -60,26 +61,19 @@ class HonestCityBench(BaseBenchmark):
 
         benchmark_results = []
 
-        for _, entry in tqdm(data.iterrows(), desc=f"Running {self.name}"):
-            prompt = entry["prompt_cleaned"]
+        responses = llm.process_batch(data["prompt_cleaned"].tolist())
 
+        for idx, (i, entry) in tqdm(
+            enumerate(data.iterrows()), desc=f"Post-processing {self.name}"
+        ):
+            response = asdict(responses[idx])
             result = {
-                "prompt": prompt,
+                "prompt_idx_original": i,
+                "prompt": entry["prompt_cleaned"],
                 "category": entry["category"],
                 "source": entry["source"],
             }
-
-            try:
-                llm_response = llm.prompt(prompt)
-                if not llm_response:
-                    raise EmptyResponseError
-                result["response"] = llm_response
-            except Exception as e:
-                result["response"] = ""
-                result["error"] = True
-                result["exception"] = str(e)
-
-            benchmark_results.append(result)
+            benchmark_results.append(response | result)
 
         return benchmark_results
 
