@@ -34,44 +34,52 @@ class Leaderboard:
 
         results = []
         for llm in tqdm(self.llms, desc="LLMs"):
-            # Warm up LLM: temp fix for duration discrepancy
-            llm.prompt("Let's benchmark some models!!")
+            try:
+                # Warm up LLM: temp fix for duration discrepancy
+                llm.prompt("Let's benchmark some models!!")
 
-            for benchmark in tqdm(self.benchmarks, desc="Benchmarks"):
-                try:
-                    self.codecarbon_params["project_name"] = f"{benchmark.name}-{llm.model_name}"
-                    llm.initialize_carbon_tracking(self.codecarbon_params)
+                for benchmark in tqdm(self.benchmarks, desc="Benchmarks"):
+                    try:
+                        self.codecarbon_params[
+                            "project_name"
+                        ] = f"{benchmark.name}-{llm.model_name}"
+                        llm.initialize_carbon_tracking(self.codecarbon_params)
 
-                    start_time = datetime.now()
-                    benchmark_results = benchmark.eval(llm, n_samples=self.n_samples)
+                        start_time = datetime.now()
+                        benchmark_results = benchmark.eval(llm, n_samples=self.n_samples)
 
-                    end_time = datetime.now()
+                        end_time = datetime.now()
 
-                    results.append(
-                        {
-                            "metadata": {
-                                "llm": llm.get_metadata(),
-                                "benchmark": benchmark.get_metadata(),
-                                "n_samples": self.n_samples,
-                                "run": {
-                                    "timestamp": datetime.now().strftime(datetime_format),
-                                    "timestamp_bench_start": start_time.strftime(datetime_format),
-                                    "timestamp_bench_end": end_time.strftime(datetime_format),
-                                    "time_bench_total": str(end_time - start_time),
-                                    "system": get_system_metadata(),
+                        results.append(
+                            {
+                                "metadata": {
+                                    "llm": llm.get_metadata(),
+                                    "benchmark": benchmark.get_metadata(),
+                                    "n_samples": self.n_samples,
+                                    "run": {
+                                        "timestamp": datetime.now().strftime(datetime_format),
+                                        "timestamp_bench_start": start_time.strftime(
+                                            datetime_format
+                                        ),
+                                        "timestamp_bench_end": end_time.strftime(datetime_format),
+                                        "time_bench_total": str(end_time - start_time),
+                                        "system": get_system_metadata(),
+                                    },
+                                    "code_carbon": llm.get_carbon_data(),
                                 },
-                                "code_carbon": llm.get_carbon_data(),
-                            },
-                            "benchmark_results": benchmark_results,
-                        }
-                    )
+                                "benchmark_results": benchmark_results,
+                            }
+                        )
 
-                    if results_path:
-                        with open(results_path, "w") as f:
-                            json.dump(results, f, indent=4, default=str)
+                        if results_path:
+                            with open(results_path, "w") as f:
+                                json.dump(results, f, indent=4, default=str)
 
-                except Exception as e:
-                    logging.error(f"{llm.model_name} failed: {e}")
+                    except Exception as bench_e:
+                        logging.error(f"{llm.model_name} failed on {benchmark.name}: {bench_e}")
+
+            except Exception as llm_e:
+                logging.error(f"{llm.model_name} failed: {llm_e}")
 
             llm.unload_model()
 
