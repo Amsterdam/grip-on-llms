@@ -30,6 +30,7 @@ import logging
 import random
 import urllib.request
 from collections import defaultdict
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -267,6 +268,7 @@ class DutchCrowSPairs(SocialBiasBenchmark):
         Returns:
             Dictionary containing model responses and metadata
         """
+        logging.info(f"Running {self.name}")
         data = self._load_data()
 
         if n_samples > 0:
@@ -287,11 +289,14 @@ class DutchCrowSPairs(SocialBiasBenchmark):
             [item["question"] for item in questions],
             response_format=self.preferred_response_format,
         )
+
         for i, item in enumerate(tqdm(questions)):
+            response = asdict(responses[i])
             results["responses"].append(
                 {
                     "question": item["question"],
-                    "response": responses[i],
+                    "response_full": response,
+                    "response": response["processed_response"],
                     "bias_type": item["bias_type"],
                     "label_mapping": item["label_mapping"],  # A->stereotypical, etc.
                 }
