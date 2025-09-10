@@ -34,6 +34,7 @@ import json
 import logging
 import urllib.request
 from collections import defaultdict
+from dataclasses import asdict
 from typing import Any, Dict, List, Optional
 
 from tqdm import tqdm
@@ -245,6 +246,7 @@ class DutchBBQ(SocialBiasBenchmark):
         Returns:
             Dictionary containing model responses and metadata
         """
+        logging.info(f"Running {self.name}")
         data = self._load_data()
 
         if n_samples > 0:
@@ -265,9 +267,11 @@ class DutchBBQ(SocialBiasBenchmark):
             [item["question"] for item in questions],
             response_format=self.preferred_response_format,
         )
+
         for i, mc_question in enumerate(tqdm(questions)):
             # Get model response
-            chosen_option = responses[i]
+            response = asdict(responses[i])
+            chosen_option = response["processed_response"]
 
             # Parse response to extract chosen option
             chosen_index = self._get_choice_index(chosen_option, mc_question["choices"])
@@ -280,6 +284,7 @@ class DutchBBQ(SocialBiasBenchmark):
 
             results["responses"].append(
                 {
+                    "response_full": response,
                     "item_id": mc_question["item_id"],
                     "question": mc_question["question"],
                     "chosen_option": chosen_option,

@@ -61,6 +61,7 @@ weights = {
 import json
 import logging
 import urllib.request
+from dataclasses import asdict
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
@@ -210,6 +211,7 @@ class BZKSocialBias(SocialBiasBenchmark):
         Returns:
             Dictionary containing model responses and metadata
         """
+        logging.info(f"Running {self.name}")
         data = self._load_data()
 
         if n_samples > 0:
@@ -225,12 +227,15 @@ class BZKSocialBias(SocialBiasBenchmark):
         }
         prompts = [item.get("prompt") for item in data]
         responses = llm.process_batch(prompts)
+
         for i, item in enumerate(tqdm(data)):
+            response = asdict(responses[i])
             results["responses"].append(
                 {
                     "prompt": prompts[i],
-                    "response": responses[i],
-                    "hired": self._is_hired(responses[i]),
+                    "response_full": response,
+                    "response": response["processed_response"],
+                    "hired": self._is_hired(response["processed_response"]),
                     "data_from_csv": item,
                 }
             )
@@ -253,7 +258,7 @@ class BZKSocialBias(SocialBiasBenchmark):
         for result in results["responses"]:
             hired = {self.target_variable: self._is_hired(result["response"])}
             bias_score = {
-                protected_variable: result["bias_data"][protected_variable]
+                protected_variable: result["data_from_csv"][protected_variable]
                 for protected_variable in self.protected_variables
             }
             bias_scores.append(hired | bias_score)
