@@ -29,7 +29,9 @@
         "factuality": 1,
         "simplification": 3,
         "summarization": 3,
-        "energy_use": 5
+        "energy_use": 5,
+        "honesty_score": 0.06139150704368096,
+        "honesty": 1
     },
     {
         "model": "Falcon3-7B-Instruct",
@@ -61,7 +63,9 @@
         "factuality": 1,
         "simplification": 4,
         "summarization": 4,
-        "energy_use": 5
+        "energy_use": 5,
+        "honesty_score": 0.14675968154229024,
+        "honesty": 1
     },
     {
         "model": "Mistral-7B-Instruct-v0.3",
@@ -92,7 +96,9 @@
         "factuality": 2,
         "simplification": 4,
         "summarization": 4,
-        "energy_use": 4
+        "energy_use": 4,
+        "honesty_score": 0.09604236343366779,
+        "honesty": 1
     },
     {
         "model": "Mistral-Small-24B-Instruct-2501",
@@ -124,7 +130,9 @@
         "factuality": 4,
         "simplification": 3,
         "summarization": 5,
-        "energy_use": 4
+        "energy_use": 4,
+        "honesty_score": 0.4132653176131436,
+        "honesty": 3
     },
     {
         "model": "Mistral-Large-Instruct-2411",
@@ -154,7 +162,9 @@
         "summarization_score": -1,
         "summarization": "-1",
         "energy_use_score": -1,
-        "energy_use": -1
+        "energy_use": -1,
+        "honesty_score": -1,
+        "honesty": -1
     },
     {
         "model": "TechxGenus/Mistral-Large-Instruct-2407-GPTQ",
@@ -217,7 +227,9 @@
         "factuality": 2,
         "simplification": 3,
         "summarization": 4,
-        "energy_use": 3
+        "energy_use": 3,
+        "honesty_score": 0.32287267885093973,
+        "honesty": 2
     },
     {
         "model": "Llama-3.2-3B-Instruct",
@@ -247,7 +259,9 @@
         "summarization_score": -1,
         "summarization": "4",
         "energy_use_score": -1,
-        "energy_use": -1
+        "energy_use": -1,
+        "honesty_score": -1,
+        "honesty": -1
     },
     {
         "model": "Llama-3.1-8B-Instruct",
@@ -279,7 +293,9 @@
         "factuality": 2,
         "simplification": 4,
         "summarization": 5,
-        "energy_use": 5
+        "energy_use": 5,
+        "honesty_score": 0.3415392779523214,
+        "honesty": 2
     },
     {
         "model": "Llama-3.3-70B-Instruct",
@@ -308,7 +324,9 @@
         "summarization_score": -1,
         "summarization": "-1",
         "energy_use_score": -1,
-        "energy_use": -1
+        "energy_use": -1,
+        "honesty_score": -1,
+        "honesty": -1
     },
     {
         "model": "GPT-4o-mini",
@@ -340,7 +358,9 @@
         "factuality": 3,
         "simplification": 4,
         "summarization": 4,
-        "energy_use": -1
+        "energy_use": -1,
+        "honesty_score": 0.3380146222537527,
+        "honesty": 2
     },
     {
         "model": "GPT-4o",
@@ -371,7 +391,9 @@
         "factuality": 4,
         "simplification": 4,
         "summarization": 5,
-        "energy_use": -1
+        "energy_use": -1,
+        "honesty_score": 0.3612373737373737,
+        "honesty": 2
     },
     {
         "model": "OLMo-2-1124-7B-Instruct",
@@ -403,7 +425,9 @@
         "factuality": 1,
         "simplification": 4,
         "summarization": 4,
-        "energy_use": 4
+        "energy_use": 4,
+        "honesty_score": 0.10498871096697185,
+        "honesty": 1
     },
     {
         "model": "OLMo-2-0325-32B-Instruct",
@@ -435,7 +459,9 @@
         "factuality": 3,
         "simplification": 4,
         "summarization": 4,
-        "energy_use": 3
+        "energy_use": 3,
+        "honesty_score": 0.3980707295924687,
+        "honesty": 2
     },
     {
         "model": "EuroLLM-9B-Instruct",
@@ -468,7 +494,9 @@
         "factuality": 1,
         "simplification": 4,
         "summarization": 5,
-        "energy_use": 4
+        "energy_use": 4,
+        "honesty_score": 0.29718646892559936,
+        "honesty": 2
     },
     {
         "model": "EuroLLM-22B-Instruct-Preview",
@@ -498,7 +526,9 @@
         "factuality": 2,
         "simplification": 4,
         "summarization": 4,
-        "energy_use": 4
+        "energy_use": 4,
+        "honesty_score": 0.20815034401990923,
+        "honesty": 2
     },
     {
         "model": "Qwen3-8B",
@@ -530,7 +560,9 @@
         "factuality": 2,
         "simplification": 4,
         "summarization": 4,
-        "energy_use": 5
+        "energy_use": 5,
+        "honesty_score": 0.2698950204384987,
+        "honesty": 2
     },
     {
         "model": "Qwen3-32B",
@@ -562,7 +594,9 @@
         "factuality": 4,
         "simplification": 4,
         "summarization": 5,
-        "energy_use": 3
+        "energy_use": 3,
+        "honesty_score": 0.30250188619753837,
+        "honesty": 2
     },
     {
         "model": "gemma-3-12b-it",
@@ -593,7 +627,9 @@
         "factuality": 3,
         "simplification": 4,
         "summarization": 5,
-        "energy_use": 2
+        "energy_use": 2,
+        "honesty_score": 0.35425407925407926,
+        "honesty": 2
     },
     {
         "model": "gemma-3-27b-it",
@@ -624,6 +660,8 @@
         "factuality": 3,
         "simplification": 4,
         "summarization": 5,
-        "energy_use": 1
+        "energy_use": 1,
+        "honesty_score": 0.3020017623278493,
+        "honesty": 2
     }
 ]

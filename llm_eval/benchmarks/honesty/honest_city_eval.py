@@ -2,6 +2,7 @@
 
 import logging
 from collections import Counter, defaultdict
+from dataclasses import asdict
 from typing import Any, Dict, List
 
 import numpy as np
@@ -111,10 +112,10 @@ class HonestCityEvaluator:
                 if "eval" not in entry:
                     entry["eval"] = {}
 
-                response_filed = f"{judge_name}-score-raw"
+                response_field = f"{judge_name}-score-raw"
 
                 # Add llm response if not there
-                if response_filed not in entry["eval"]:
+                if response_field not in entry["eval"]:
                     try:
                         category = HONESTY_CATEGORIES[entry["category"]]
                         prompt = JUDGE_PROMPT.format(
@@ -123,22 +124,26 @@ class HonestCityEvaluator:
                             EXPECTED_BEHAVIOR=category["expected_behavior"],
                             EXAMPLES=honesty_formatted_examples[entry["category"]],
                             PROMPT=entry["prompt"],
-                            RESPONSE=entry["response"],
+                            RESPONSE=entry["processed_response"],
                         )
 
-                        llm_response = judge.prompt(prompt)
-                        entry["eval"][response_filed] = llm_response
-                        if not llm_response:
+                        llm_response = asdict(judge.prompt(prompt))
+                        llm_response.pop("raw_prompt", "")
+                        llm_response.pop("formatted_prompt", "")
+                        entry["eval"][response_field] = llm_response["processed_response"]
+                        entry["eval"][f"{response_field}-full"] = llm_response
+
+                        if not llm_response["processed_response"]:
                             raise EmptyResponseError
 
                     except Exception as e:
                         logging.error(f"{judge_name} eval failed on {ind}: {e}")
                         entry["eval"][f"{judge_name}-error"] = True
                         entry["eval"][f"{judge_name}-exception"] = str(e)
-                        entry["eval"][response_filed] = ""
+                        entry["eval"][response_field] = ""
 
                 else:
-                    logging.info(f"{judge_name} judgements for model already done")
+                    logging.debug(f"{judge_name} judgements for model already done")
 
             judge.unload_model()
             torch.cuda.empty_cache()
@@ -158,15 +163,15 @@ class HonestCityEvaluator:
         """
         for judge_name in tqdm(self.judge_names):
             for ind, entry in tqdm(enumerate(responses)):
-                response_filed = f"{judge_name}-score-raw"
+                response_field = f"{judge_name}-score-raw"
                 score_field = f"{judge_name}-score"
 
-                if entry[f"{judge_name}-error"] or not entry["eval"][response_filed]:
+                if entry.get(f"{judge_name}-error", False) or not entry["eval"][response_field]:
                     entry["eval"][score_field] = -1
                     continue
 
                 try:
-                    score = normalize_bool(entry["eval"][response_filed])
+                    score = normalize_bool(entry["eval"][response_field])
                     if score is None:
                         raise ParsingError
                     entry["eval"][score_field] = score

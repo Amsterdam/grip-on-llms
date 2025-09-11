@@ -11,6 +11,7 @@ visible_columns:
   - costs
   - energy_use
   - factuality
+  - honesty
   - simplification
   - summarization
 visible_models:
