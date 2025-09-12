@@ -1,6 +1,5 @@
 """Support for vLLM inference engine for faster HuggingFace model serving."""
 
-import gc
 import logging
 import os
 from typing import Dict, List, Optional
@@ -11,6 +10,7 @@ from vllm.transformers_utils.tokenizer import get_tokenizer
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.chat_template import create_chat_handler
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
+from llm_eval.language_models.llms.llm_utils import aggressive_gpu_cleanup
 from llm_eval.utils.exceptions import UnsupportedModelError
 from llm_eval.utils.string_utils import LLMResponse
 
@@ -46,6 +46,10 @@ class VLLMLlm(BaseLLM):
             trust_remote_code: Whether to trust remote code in model
             vllm_config: H100-optimized vLLM configuration
         """
+        self.gpu_memory_utilization = gpu_memory_utilization
+        self.max_model_len = max_model_len
+        self.trust_remote_code = trust_remote_code
+        self.vllm_config = vllm_config or {}  # Store H100 configuration
         super().__init__(model_name, uses_api, params if params is not None else {})
 
         self.hf_token = hf_token
@@ -54,10 +58,6 @@ class VLLMLlm(BaseLLM):
         self.tokenizer = None
         self.system_prompt = None
         self.tensor_parallel_size = tensor_parallel_size
-        self.gpu_memory_utilization = gpu_memory_utilization
-        self.max_model_len = max_model_len
-        self.trust_remote_code = trust_remote_code
-        self.vllm_config = vllm_config or {}  # Store H100 configuration
         self.model_config = MODEL_MAPPING[self.model_name]
         self.chat_handler = None
 
@@ -142,6 +142,7 @@ class VLLMLlm(BaseLLM):
             "temperature": params.get("temperature"),
             "top_p": params.get("top_p"),
             "top_k": params.get("top_k"),
+            "truncate_prompt_tokens": self.max_model_len - params.get("max_new_tokens"),
             "max_tokens": params.get("max_new_tokens") or params.get("max_length"),
         }
 
@@ -289,13 +290,20 @@ class VLLMLlm(BaseLLM):
     def unload_model(self):
         """Unload model to free up memory."""
         logging.info(f"Unloading {self.model_name}")
+
+        # Clear model and tokenizer references
         if hasattr(self, "model") and self.model is not None:
-            # vLLM doesn't have an explicit unload method, so we delete the object
             del self.model
+        if hasattr(self, "tokenizer") and self.tokenizer is not None:
+            del self.tokenizer
+        if hasattr(self, "chat_handler") and self.chat_handler is not None:
+            del self.chat_handler
+
         self.model = None
         self.tokenizer = None
         self.chat_handler = None
-        gc.collect()
+
+        aggressive_gpu_cleanup()
 
     def get_metadata(self):
         """Get model metadata including vLLM-specific information."""

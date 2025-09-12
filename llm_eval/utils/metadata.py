@@ -42,10 +42,12 @@ def get_device_info():
     device_info = {
         "device": torch.device("cuda" if cuda_available else "cpu"),
         "os": {"system": platform.system(), "release": platform.release()},
+        "gpu_count": torch.cuda.device_count() if cuda_available else 0,
     }
     if cuda_available:
         total = torch.cuda.get_device_properties(0).total_memory
-        total_human = f"{total / (1024 ** 3):.2f} GB"
+        total_gb = total / (1024**3)
+        total_human = f"{total_gb:.2f} GB"
         used = torch.cuda.memory_allocated(0)
         used_human = f"{used / (1024 ** 3):.2f} GB"
         utilization_human = f"{used / total * 100:.2f}%"
@@ -53,6 +55,7 @@ def get_device_info():
         device_info["gpu"] = {
             "device_name": torch.cuda.get_device_name(0),
             "gpu_memory_total": total_human,
+            "gpu_memory_total_gb": total_gb,
             "gpu_memory_used": used_human,
             "gpu_memory_utilization": utilization_human,
         }

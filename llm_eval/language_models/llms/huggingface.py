@@ -1,5 +1,4 @@
 """Support for locally-hosted HuggingFace models."""
-import gc
 import logging
 from typing import List
 
@@ -10,6 +9,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.chat_template import create_chat_handler
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
+from llm_eval.language_models.llms.llm_utils import aggressive_gpu_cleanup
 from llm_eval.utils.exceptions import UnsupportedModelError
 from llm_eval.utils.string_utils import LLMResponse
 
@@ -117,10 +117,20 @@ class HuggingFaceLLM(BaseLLM):
     def unload_model(self):
         """Unload model on demand to free up memory"""
         logging.info(f"Unloading {self.model_name}")
+
+        # Clear model and tokenizer references
+        if hasattr(self, "model") and self.model is not None:
+            del self.model
+        if hasattr(self, "tokenizer") and self.tokenizer is not None:
+            del self.tokenizer
+        if hasattr(self, "chat_handler") and self.chat_handler is not None:
+            del self.chat_handler
+
         self.model = None
         self.tokenizer = None
         self.chat_handler = None
-        gc.collect()
+
+        aggressive_gpu_cleanup()
 
 
 def get_device():
