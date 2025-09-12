@@ -11,11 +11,11 @@ Usage Examples:
 
 import logging
 
-from llm_eval.language_models.llms.h100_profiles import get_optimal_vllm_config
 from llm_eval.language_models.llms.huggingface import HuggingFaceLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.language_models.llms.openai import OpenAILLM
 from llm_eval.language_models.llms.vllm_llm import VLLMLlm
+from llm_eval.language_models.llms.vllm_profiles import get_optimal_vllm_config
 
 
 class LLMRouter:
@@ -34,8 +34,6 @@ class LLMRouter:
         uses_api=None,  # Auto-detected based on provider
         # vLLM-specific parameters (ignored for other providers)
         tensor_parallel_size=1,
-        gpu_memory_utilization=None,  # Auto-set from H100 profiles
-        max_model_len=None,  # Auto-set from H100 profiles
         trust_remote_code=True,  # Default True for vLLM
     ):
         """Get corresponding LLM instance based on model name and optional provider.
@@ -52,10 +50,6 @@ class LLMRouter:
             params (dict, optional): Additional parameters for the model.
             uses_api (bool, optional): Whether the model uses an API. Auto-detected if None.
             tensor_parallel_size (int, optional): Number of GPUs for tensor parallelism.
-            gpu_memory_utilization (float, optional): GPU memory usage
-                (auto-set from H100 profiles).
-            max_model_len (int, optional): Maximum model sequence length
-                (auto-set from profiles).
             trust_remote_code (bool, optional): Whether to trust remote code.
 
         Returns:
@@ -92,15 +86,10 @@ class LLMRouter:
         elif provider == "vllm":
             model_config = MODEL_MAPPING.get(model_name, {})
             model_id = model_config.get("id", model_name)
-            profile_override = model_config.get("h100_profile")
+            model_size = model_config.get("model_size")
+            model_loading_config = model_config.get("kwargs", {}).get("loading", {})
 
-            vllm_config = get_optimal_vllm_config(model_id, profile_override=profile_override)
-
-            # Override with user-specified parameters
-            if gpu_memory_utilization is not None:
-                vllm_config["gpu_memory_utilization"] = gpu_memory_utilization
-            if max_model_len is not None:
-                vllm_config["max_model_len"] = max_model_len
+            vllm_config = get_optimal_vllm_config(model_id, model_size, model_loading_config)
 
             return VLLMLlm(
                 model_name=model_name,
@@ -109,8 +98,8 @@ class LLMRouter:
                 params=params,
                 uses_api=uses_api,
                 tensor_parallel_size=tensor_parallel_size,
-                gpu_memory_utilization=vllm_config.get("gpu_memory_utilization", 0.9),
-                max_model_len=vllm_config.get("max_model_len", max_model_len),
+                gpu_memory_utilization=vllm_config.get("gpu_memory_utilization"),
+                max_model_len=vllm_config.get("max_model_len"),
                 trust_remote_code=trust_remote_code,
                 vllm_config=vllm_config,  # Pass full config to VLLMLlm
             )
