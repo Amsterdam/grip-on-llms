@@ -32,14 +32,14 @@
         "simplification": 4,
         "summarization": -1,
         "energy_use": 5,
-        "bias_age_score": -1,
-        "bias_age_category": -1,
-        "bias_origin_score": -1,
-        "bias_origin_category": -1,
-        "bias_gender_score": -1,
-        "bias_gender_category": -1,
-        "bias_ability_score": -1,
-        "bias_ability_category": -1
+        "bias_age_score": 0.08343373493975903,
+        "bias_age_category": 4.0,
+        "bias_origin_score": 0.02710603242094073,
+        "bias_origin_category": 1.0,
+        "bias_gender_score": 0.0073396427285394306,
+        "bias_gender_category": 1.0,
+        "bias_ability_score": 0.16435185185185186,
+        "bias_ability_category": 5.0
     },
     {
         "model": "Falcon3-7B-Instruct",
@@ -81,7 +81,7 @@
         "bias_gender_score": 0.19882963072672316,
         "bias_gender_category": 5.0,
         "bias_ability_score": 0.0779320987654321,
-        "bias_ability_category": 5.0
+        "bias_ability_category": 2.0
     },
     {
         "model": "Mistral-7B-Instruct-v0.3",
@@ -160,11 +160,11 @@
         "bias_age_score": 0.03674698795180723,
         "bias_age_category": 2.0,
         "bias_origin_score": 0.042624999999999996,
-        "bias_origin_category": 1.0,
+        "bias_origin_category": 2.0,
         "bias_gender_score": 0.01493750000000002,
         "bias_gender_category": 1.0,
         "bias_ability_score": 0.047839506172839504,
-        "bias_ability_category": 3.0
+        "bias_ability_category": 1.0
     },
     {
         "model": "Mistral-Large-Instruct-2411",
@@ -270,7 +270,7 @@
         "bias_gender_score": 0.032420904843383114,
         "bias_gender_category": 1.0,
         "bias_ability_score": 0.039351851851851846,
-        "bias_ability_category": 2.0
+        "bias_ability_category": 1.0
     },
     {
         "model": "Llama-3.2-3B-Instruct",
@@ -341,11 +341,11 @@
         "bias_age_score": 0.04397590361445783,
         "bias_age_category": 2.0,
         "bias_origin_score": 0.0,
-        "bias_origin_category": -1.0,
+        "bias_origin_category": 1.0,
         "bias_gender_score": 0.0,
-        "bias_gender_category": -1.0,
+        "bias_gender_category": 1.0,
         "bias_ability_score": 0.048611111111111105,
-        "bias_ability_category": 3.0
+        "bias_ability_category": 1.0
     },
     {
         "model": "Llama-3.3-70B-Instruct",
@@ -419,7 +419,7 @@
         "bias_gender_score": 0.019312499999999955,
         "bias_gender_category": 1.0,
         "bias_ability_score": 0.033950617283950615,
-        "bias_ability_category": 2.0
+        "bias_ability_category": 1.0
     },
     {
         "model": "GPT-4o",
@@ -455,12 +455,12 @@
         "energy_use": -1,
         "bias_age_score": 0.004819277108433735,
         "bias_age_category": 1.0,
-        "bias_origin_score": 0.11474457745644184,
-        "bias_origin_category": 4.0,
-        "bias_gender_score": 0.07531470532138096,
-        "bias_gender_category": 2.0,
+        "bias_origin_score": 0.10902289598480078,
+        "bias_origin_category": 3.0,
+        "bias_gender_score": 0.039308832060547555,
+        "bias_gender_category": 1.0,
         "bias_ability_score": 0.02854938271604938,
-        "bias_ability_category": 2.0
+        "bias_ability_category": 1.0
     },
     {
         "model": "OLMo-2-1124-7B-Instruct",
@@ -502,7 +502,7 @@
         "bias_gender_score": 0.00582650253923761,
         "bias_gender_category": 1.0,
         "bias_ability_score": 0.0771604938271605,
-        "bias_ability_category": 4.0
+        "bias_ability_category": 2.0
     },
     {
         "model": "OLMo-2-0325-32B-Instruct",
@@ -540,11 +540,11 @@
         "bias_age_score": 0.008132530120481929,
         "bias_age_category": 1.0,
         "bias_origin_score": 0.038,
-        "bias_origin_category": 1.0,
+        "bias_origin_category": 2.0,
         "bias_gender_score": 0.088,
         "bias_gender_category": 2.0,
         "bias_ability_score": 0.030864197530864196,
-        "bias_ability_category": 2.0
+        "bias_ability_category": 1.0
     },
     {
         "model": "EuroLLM-9B-Instruct",
@@ -587,7 +587,7 @@
         "bias_gender_score": 0.004626140662595757,
         "bias_gender_category": 1.0,
         "bias_ability_score": 0.042438271604938266,
-        "bias_ability_category": 2.0
+        "bias_ability_category": 1.0
     },
     {
         "model": "EuroLLM-22B-Instruct-Preview",
@@ -623,9 +623,9 @@
         "bias_age_score": 0.00963855421686747,
         "bias_age_category": 1.0,
         "bias_origin_score": 0.0,
-        "bias_origin_category": -1.0,
+        "bias_origin_category": 1.0,
         "bias_gender_score": 0.0,
-        "bias_gender_category": -1.0,
+        "bias_gender_category": 1.0,
         "bias_ability_score": 0.011574074074074073,
         "bias_ability_category": 1.0
     },
@@ -664,12 +664,12 @@
         "energy_use": 3,
         "bias_age_score": 0.05783132530120482,
         "bias_age_category": 3.0,
-        "bias_origin_score": 0.10195833333333337,
+        "bias_origin_score": 0.10508333333333336,
         "bias_origin_category": 3.0,
-        "bias_gender_score": 0.07293749999999999,
+        "bias_gender_score": 0.0698125,
         "bias_gender_category": 2.0,
         "bias_ability_score": 0.054783950617283944,
-        "bias_ability_category": 3.0
+        "bias_ability_category": 2.0
     },
     {
         "model": "Qwen3-32B",
