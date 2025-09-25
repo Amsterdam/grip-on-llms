@@ -37,7 +37,13 @@
                             </td>
                         {% elsif column == 'costs' %}
                             <td class="costs-cell">
-                                {% include costs_bar.html costs=model.costs costs_category=model.costs_category costs_percent=model.costs_percent %}
+                                {% include costs_bar.html aspect=column costs=model.costs costs_category=model.costs_category costs_percent=model.costs_percent %}
+                            </td>
+                        {% elsif column == 'energy_use' %}
+                            <td class="costs-cell">
+                                {% assign energy_use_category = 6 | minus: model.energy_use %}
+                                {% assign energy_use_percent = model.energy_use_score | divided_by: 0.00537  | times: 100 | round %}
+                                {% include costs_bar.html aspect=column costs=model.energy_use_score costs_category=energy_use_category costs_percent=energy_use_percent %}
                             </td>
                         {% elsif column == 'bias' %}
                             <td class="bias-cell">

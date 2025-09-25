@@ -6,17 +6,27 @@ Parameters:
 - percentage: Width percentage for the bar (0-100)
 {% endcomment %}
 
+{% assign aspect = include.aspect %}
 {% assign costs = include.costs %}
 {% assign costs_category = include.costs_category | plus: 0 %}
 {% assign costs_percent = include.costs_percent | plus: 0 %}
 
-{% if score == -1 %}
-    unknown
+{% if costs == -1 %}
+    {% if aspect == "energy_use" %}
+        {% include energy_disclaimer.html %}
+    {% else %}
+        ?
+    {% endif %}
 {% else %}
     <div class="costs-container">
         <div class="costs-bar">
             <div class="costs-fill costs-category-{{ costs_category }}" style="width: {{ costs_percent }}%"></div>
         </div>
-        <span class="costs-value">€{{ costs }}</span>
+        {% if aspect == 'costs' %}
+            <span class="costs-value">€{{ costs }}</span>
+        {% elsif aspect == "energy_use" %}
+            {% assign energy_costs = costs | times: 10000 | round: 1 %}
+            <span class="costs-value">{{ energy_costs }}Wh</span>
+        {% endif %}
   </div>
 {% endif %}
