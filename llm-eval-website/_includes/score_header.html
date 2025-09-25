@@ -19,11 +19,11 @@
                         {{ site.data[translations_key].score_explanation.title }}
                     </div> -->
                     <div class="score-explanation-text">
-                        <p>{{ site.data[translations_key].score_explanation[score_type].intro }}</p>
+                        <p>{{ site.data[translations_key].score_explanation[score_type].intro | newline_to_br }}</p>
                         <div class="score-explanation-example">
                             <p>{{ site.data[translations_key].score_explanation[score_type].example | newline_to_br }}</p>
                         </div>
-                        <p>{{ site.data[translations_key].score_explanation[score_type].outro }}</p>
+                        <p>{{ site.data[translations_key].score_explanation[score_type].outro | newline_to_br }}</p>
                     </div>
                 </div>
             </div>

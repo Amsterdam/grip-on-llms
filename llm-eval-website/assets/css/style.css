@@ -353,6 +353,7 @@ th {
   min-width: 240px;
   max-width: 300px;
   z-index: 10;
+  text-align: left;
   font-family: inherit;
   font-size: 12px;
   color: #222;
@@ -364,7 +365,7 @@ th {
 
 .missing-score-icon:hover .score-disclaimer-card,
 .missing-score-icon:focus .score-disclaimer-card {
-  display: flex;
+    display: flex;
 }
 
 @media (max-width: 600px) {
@@ -404,6 +405,7 @@ th {
   justify-content: flex-start;
   border-radius: 2px 0 0 2px;
   box-sizing: border-box;
+  padding: 8px 0;
 }
 
 .score-disclaimer-bar svg {
@@ -456,40 +458,53 @@ th {
   vertical-align: middle;
 }
 
+.score-disclaimer-card,
 .score-explanation-card {
-    display: none;
-    position: absolute;
-    left: -300px;
-    top: 30px;
-    /* position: fixed; */
-    /* transform: translateY(-50%); */
-    background: #fff;
-    border: 2px solid #00A03C;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    /* min-width: 300px; */
-    /* max-width: 500px; */
-    width: 500px;
-    z-index: 10;
-    font-family: inherit;
-    font-size: 12px;
-    color: #222;
-    white-space: normal;
-    flex-direction: row;
-    align-items: stretch;
-    pointer-events: auto;
-    /* max-height: 90vh;
-    overflow: hidden; */
+  display: none;
+  position: absolute;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  border-radius: 4px;
+  z-index: 10;
+  text-align: left;
+  font-family: inherit;
+  font-size: 12px;
+  color: #222;
+  white-space: normal;
+  flex-direction: row;
+  align-items: stretch;
+  pointer-events: auto;
+}
+
+/* Specific disclaimer styles */
+.score-disclaimer-card {
+  left: -400px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 2px solid #FF9100;
+  min-width: 240px;
+  max-width: 300px;
+}
+
+/* Specific explanation styles */
+.score-explanation-card {
+  left: -300px;
+  top: 30px;
+  border: 2px solid #00A03C;
+  width: 500px;
 }
 
 .score-explanation-card--right {
     left: -500px;
 }
 
+
 .score-header-container:hover .score-explanation-card,
 .score-header-container:focus .score-explanation-card,
 .score-info-icon:hover .score-explanation-card,
-.score-info-icon:focus .score-explanation-card {
+.score-info-icon:focus .score-explanation-card,
+.bias-aspect:hover .score-explanation-card,
+.bias-aspect:focus .score-explanation-card {
     display: flex;
 }
 
@@ -527,7 +542,8 @@ th {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    /* justify-content: flex-start; */
+    justify-content: center;
     border-radius: 2px 0 0 2px;
     box-sizing: border-box;
 }
@@ -537,6 +553,7 @@ th {
     width: 24px;
     height: 24px;
     display: block;
+    flex-shrink: 0;
 }
 
 .score-explanation-header-info-circle svg {
@@ -584,7 +601,9 @@ th {
 }
 
 .score-disclaimer-card,
-.score-explanation-card {
+.score-explanation-card
+{
+  /* text-align: left; */
   max-height: 90vh;
   overflow-y: auto;
 }
@@ -628,3 +647,140 @@ th {
 .costs-category-4 { background: #FF9100; }
 .costs-category-5 { background: #EC0000; }
 .costs-category-6 { background: #B70000; }
+
+
+.bias-cell {
+    text-align: center;
+}
+
+.bias-scores {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+/* Adjust gap when fewer items */
+.bias-scores:has(:nth-child(4):not(:nth-child(5))) {
+    gap: 6px; /* More space with 4 items */
+}
+
+.bias-scores:has(:nth-child(3):not(:nth-child(4))) {
+    gap: 8px; /* Even more space with 3 items */
+}
+
+.bias-scores .score-circles.score-unavailable {
+  width: 20px;
+  height: 20px;
+  display: inline-flex; /* Match other bias icons */
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.bias-scores .missing-score-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 14px; /* Match the size used in other missing bias icons */
+  font-weight: bold;
+  color: #666; /* Match bias icon color scheme */
+}
+
+.bias-aspect svg {
+    width: 20px;
+    height: 20px;
+    fill: #666; /* Default gray */
+    opacity: 0.3; /* Low bias = more transparent */
+    transition: opacity 0.2s;
+}
+
+.bias-aspect {
+  position: relative;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Your category colors */
+/* .bias-aspect.category-1 svg { fill: #22c55e; }
+.bias-aspect.category-2 svg { fill: #84cc16; }
+.bias-aspect.category-3 svg { fill: #eab308; }
+.bias-aspect.category-4 svg { fill: #f97316; }
+.bias-aspect.category-5 svg { fill: #ef4444; } */
+
+/* .bias-aspect.category-0 svg { opacity: 0.2; }
+.bias-aspect.category-1 svg { opacity: 0.3; }
+.bias-aspect.category-2 svg { opacity: 0.5; }
+.bias-aspect.category-3 svg { opacity: 0.7; }
+.bias-aspect.category-4 svg { opacity: 0.9; }
+.bias-aspect.category-5 svg { opacity: 1.0; } */
+
+/* .bias-aspect.category-0 svg {  fill: #eab308; opacity: 0.2; filter: drop-shadow(0 0 0px #eab308);}
+.bias-aspect.category-1 svg {  fill: #eab308; opacity: 0.3; filter: drop-shadow(0 0 1px #eab308);}
+.bias-aspect.category-2 svg { fill: #f97316; opacity: 0.5;  filter: drop-shadow(0 0 0px #f97316);}
+.bias-aspect.category-3 svg { fill: #f97316; opacity: 0.7;  filter: drop-shadow(0 0 1px #f97316);}
+.bias-aspect.category-4 svg { fill: #ef4444; opacity: 0.9;  filter: drop-shadow(0 0 0px #ef4444);}
+.bias-aspect.category-5 svg { fill: #ef4444; opacity: 1.0;  filter: drop-shadow(0 0 1px #ef4444);} */
+
+/* .bias-aspect.category-0 svg {  fill: #00A03C; opacity: 0.4;}
+.bias-aspect.category-1 svg {  fill: #BED200; opacity: 0.4;}
+.bias-aspect.category-2 svg { fill: #eab308; opacity: 0.6;}
+.bias-aspect.category-3 svg { fill: #f97316; opacity: 0.6;}
+.bias-aspect.category-4 svg { fill: #ef4444; opacity: 0.8;}
+.bias-aspect.category-5 svg { fill: #B70000; opacity: 0.8;} */
+
+
+.bias-aspect.category-0 svg {  fill: #00A03C; opacity: 1;}
+.bias-aspect.category-1 svg {  fill: #BED200; opacity: 1;}
+.bias-aspect.category-2 svg { fill: #eab308; opacity: 1;}
+.bias-aspect.category-3 svg { fill: #f97316; opacity: 1;}
+.bias-aspect.category-4 svg { fill: #ef4444; opacity: 1;}
+.bias-aspect.category-5 svg { fill: #B70000; opacity: 1;}
+
+
+ /* .bias-aspect.category-0 svg {  fill: #eab308; opacity: 0.4;}
+.bias-aspect.category-1 svg {  fill: #eab308; opacity: 0.4;}
+.bias-aspect.category-2 svg { fill: #f97316; opacity: 0.6;}
+.bias-aspect.category-3 svg { fill: #f97316; opacity: 0.6;}
+.bias-aspect.category-4 svg { fill: #ef4444; opacity: 0.8;}
+.bias-aspect.category-5 svg { fill: #B70000; opacity: 0.8;} */
+
+/* .bias-aspect.category-1 { border: 1px solid #ccc; }
+.bias-aspect.category-2 { border: 2px solid #999; }
+.bias-aspect.category-3 { border: 2px dashed #666; }
+.bias-aspect.category-4 { border: 3px solid #333; }
+.bias-aspect.category-5 {
+    border: 3px solid #000;
+    box-shadow: 0 0 0 2px red;
+} */
+
+
+/* Position the explanation cards for bias icons */
+.bias-aspect .score-explanation-card {
+    display: none;
+    position: absolute;
+    left: -300px;
+    top: 30px;
+    background: #fff;
+    border: 2px solid #00A03C;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    width: 500px;
+    z-index: 10;
+    font-family: inherit;
+    font-size: 12px;
+    color: #222;
+    white-space: normal;
+    flex-direction: row;
+    align-items: stretch;
+    pointer-events: auto;
+}
+
+.bias-aspect:focus,
+.missing-bias-score-icon:focus {
+    outline: 2px solid #00A03C;
+    outline-offset: 2px;
+}
