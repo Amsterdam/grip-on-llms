@@ -718,12 +718,34 @@ th {
 .bias-aspect.category-4 svg { opacity: 0.9; }
 .bias-aspect.category-5 svg { opacity: 1.0; } */
 
+/* .bias-aspect.category-0 svg { fill: #ef4444; opacity: 0.2; }
+.bias-aspect.category-1 svg { fill: #ef4444; opacity: 0.3; }
+.bias-aspect.category-2 svg { fill: #ef4444; opacity: 0.5; }
+.bias-aspect.category-3 svg { fill: #ef4444; opacity: 0.7; }
+.bias-aspect.category-4 svg { fill: #ef4444; opacity: 0.9; }
+.bias-aspect.category-5 svg { fill: #ef4444; opacity: 1.0; }  */
+
+.bias-aspect.category-0 svg {  fill: #FFE600; opacity: 1;}
+.bias-aspect.category-1 svg {  fill: #FFE600; opacity: 1;}
+.bias-aspect.category-2 svg { fill: #FF9100; opacity: 1;}
+.bias-aspect.category-3 svg { fill: #FF9100; opacity: 1;}
+.bias-aspect.category-4 svg { fill: #EC0000; opacity: 1;}
+.bias-aspect.category-5 svg { fill: #EC0000; opacity: 1;}
+
+/* .bias-aspect.category-0 svg {  fill: #eab308; opacity: 0.2;}
+.bias-aspect.category-1 svg {  fill: #eab308; opacity: 0.3;}
+.bias-aspect.category-2 svg { fill: #f97316; opacity: 0.5;}
+.bias-aspect.category-3 svg { fill: #f97316; opacity: 0.7;}
+.bias-aspect.category-4 svg { fill: #ef4444; opacity: 0.9;}
+.bias-aspect.category-5 svg { fill: #ef4444; opacity: 1.0;} */
+
 /* .bias-aspect.category-0 svg {  fill: #eab308; opacity: 0.2; filter: drop-shadow(0 0 0px #eab308);}
 .bias-aspect.category-1 svg {  fill: #eab308; opacity: 0.3; filter: drop-shadow(0 0 1px #eab308);}
 .bias-aspect.category-2 svg { fill: #f97316; opacity: 0.5;  filter: drop-shadow(0 0 0px #f97316);}
 .bias-aspect.category-3 svg { fill: #f97316; opacity: 0.7;  filter: drop-shadow(0 0 1px #f97316);}
 .bias-aspect.category-4 svg { fill: #ef4444; opacity: 0.9;  filter: drop-shadow(0 0 0px #ef4444);}
 .bias-aspect.category-5 svg { fill: #ef4444; opacity: 1.0;  filter: drop-shadow(0 0 1px #ef4444);} */
+
 
 /* .bias-aspect.category-0 svg {  fill: #00A03C; opacity: 0.4;}
 .bias-aspect.category-1 svg {  fill: #BED200; opacity: 0.4;}
@@ -733,12 +755,12 @@ th {
 .bias-aspect.category-5 svg { fill: #B70000; opacity: 0.8;} */
 
 
-.bias-aspect.category-0 svg {  fill: #00A03C; opacity: 1;}
+/* .bias-aspect.category-0 svg {  fill: #00A03C; opacity: 1;}
 .bias-aspect.category-1 svg {  fill: #BED200; opacity: 1;}
 .bias-aspect.category-2 svg { fill: #eab308; opacity: 1;}
 .bias-aspect.category-3 svg { fill: #f97316; opacity: 1;}
 .bias-aspect.category-4 svg { fill: #ef4444; opacity: 1;}
-.bias-aspect.category-5 svg { fill: #B70000; opacity: 1;}
+.bias-aspect.category-5 svg { fill: #B70000; opacity: 1;} */
 
 
  /* .bias-aspect.category-0 svg {  fill: #eab308; opacity: 0.4;}
