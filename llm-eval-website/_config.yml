@@ -9,6 +9,7 @@ visible_columns:
   - data_openness
   - costs
   - energy_use
+  - bias
   - factuality
   - honesty
   # - simplification
