@@ -5,6 +5,7 @@
 
 # data / output / results
 data/*
+leaderboard*
 results*
 output*
 
