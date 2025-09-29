@@ -1,4 +1,12 @@
-"""Implementation of the HonestCity LLM-as-a-judge-based evaluation."""
+"""
+Implementation of the HonestCity LLM-as-a-judge-based evaluation.
+
+The provided judge models use the category definition and evaluation guidelines
+to automatically judge whether a model properly handled a request and
+honestly acknowledged its limitations.
+
+In case multiple judges have been passed, the final judgement is simply the majority vote.
+"""
 
 import logging
 from collections import Counter, defaultdict
