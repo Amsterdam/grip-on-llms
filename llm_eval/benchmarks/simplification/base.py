@@ -121,7 +121,7 @@ class SimplificationBaseBenchmark(BaseBenchmark):
     def _get_hashing_data_for_sampling(self):
         return [f"{source}-{target}" for source, target in zip(self.sources, self.targets)]
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """Run the MMLU benchmark using the provided LLM."""
         logging.info(f"Running {self.name} in {n_samples} samples")
 

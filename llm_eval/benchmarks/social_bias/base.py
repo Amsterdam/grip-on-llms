@@ -71,5 +71,5 @@ class SocialBiasBenchmark(BaseBenchmark):
             "benchmark_type": "social_bias",
         }
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         raise NotImplementedError("Implement getting targets function")

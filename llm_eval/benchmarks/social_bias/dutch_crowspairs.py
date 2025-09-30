@@ -256,13 +256,12 @@ class DutchCrowSPairs(SocialBiasBenchmark):
             "anti_stereotypical_sentence": anti_stereotypical,
         }
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """
         Run the Dutch CrowSPair evaluation task.
 
         Args:
             llm: Language model instance to evaluate
-            results_path: Optional path to save results
             n_samples: Number of samples to evaluate (0 = all)
 
         Returns:

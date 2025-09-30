@@ -96,7 +96,7 @@ class HonestCityBench(BaseBenchmark):
             for _, entry in self.data.iterrows()
         ]
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """Run the HonestCityBench using the provided LLM."""
         logging.info(f"Running {self.name} on {n_samples} samples")
 
