@@ -1,19 +1,5 @@
 """Helpers for string manipulations, cleaning, comparison, etc"""
 import re
-from dataclasses import dataclass
-from typing import List, Optional, Union
-
-
-@dataclass
-class LLMResponse:
-    """Storing the in and outputs of LLMs"""
-
-    raw_prompt: str = ""
-    formatted_prompt: Union[str, List] = ""
-    raw_response: str = ""
-    error: bool = False
-    processed_response: Optional[str] = None
-    exception: Optional[str] = None
 
 
 def clean_and_extract_multiple_choice(input_string):  # noqa
