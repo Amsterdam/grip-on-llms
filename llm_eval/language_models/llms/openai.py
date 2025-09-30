@@ -5,7 +5,7 @@ from typing import List
 from openai import AzureOpenAI
 
 from llm_eval.language_models.llms.base import BaseLLM
-from llm_eval.utils.string_utils import LLMResponse
+from llm_eval.utils.schemas import LLMResponse
 
 
 class OpenAILLM(BaseLLM):

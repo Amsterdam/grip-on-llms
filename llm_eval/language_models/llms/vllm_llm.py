@@ -12,7 +12,7 @@ from llm_eval.language_models.llms.chat_template import create_chat_handler
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.language_models.llms.llm_utils import aggressive_gpu_cleanup
 from llm_eval.utils.exceptions import UnsupportedModelError
-from llm_eval.utils.string_utils import LLMResponse
+from llm_eval.utils.schemas import LLMResponse
 
 
 class VLLMLlm(BaseLLM):

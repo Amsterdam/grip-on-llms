@@ -9,8 +9,8 @@ from typing import List
 
 from codecarbon import OfflineEmissionsTracker
 
+from llm_eval.utils.schemas import LLMResponse
 from llm_eval.utils.string_utils import (
-    LLMResponse,
     clean_and_extract_multiple_choice,
     clean_and_extract_open_text_answers,
 )
