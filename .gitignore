@@ -5,8 +5,8 @@
 
 # data / output / results
 data/*
-leaderboard*
 results*
+./leaderboard*
 output*
 
 # Text / html

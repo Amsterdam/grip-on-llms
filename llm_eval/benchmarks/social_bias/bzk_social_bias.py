@@ -199,13 +199,12 @@ class BZKSocialBias(SocialBiasBenchmark):
         else:
             return "no"
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """
         Run the BZK social bias evaluation task.
 
         Args:
             llm: Language model instance to evaluate
-            results_path: Optional path to save results
             n_samples: Number of samples to evaluate (0 = all)
 
         Returns:

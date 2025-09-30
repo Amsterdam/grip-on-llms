@@ -23,7 +23,7 @@ class Leaderboard:
         self.codecarbon_params = codecarbon_params
         self.n_samples = n_samples
 
-    def run_comparison(self, results_path=None):
+    def run_comparison(self, results_dir=None, results_path=None):
         """
         For run the full comparison for the provided benchmarks and LLMs.
         Add all necessary metadata, such as LLM & benchmark info, system info,
@@ -40,6 +40,12 @@ class Leaderboard:
 
                 for benchmark in tqdm(self.benchmarks, desc="Benchmarks"):
                     try:
+                        # results into a single large file or individual per bench/llm
+                        results_path = (
+                            results_path
+                            or self.results_dir / benchmark.name / f"{llm.model_name}.json"
+                        )
+
                         self.codecarbon_params[
                             "project_name"
                         ] = f"{benchmark.name}-{llm.model_name}"

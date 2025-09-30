@@ -183,7 +183,7 @@ class BaseTinyBenchmark(BaseBenchmark):
     def _get_hashing_data_for_sampling(self):
         return self.inputs
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """Run the MMLU benchmark using the provided LLM."""
         if n_samples:
             indices = self._sample_data(n_samples)

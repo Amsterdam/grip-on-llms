@@ -78,7 +78,7 @@ class BaseTinyMultipleChoiceBenchmark(BaseTinyBenchmark):
         """Get ground-truth answers. Map 1/2/3/4s to A/B/C/D"""
         return [ANSWERS[x] for x in self.dataset[self.target_field]]
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """Run the tiny multiple-choice benchmark using the provided LLM."""
         if n_samples:
             indices = self._sample_data(n_samples)

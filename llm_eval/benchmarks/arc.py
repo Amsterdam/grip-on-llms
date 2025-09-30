@@ -120,7 +120,7 @@ class ARC(BaseBenchmark):
     def _get_hashing_data_for_sampling(self):
         return [entry["id"] for entry in self.data]
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """Run the ARC benchmark using the provided LLM."""
         if self.data is None:
             raise ValueError("Benchmark data is not loaded.")

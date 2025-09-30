@@ -2,7 +2,12 @@
 import logging
 from pathlib import Path
 
-from env_setup import benchmark_data_folder, get_gpt_secrets, get_hf_secrets
+from env_setup import (
+    base_results_folder,
+    benchmark_data_folder,
+    get_gpt_secrets,
+    get_hf_secrets,
+)
 
 from llm_eval.benchmarks import (
     ARC,
@@ -371,6 +376,9 @@ def test_leaderboard():
         llm_judges=[],
     )
 
+    experiment_name = "vllm_rerun_2025-09-30"
+    results_dir = Path(base_results_folder) / experiment_name
+
     logging.info("Running comparison")
     leaderboard = Leaderboard(
         llms=[
@@ -405,7 +413,7 @@ def test_leaderboard():
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )
-    leaderboard.run_comparison(results_path="leaderboard")
+    leaderboard.run_comparison(results_dir=results_dir, results_path=None)
 
 
 if __name__ == "__main__":

@@ -72,11 +72,11 @@ class BaseBenchmark(ABC):
 
     def run(self, llm, results_path=None, n_samples=0):
         """Run the benchmark using the provided LLM."""
-        results = self._run_task(llm, results_path=results_path, n_samples=n_samples)
+        results = self._run_task(llm, n_samples=n_samples)
 
         if results_path:
             with open(results_path, "w") as f:
-                json.dump(results, f)
+                json.dump(results, f, indent=4, default=str)
 
         return results
 
@@ -104,7 +104,7 @@ class BaseBenchmark(ABC):
 
         if results_path:
             with open(results_path, "w") as f:
-                json.dump(results, f)
+                json.dump(results, f, indent=4, default=str)
 
         return results
 

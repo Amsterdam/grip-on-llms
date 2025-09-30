@@ -144,7 +144,7 @@ class SummarizationBaseBenchmark(BaseBenchmark):
     def _get_hashing_data_for_sampling(self):
         return [f"{source}-{summary}" for source, summary in zip(self.sources, self.summaries)]
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """Run the MMLU benchmark using the provided LLM."""
         logging.info(f"Running {self.name} in {n_samples} samples")
 
