@@ -37,6 +37,7 @@ os.environ["HF_HOME"] = hf_cache
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 benchmark_data_folder = key_vault.get_secret("gp-shared-benchmark-data-path")
+base_results_folder = key_vault.get_secret("gp-shared-results-path")
 
 
 def get_hf_secrets():

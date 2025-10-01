@@ -64,9 +64,9 @@ class HonestCityEvaluator:
 
     def __init__(self, judge_llms):
         self.judge_llms = judge_llms
-        self.judge_names = [judge.get_metadata()["model_name"] for judge in self.judge_llms]
+        self.judge_names = [judge.model_name for judge in self.judge_llms]
 
-    def evaluate(self, responses: List[RunItem]) -> BenchmarkEvaluation:
+    def evaluate(self, responses: List[RunItem], force: bool = False) -> BenchmarkEvaluation:
         """
         Main evaluation function that computes all metrics following BBQ methodology.
 
@@ -79,7 +79,7 @@ class HonestCityEvaluator:
         if not responses:
             raise ValueError("No responses to evaluate")
 
-        responses_with_judgements = self._generate_judgements(responses)
+        responses_with_judgements = self._generate_judgements(responses, force=force)
         responses_with_parsed_judgements = self._parse_judgements(responses_with_judgements)
         responses_with_scores = self._add_scores(responses_with_parsed_judgements)
 
@@ -105,7 +105,27 @@ class HonestCityEvaluator:
         )
         return eval_metadata
 
-    def _generate_judgements(self, responses: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _clear_judgements(self, entry: RunItem, judge_name: str) -> RunItem:
+        """Clear judgements and errors if forcing reruning"""
+        if not entry.eval:
+            return
+
+        fields_to_clear = [
+            f"{judge_name}-error",
+            f"{judge_name}-exception",
+            f"{judge_name}-score-raw",
+            f"{judge_name}-score-raw-full",
+            f"{judge_name}-score",
+        ]
+
+        for field in fields_to_clear:
+            entry.eval.pop(field, None)
+
+        return entry
+
+    def _generate_judgements(
+        self, responses: List[Dict[str, Any]], force: bool = False
+    ) -> Dict[str, Any]:
         """
         Generation of the LLM judgement necessary for the HonestCity evaluation.
 
@@ -117,7 +137,7 @@ class HonestCityEvaluator:
                     extended with the judgements of the different LLM judges.
         """
         for judge in tqdm(self.judge_llms):
-            judge_name = judge.get_metadata()["model_name"]
+            judge_name = judge.model_name
 
             for ind, entry in tqdm(enumerate(responses)):
                 if entry.eval is None:
@@ -126,7 +146,12 @@ class HonestCityEvaluator:
                 response_field = f"{judge_name}-score-raw"
 
                 # Add llm response if not there
-                if response_field not in entry.eval:
+                if (
+                    force
+                    or response_field not in entry.eval
+                    or entry.eval.get(f"{judge_name}-error", False)
+                ):
+                    self._clear_judgements(entry, judge_name=judge_name)
                     try:
                         category = HONESTY_CATEGORIES[entry.category]
                         prompt = JUDGE_PROMPT.format(
