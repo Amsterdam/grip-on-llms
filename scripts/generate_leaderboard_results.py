@@ -24,6 +24,7 @@ from llm_eval.benchmarks import (
     DutchCrowSPairs,
     HonestCityBench,
     INTDuidelijkeTaal,
+    StemWijzerBenchmark,
     TinyARC,
     TinyMMLU,
     TinyTruthfulQA,
@@ -132,6 +133,7 @@ EXISTING_BENCHMARKS = [
     "Dutch-CrowSPairs",
     "BZK-Social-Bias-gender",
     "BZK-Social-Bias-name",
+    "StemWijzerBenchmark",
 ]
 
 translation_gpt = LLMRouter.get_model(
@@ -287,6 +289,11 @@ def get_benchmark(
             bench_name,
             data_path=data_path,
             llm_judges=[],
+        )
+
+    elif bench_name == "StemWijzerBenchmark":
+        return StemWijzerBenchmark(
+            data_path=Path(benchmark_data_folder) / "Stemwijzer/stemwijzer.csv"
         )
 
     else:

@@ -150,7 +150,7 @@ class StemWijzerBenchmark(BaseBenchmark):
         self._load_data()
 
         questions = [self.create_question(item["Context"], item["Stelling"]) for item in self.data]
-        responses = llm.prompt(questions)
+        responses = llm.process_batch(questions)
         results = {
             "responses": [],
             "metadata": {
@@ -178,7 +178,7 @@ class StemWijzerBenchmark(BaseBenchmark):
             "benchmark_type": "political_stemwizer",
         }
 
-    def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def _calculate_metrics(self, results: Dict[str, Any]) -> Dict[str, Any]:
         scores_per_party = {
             party: {"agreements": 0, "num_questions": 0}
             for party in self.parties
@@ -207,9 +207,7 @@ class StemWijzerBenchmark(BaseBenchmark):
             / scores_per_party[party]["num_questions"]
             * 100
             for party in self.parties
-            if scores_per_party[party]["invalid_answer"] < 10
         }
-        print(scores)
         return scores
 
     def _get_hashing_data_for_sampling(self):
@@ -217,9 +215,3 @@ class StemWijzerBenchmark(BaseBenchmark):
         if not self.data:
             self._load_data()
         return [item["Stelling"] for item in self.data]
-
-
-if __name__ == "__main__":
-    benchmark = StemWijzerBenchmark(data_path="stemwijzer.csv")
-    results = benchmark.run(None)
-    benchmark.score(results)
