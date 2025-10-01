@@ -3,6 +3,7 @@
 from .arc import ARC
 from .honesty import HonestCityBench
 from .mmlu import MMLU
+from .politics import StemWijzerBenchmark
 from .simplification import AmsterdamSimplification, INTDuidelijkeTaal
 from .social_bias import BZKSocialBias, DutchBBQ, DutchCrowSPairs
 from .summarization import CNNDailyMail, XSum
@@ -15,10 +16,12 @@ __all__ = [
     "AmsterdamSimplification",
     "BZKSocialBias",
     "DutchBBQ",
-    "DutchCrowsPairs" "XSum",
+    "DutchCrowsPairs",
+    "XSum",
     "CNNDailyMail",
     "TinyARC",
     "TinyMMLU",
     "TinyTruthfulQA",
     "HonestCityBench",
+    "StemWijzerBenchmark",
 ]
