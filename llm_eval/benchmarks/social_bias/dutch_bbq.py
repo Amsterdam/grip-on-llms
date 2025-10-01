@@ -34,12 +34,10 @@ import json
 import logging
 import urllib.request
 from collections import defaultdict
-from dataclasses import asdict
 from typing import Any, Dict, List, Optional
 
-from tqdm import tqdm
-
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 
 class DutchBBQ(SocialBiasBenchmark):
@@ -234,7 +232,7 @@ class DutchBBQ(SocialBiasBenchmark):
             "question_polarity": item.get("question_polarity", "unknown"),
         }
 
-    def _run_task(self, llm, n_samples=0):
+    def _run_task(self, llm, n_samples=0) -> List[RunItem]:
         """
         Run the Dutch BBQ evaluation task.
 
@@ -252,53 +250,41 @@ class DutchBBQ(SocialBiasBenchmark):
             sample_indices = self._sample_data(n_samples)
             data = [data[i] for i in sample_indices if i < len(data)]
 
-        results = {
-            "responses": [],
-            "metadata": {
-                "total_samples": len(data),
-                "language": self.language,
-                "bias_categories": self.bias_categories,
-            },
-        }
-
         questions = [self._generate_multiple_choice_question(item) for item in data]
+        prompts = [item["question"] for item in questions]
         responses = llm.process_batch(
-            [item["question"] for item in questions],
+            prompts,
             response_format=self.preferred_response_format,
         )
 
-        for i, mc_question in enumerate(tqdm(questions)):
-            # Get model response
-            response = asdict(responses[i])
-            chosen_option = response["processed_response"]
-
-            # Parse response to extract chosen option
+        run_items = []
+        for i, (mc_question, response) in enumerate(zip(questions, responses)):
+            chosen_option = response.processed_response
             chosen_index = self._get_choice_index(chosen_option, mc_question["choices"])
-
-            # Determine if response is correct
             is_correct = chosen_index == mc_question["correct_index"]
-
-            # Analyze bias pattern
             bias_analysis = self._analyze_bias_pattern(chosen_index, mc_question)
 
-            results["responses"].append(
-                {
-                    "response_full": response,
-                    "item_id": mc_question["item_id"],
-                    "question": mc_question["question"],
-                    "chosen_option": chosen_option,
-                    "chosen_index": chosen_index,
-                    "correct_answer": mc_question["correct_answer"],
-                    "correct_index": mc_question["correct_index"],
-                    "is_correct": is_correct,
-                    "bias_category": mc_question["bias_category"],
-                    "is_control": mc_question["is_control"],
-                    "bias_pattern": bias_analysis,
-                    "context_condition": mc_question.get("context_condition", "unknown"),
-                    "question_polarity": mc_question.get("question_polarity", "unknown"),
-                }
+            run_item = RunItem(
+                **response.model_dump(),
+                prompt=prompts[i],
+                prompt_idx_original=i,
+                question=mc_question["question"],
+                chosen_option=chosen_option,
+                chosen_index=chosen_index,
+                # target=mc_question["correct_answer"],
+                correct_answer=mc_question["correct_answer"],
+                correct_index=mc_question["correct_index"],
+                correct=is_correct,
+                item_id=mc_question["item_id"],
+                bias_category=mc_question["bias_category"],
+                bias_pattern=bias_analysis,
+                is_control=mc_question["is_control"],
+                context_condition=mc_question.get("context_condition", "unknown"),
+                question_polarity=mc_question.get("question_polarity", "unknown"),
             )
-        return results
+            run_items.append(run_item)
+
+        return run_items
 
     def _get_choice_index(self, chosen_option: str, choices: List[Dict]) -> int:
         """Get the numeric index of the chosen option."""
@@ -336,7 +322,7 @@ class DutchBBQ(SocialBiasBenchmark):
         else:
             return "invalid response"
 
-    def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, float]:
+    def _calculate_metrics(self, run_output: List[RunItem]) -> BenchmarkEvaluation:
         """
         Calculate bias metrics for the Dutch BBQ benchmark following the paper's methodology.
 
@@ -346,9 +332,14 @@ class DutchBBQ(SocialBiasBenchmark):
         Returns:
             Dictionary containing accuracy and bias scores
         """
+        responses_as_dicts = [item.model_dump() for item in run_output]
         evaluator = BBQDutchEvaluator()
-        metrics = evaluator.evaluate(results["responses"])
-        return metrics
+        metrics = evaluator.evaluate(responses_as_dicts)
+
+        return BenchmarkEvaluation(
+            metrics=metrics,
+            total_samples=len(run_output),
+        )
 
     def _get_hashing_data_for_sampling(self) -> List[str]:
         """Get data for consistent sampling using hash-based selection."""
@@ -357,6 +348,17 @@ class DutchBBQ(SocialBiasBenchmark):
             f"{item.get('context', '')}{item.get('question', '')}{item.get('bias_category', '')}"
             for item in data
         ]
+
+    def _get_own_metadata(self):
+        """Get benchmark metadata for versioning purposes"""
+        metadata = super()._get_own_metadata()
+        metadata.update(
+            {
+                "bias_categories": self.bias_categories,
+                "choice_labels": self.choice_labels,
+            }
+        )
+        return metadata
 
 
 class BBQDutchEvaluator:

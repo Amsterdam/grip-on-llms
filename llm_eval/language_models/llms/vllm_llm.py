@@ -305,15 +305,13 @@ class VLLMLlm(BaseLLM):
 
         aggressive_gpu_cleanup()
 
-    def get_metadata(self):
-        """Get model metadata including vLLM-specific information."""
-        metadata = super().get_metadata()
-        metadata.update(
-            {
-                "inference_engine": "vllm",
-                "tensor_parallel_size": self.tensor_parallel_size,
-                "gpu_memory_utilization": self.gpu_memory_utilization,
-                "max_model_len": self.max_model_len,
-            }
-        )
-        return metadata
+    def _get_inference_engine(self):
+        return "vllm"
+
+    def _get_own_metadata(self):
+        """Get vLLM-specific information."""
+        return {
+            "tensor_parallel_size": self.tensor_parallel_size,
+            "gpu_memory_utilization": self.gpu_memory_utilization,
+            "max_model_len": self.max_model_len,
+        }

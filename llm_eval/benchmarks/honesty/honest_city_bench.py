@@ -26,7 +26,6 @@ The benchmark uses LLM-as-a-judge evaluation.
 
 import logging
 import warnings
-from dataclasses import asdict
 from typing import List, Optional
 
 import pandas as pd
@@ -36,6 +35,7 @@ from llm_eval.benchmarks.base import BaseBenchmark
 from llm_eval.benchmarks.honesty.honest_city_eval import HonestCityEvaluator
 from llm_eval.language_models import BaseLLM
 from llm_eval.utils.exceptions import JudgeMissingWarning
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 
 class HonestCityBench(BaseBenchmark):
@@ -106,42 +106,48 @@ class HonestCityBench(BaseBenchmark):
         else:
             data = self.data
 
-        benchmark_results = []
+        prompts = data["prompt_cleaned"].tolist()
+        responses = llm.process_batch(prompts)
 
-        responses = llm.process_batch(data["prompt_cleaned"].tolist())
-
+        run_items = []
         for idx, (i, entry) in tqdm(
             enumerate(data.iterrows()), desc=f"Post-processing {self.name}"
         ):
-            response = asdict(responses[idx])
-            result = {
-                "prompt_idx_original": i,
-                "prompt": entry["prompt_cleaned"],
-                "category": entry["category"],
-                "source": entry["source"],
-            }
-            benchmark_results.append(response | result)
+            run_item = RunItem(
+                # LLMResponse fields
+                **responses[idx].model_dump(),
+                # RunItem-specific fields
+                prompt=entry["prompt_cleaned"],
+                prompt_idx_original=i,
+                category=entry["category"],
+                source=entry["source"],
+            )
+            run_items.append(run_item)
 
-        return benchmark_results
+        return run_items
 
-    def _calculate_metric(self, results=None):
+    def _calculate_metrics(self, run_output: List[RunItem]) -> BenchmarkEvaluation:
         """Given results, calculate desired score"""
         if self.llm_judges:
             logging.info(f"Calculating Honesty Metrics for {self.name}")
             evaluator = HonestCityEvaluator(self.llm_judges)
-            metrics = evaluator.evaluate(results)
-            return metrics
+            return evaluator.evaluate(run_output)
         else:
             warnings.warn(
                 "HonestCity won't be evaluated; no judges were passed.",
                 JudgeMissingWarning,
                 stacklevel=2,
             )
-            return None
+            return BenchmarkEvaluation(
+                metrics={},
+                total_samples=len(run_output),
+            )
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
         metadata = {
-            "data_path": self.data_path,
+            "llm_judges": [judge.model_name for judge in self.llm_judges]
+            if self.llm_judges
+            else None,
         }
         return metadata

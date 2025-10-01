@@ -6,12 +6,10 @@ The base class handles the default templating, calculating metrics, etc.
 
 import logging
 from abc import abstractmethod
-from dataclasses import asdict
-
-from tqdm import tqdm
 
 from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 PROMPT_TEMPLATES = {
     "simple": {
@@ -145,7 +143,7 @@ class SummarizationBaseBenchmark(BaseBenchmark):
         return [f"{source}-{summary}" for source, summary in zip(self.sources, self.summaries)]
 
     def _run_task(self, llm, n_samples=0):
-        """Run the MMLU benchmark using the provided LLM."""
+        """Run the summarization benchmark using the provided LLM."""
         logging.info(f"Running {self.name} in {n_samples} samples")
 
         if n_samples:
@@ -153,39 +151,42 @@ class SummarizationBaseBenchmark(BaseBenchmark):
             src_sum = list(zip(self.sources, self.summaries))
             data = [src_sum[ind] for ind in indices]
         else:
-            data = zip(self.sources, self.summaries)
+            data = list(zip(self.sources, self.summaries))
 
         prompt_template = PROMPT_TEMPLATES[self.prompt_type][self.language]
-        benchmark_results = []
-        responses = llm.process_batch(
-            [
-                prompt_template.format(
-                    DOCUMENT_TYPE=self.document_type,
-                    TARGET_LENGTH=self.target_length,
-                    DOCUMENT=source,
-                )
-                for (source, _) in data
-            ]
-        )
 
-        for i, (source, summary) in tqdm(enumerate(data), desc=f"Running {self.name}"):
-            response = asdict(responses[i])
-            result = {
-                "source": source,
-                "summary": summary,
-            }
+        prompts = [
+            prompt_template.format(
+                DOCUMENT_TYPE=self.document_type,
+                TARGET_LENGTH=self.target_length,
+                DOCUMENT=source,
+            )
+            for (source, _) in data
+        ]
+        responses = llm.process_batch(prompts)
 
-            benchmark_results.append(response | result)
+        run_items = []
+        for i, ((source, summary), response) in enumerate(zip(data, responses)):
+            run_item = RunItem(
+                # LLMResponse fields
+                **response.model_dump(),
+                # RunItem-specific fields
+                prompt=prompts[i],
+                prompt_idx_original=i,
+                source=source,
+                target=summary,
+            )
+            run_items.append(run_item)
 
-        return benchmark_results
+        return run_items
 
-    def _calculate_metric(self, results=None):
+    def _calculate_metrics(self, run_output: list[RunItem]) -> BenchmarkEvaluation:
         """Given results, calculate desired score"""
         logging.info(f"Calculating Summarization Metrics for {self.name}")
         predictions = [
-            entry["processed_response"] if entry["processed_response"] else "" for entry in results
+            entry.processed_response if entry.processed_response else "" for entry in run_output
         ]
-        references = [entry["summary"] if entry["summary"] else "" for entry in results]
+        references = [entry.target if entry.target else "" for entry in run_output]
 
         rouge_score = metrics.rouge(predictions=predictions, references=references)
         bleu_score = metrics.bleu(predictions=predictions, references=references)
@@ -194,17 +195,19 @@ class SummarizationBaseBenchmark(BaseBenchmark):
             predictions=predictions, references=references, lang=self.language.lower()
         )
 
-        return {
-            "bleu": bleu_score,
-            "rouge": rouge_score,
-            "meteor": meteor_score,
-            "bert_score": bert_score,
-        }
+        return BenchmarkEvaluation(
+            metrics={
+                "bleu": bleu_score,
+                "rouge": rouge_score,
+                "meteor": meteor_score,
+                "bert_score": bert_score,
+            },
+            total_samples=len(run_output),
+        )
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
         metadata = {
-            "data_path": self.data_path,
             "language": self.language,
             "prompt_type": self.prompt_type,
             "target_length": self.target_length,

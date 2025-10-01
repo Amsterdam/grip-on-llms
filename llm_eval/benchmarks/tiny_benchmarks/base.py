@@ -34,13 +34,12 @@ arXiv preprint arXiv:2402.14992 (2024).
 """
 import logging
 from abc import abstractmethod
-from dataclasses import asdict
 
 from datasets import load_dataset
-from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
 from llm_eval.utils.exceptions import TranslatorMissingError
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 TRANSLATE_PROMPT = (
     "Below is a formatted prompt for an LLM benchmark.\n"
@@ -190,29 +189,38 @@ class BaseTinyBenchmark(BaseBenchmark):
             src_sum = list(zip(self.inputs, self.targets))
             data = [src_sum[ind] for ind in indices]
         else:
-            data = zip(self.inputs, self.targets)
+            data = list(zip(self.inputs, self.targets))
 
-        benchmark_results = []
+        prompts = [input for input, target in data]
+        responses = llm.process_batch(prompts, response_format=self.preferred_response_format)
 
-        responses = llm.process_batch(
-            [input for input, target in data], response_format=self.preferred_response_format
-        )
+        run_items = []
+        for i, ((input_text, target), response) in enumerate(zip(data, responses)):
+            run_item = RunItem(
+                # LLMResponse fields
+                **response.model_dump(),
+                # RunItem-specific fields
+                prompt=input_text,
+                prompt_idx_original=i,
+                target=target,
+            )
+            run_items.append(run_item)
 
-        for i, (_, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
-            result = asdict(responses[i]) | {"target": target}
-            benchmark_results.append(result)
-        return benchmark_results
+        return run_items
 
     @abstractmethod
-    def _calculate_metric(self, results=None):
+    def _calculate_metrics(self, run_output: list[RunItem]) -> BenchmarkEvaluation:
         raise NotImplementedError("Implement metric calculation")
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
         metadata = {
-            "data_path": self.data_path,
+            "benchmark_purpose": self.benchmark_purpose,
             "language": self.language,
-            "translation_prompt": TRANSLATE_PROMPT if self.language == "NL" else "",
+            "translation_prompt": TRANSLATE_PROMPT if self.language != "EN" else None,
+            "translator": self.translator.get_metadata() if self.translator else None,
+            "input_field": self.input_field,
+            "target_field": self.target_field,
             # "prompt_template": PROMPT_TEMPLATES[self.prompt_type][self.language],
         }
         return metadata

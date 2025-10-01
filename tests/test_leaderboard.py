@@ -413,7 +413,7 @@ def test_leaderboard():
         codecarbon_params=codecarbon_params,
         n_samples=n_samples,
     )
-    leaderboard.run_comparison(results_dir=results_dir, results_path=None)
+    leaderboard.run_comparison(results_dir=results_dir)
 
 
 if __name__ == "__main__":

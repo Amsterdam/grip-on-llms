@@ -3,12 +3,14 @@ Module for handling benchmarks and running evaluation.
 For every benchmark we should be able to provide an LLM,
 generate LLM responses and evaluate them.
 """
-import json
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import List
 
 import mmh3
 import numpy as np
+
+from llm_eval.utils.schemas import BenchmarkEvaluation, BenchmarkMetadata, RunItem
 
 
 class BaseBenchmark(ABC):
@@ -70,43 +72,19 @@ class BaseBenchmark(ABC):
         """Property to get the preferred response format"""
         return self._preferred_response_format
 
-    def run(self, llm, results_path=None, n_samples=0):
+    def run(self, llm, n_samples=0) -> List[RunItem]:
         """Run the benchmark using the provided LLM."""
-        results = self._run_task(llm, n_samples=n_samples)
+        return self._run_task(llm, n_samples=n_samples)
 
-        if results_path:
-            with open(results_path, "w") as f:
-                json.dump(results, f, indent=4, default=str)
-
-        return results
-
-    def score(self, results=None, results_path=None):
-        """Given results or a path to results, calculate desired score"""
-        if not results and not results_path:
-            raise ValueError("At least one of results or results path must be provided")
-
-        if results_path:
-            results = json.load(open(results_path, "r"))
-
-        score = self._calculate_metric(results)
-
-        return score
+    def score(self, run_output: List[RunItem]) -> BenchmarkEvaluation:
+        """Calculate evaluation from run output"""
+        return self._calculate_metrics(run_output)
 
     def eval(self, llm, results_path=None, n_samples=0):
         """Run benchmark and calculate corresponding scores"""
         run_output = self.run(llm, n_samples=n_samples)
-        score = self.score(run_output)
-
-        results = {
-            "run_output": run_output,
-            "score": score,
-        }
-
-        if results_path:
-            with open(results_path, "w") as f:
-                json.dump(results, f, indent=4, default=str)
-
-        return results
+        scores = self.score(run_output)
+        return run_output, scores
 
     @abstractmethod
     def _run_task(self, llm, n_samples=0):
@@ -131,20 +109,19 @@ class BaseBenchmark(ABC):
         raise NotImplementedError("Implement _get_hashing_data_for_sampling function")
 
     @abstractmethod
-    def _calculate_metric(self, results):
+    def _calculate_metrics(self, results):
         """Function to calculate a metric should always be implemented"""
-        raise NotImplementedError("Implement _calculate_metric function")
+        raise NotImplementedError("Implement _calculate_metrics function")
 
     def get_metadata(self):
-        """Get benchmark metadata for versioning purposes"""
-        metadata = {
-            "name": self.name,
-            "source_url": self.source_url,
-            "data_path": self.data_path,
-            "preferred_response_format": self.preferred_response_format,
-        }
-        metadata.update(self._get_own_metadata())
-        return metadata
+        """Get benchmark metadata for versioning purposes as BenchmarkMetadata object"""
+        return BenchmarkMetadata(
+            name=self.name,
+            source_url=self.source_url,
+            data_path=str(self.data_path),
+            preferred_response_format=self.preferred_response_format,
+            **self._get_own_metadata(),
+        )
 
     @abstractmethod
     def _get_own_metadata(self):

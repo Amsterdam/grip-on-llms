@@ -5,12 +5,9 @@ This is the implementation of common functionality such as
 templating the question and corresponding A/B/C/D answers,
 as well as running the task itself and calculating metrics.
 """
-from dataclasses import asdict
-
-from tqdm import tqdm
-
 from llm_eval.benchmarks.metrics import tiny_scores
 from llm_eval.benchmarks.tiny_benchmarks.base import BaseTinyBenchmark
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 ANSWERS = {
     0: "A",
@@ -71,7 +68,6 @@ class BaseTinyMultipleChoiceBenchmark(BaseTinyBenchmark):
 
     def _get_inputs(self):
         """Get formatted questions"""
-        template_question
         return self.dataset[self.input_field]
 
     def _get_targets(self):
@@ -85,33 +81,46 @@ class BaseTinyMultipleChoiceBenchmark(BaseTinyBenchmark):
             src_sum = list(zip(self.inputs, self.targets))
             data = [src_sum[ind] for ind in indices]
         else:
-            data = zip(self.inputs, self.targets)
+            data = list(zip(self.inputs, self.targets))
 
         prompt_template = PROMPT_TEMPLATES[self.language]
-        benchmark_results = []
 
+        prompts = [prompt_template.format(question=input) for input, target in data]
         responses = llm.process_batch(
-            [prompt_template.format(question=input) for input, target in data],
+            prompts,
             response_format=self.preferred_response_format,
         )
 
-        for i, (_, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
-            response = asdict(responses[i]) | {"target": target}
-            result = {
-                "target": target,
-                "correct": response["processed_response"].strip().lower()
-                == target.strip().lower(),
-            }
-            benchmark_results.append(response | result)
-        return benchmark_results
+        run_items = []
+        for i, ((_, target), response) in enumerate(zip(data, responses)):
+            is_correct = response.processed_response.strip().lower() == target.strip().lower()
+            run_item = RunItem(
+                # LLMResponse fields
+                **response.model_dump(),
+                # RunItem-specific fields
+                prompt=prompts[i],
+                prompt_idx_original=i,
+                target=target,
+                correct=is_correct,
+            )
+            run_items.append(run_item)
 
-    def _calculate_metric(self, results=None):
+        return run_items
+
+    def _calculate_metrics(self, run_output: list[RunItem]) -> BenchmarkEvaluation:
         """Given results, calculate desired score"""
-        tiny_predictions = [entry["correct"] for entry in results]
-        return {
-            "acc": len([entry for entry in results if entry["correct"]]) / len(results),
-            "tiny_scores": tiny_scores(tiny_predictions, task=self.tiny_task),
-        }
+        n_correct = sum(1 for entry in run_output if entry.correct)
+        accuracy = n_correct / len(run_output) if run_output else 0
+
+        tiny_predictions = [entry.correct for entry in run_output]
+
+        return BenchmarkEvaluation(
+            metrics={
+                "acc": accuracy,
+                "tiny_scores": tiny_scores(tiny_predictions, task=self.tiny_task),
+            },
+            total_samples=len(run_output),
+        )
 
 
 def template_question(question, choices):

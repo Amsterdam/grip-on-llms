@@ -6,12 +6,10 @@ The base class handles the default templ
 
 import logging
 from abc import abstractmethod
-from dataclasses import asdict
-
-from tqdm import tqdm
 
 from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 PROMPT_TEMPLATES = {
     "simple": {
@@ -122,7 +120,7 @@ class SimplificationBaseBenchmark(BaseBenchmark):
         return [f"{source}-{target}" for source, target in zip(self.sources, self.targets)]
 
     def _run_task(self, llm, n_samples=0):
-        """Run the MMLU benchmark using the provided LLM."""
+        """Run the simplification benchmark using the provided LLM."""
         logging.info(f"Running {self.name} in {n_samples} samples")
 
         if n_samples:
@@ -130,33 +128,37 @@ class SimplificationBaseBenchmark(BaseBenchmark):
             src_trg = list(zip(self.sources, self.targets))
             data = [src_trg[ind] for ind in indices]
         else:
-            data = zip(self.sources, self.targets)
+            data = list(zip(self.sources, self.targets))
 
         prompt_template = PROMPT_TEMPLATES[self.prompt_type][self.language]
-        benchmark_results = []
 
-        responses = llm.process_batch(
-            [
-                prompt_template.format(GRANULARITY=self.granularity, LEVEL=self.level, TEXT=source)
-                for source, target in data
-            ]
-        )
+        prompts = [
+            prompt_template.format(GRANULARITY=self.granularity, LEVEL=self.level, TEXT=source)
+            for source, target in data
+        ]
+        responses = llm.process_batch(prompts)
 
-        for i, (source, target) in tqdm(enumerate(data), desc=f"Running {self.name}"):
-            response = asdict(responses[i])
-            result = {
-                "source": source,
-                "target": target,
-            }
-            benchmark_results.append(response | result)
-        return benchmark_results
+        run_items = []
+        for i, ((source, target), response) in enumerate(zip(data, responses)):
+            run_item = RunItem(
+                # LLMResponse fields
+                **response.model_dump(),
+                # RunItem-specific fields
+                prompt=prompts[i],
+                prompt_idx_original=i,
+                source=source,
+                target=target,
+            )
+            run_items.append(run_item)
 
-    def _calculate_metric(self, results=None):
+        return run_items
+
+    def _calculate_metrics(self, run_output: list[RunItem]) -> BenchmarkEvaluation:
         """Given results, calculate desired score"""
         logging.info(f"Calculating Simplification Metrics for {self.name}")
-        predictions = [entry["processed_response"] for entry in results]
-        sources = [entry["source"] for entry in results]
-        references = [entry["target"] for entry in results]
+        predictions = [entry.processed_response for entry in run_output]
+        sources = [entry.source for entry in run_output]
+        references = [entry.target for entry in run_output]
 
         sari_score = metrics.sari(sources=sources, predictions=predictions, references=references)
         bleu_score = metrics.bleu(predictions=predictions, references=references)
@@ -165,17 +167,19 @@ class SimplificationBaseBenchmark(BaseBenchmark):
             predictions=predictions, references=references, lang=self.language.lower()
         )
 
-        return {
-            "bleu": bleu_score,
-            "sari": sari_score,
-            "meteor": meteor_score,
-            "bert_score": bert_score,
-        }
+        return BenchmarkEvaluation(
+            metrics={
+                "bleu": bleu_score,
+                "sari": sari_score,
+                "meteor": meteor_score,
+                "bert_score": bert_score,
+            },
+            total_samples=len(run_output),
+        )
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
         metadata = {
-            "data_path": self.data_path,
             "language": self.language,
             "prompt_type": self.prompt_type,
             "level": self.level,
