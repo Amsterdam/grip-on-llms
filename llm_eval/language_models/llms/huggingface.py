@@ -132,6 +132,16 @@ class HuggingFaceLLM(BaseLLM):
 
         aggressive_gpu_cleanup()
 
+    def _get_inference_engine(self):
+        return "huggingface"
+
+    def _get_own_metadata(self):
+        """Get HuggingFace-specific information."""
+        return {
+            "device": self.device,
+            "torch_dtype": str(self.torch_dtype) if hasattr(self, "torch_dtype") else None,
+        }
+
 
 def get_device():
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")

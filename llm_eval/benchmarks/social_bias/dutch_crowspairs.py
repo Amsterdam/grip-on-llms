@@ -30,14 +30,13 @@ import logging
 import random
 import urllib.request
 from collections import defaultdict
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from tqdm import tqdm
 
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 
 class DutchCrowSPairs(SocialBiasBenchmark):
@@ -256,7 +255,7 @@ class DutchCrowSPairs(SocialBiasBenchmark):
             "anti_stereotypical_sentence": anti_stereotypical,
         }
 
-    def _run_task(self, llm, n_samples=0):
+    def _run_task(self, llm, n_samples=0) -> List[RunItem]:
         """
         Run the Dutch CrowSPair evaluation task.
 
@@ -274,35 +273,27 @@ class DutchCrowSPairs(SocialBiasBenchmark):
             sample_indices = self._sample_data(n_samples)
             data = [data[i] for i in sample_indices if i < len(data)]
 
-        results = {
-            "responses": [],
-            "metadata": {
-                "total_samples": len(data),
-                "language": self.language,
-                "bias_categories": self.bias_categories,
-                "randomize_order": self.randomize_order,
-            },
-        }
         questions = [self._generate_multiple_choice_question(item) for item in data]
-        responses = llm.process_batch(
-            [item["question"] for item in questions],
-            response_format=self.preferred_response_format,
-        )
+        prompts = [item["question"] for item in questions]
+        responses = llm.process_batch(prompts, response_format=self.preferred_response_format)
 
-        for i, item in enumerate(tqdm(questions)):
-            response = asdict(responses[i])
-            results["responses"].append(
-                {
-                    "question": item["question"],
-                    "response_full": response,
-                    "response": response["processed_response"],
-                    "bias_type": item["bias_type"],
-                    "label_mapping": item["label_mapping"],  # A->stereotypical, etc.
-                }
+        run_items = []
+        for i, (mc_question, response) in enumerate(zip(questions, responses)):
+            run_item = RunItem(
+                **response.model_dump(),
+                prompt=prompts[i],
+                prompt_idx_original=i,
+                bias_type=mc_question["bias_type"],
+                item_id=mc_question["item_id"],
+                label_mapping=mc_question["label_mapping"],
+                # stereotypical_sentence=mc_question["stereotypical_sentence"],
+                # anti_stereotypical_sentence=mc_question["anti_stereotypical_sentence"],
             )
-        return results
+            run_items.append(run_item)
 
-    def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, float]:
+        return run_items
+
+    def _calculate_metrics(self, run_output: List[RunItem]) -> BenchmarkEvaluation:
         """
         Calculate bias metrics for the Dutch CrowSPair benchmark.
 
@@ -312,9 +303,15 @@ class DutchCrowSPairs(SocialBiasBenchmark):
         Returns:
             Dictionary containing bias scores and metrics
         """
+        responses_as_dicts = [item.model_dump() for item in run_output]
+
         evaluator = CrowSPairsDutchEvaluator()
-        metrics = evaluator.evaluate(results["responses"])
-        return metrics
+        metrics = evaluator.evaluate(responses_as_dicts)
+
+        return BenchmarkEvaluation(
+            metrics=metrics,
+            total_samples=len(run_output),
+        )
 
     def _get_hashing_data_for_sampling(self) -> List[str]:
         """Get data for consistent sampling using hash-based selection."""
@@ -324,6 +321,17 @@ class DutchCrowSPairs(SocialBiasBenchmark):
                 {item.get('bias_type', '')}"
             for item in data
         ]
+
+    def _get_own_metadata(self):
+        metadata = super()._get_own_metadata()
+        metadata.update(
+            {
+                "bias_categories": self.bias_categories,
+                "choice_labels": self.choice_labels,
+                "randomize_order": self.randomize_order,
+            }
+        )
+        return metadata
 
 
 class CrowSPairsDutchEvaluator:

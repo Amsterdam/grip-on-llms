@@ -21,12 +21,11 @@ References:
 arXiv preprint arXiv:2009.03300 (2020).
 """
 import json
-from dataclasses import asdict
 
 import requests
-from tqdm import tqdm
 
 from llm_eval.benchmarks.base import BaseBenchmark
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 prompt_template = (
     # "The following is a multiple choice question about {question_type}.\n"
@@ -115,7 +114,6 @@ class MMLU(BaseBenchmark):
         else:
             data = self.data
 
-        benchmark_results = []
         prompts = [
             prompt_template.format(
                 question_type=entry["id"].split("/")[0].replace("/", " "),
@@ -129,27 +127,39 @@ class MMLU(BaseBenchmark):
         ]
         responses = llm.process_batch(prompts, response_format=self.preferred_response_format)
 
-        for i, entry in tqdm(enumerate(data), total=len(data)):
+        run_items = []
+        for i, (entry, response) in enumerate(zip(data, responses)):
             expected_answer = entry["answer"]
-            response = asdict(responses[i])
+            is_correct = (
+                response.processed_response.strip().lower() == expected_answer.strip().lower()
+            )
 
-            result = {
-                "expected": expected_answer,
-                "correct": response["processed_response"].strip().lower()
-                == expected_answer.strip().lower(),
-            }
-            benchmark_results.append(response | result)
-        return benchmark_results
+            run_item = RunItem(
+                # LLMResponse fields
+                **response.model_dump(),
+                # RunItem-specific fields
+                prompt=prompts[i],
+                prompt_idx_original=i,
+                target=expected_answer,
+                correct=is_correct,
+            )
+            run_items.append(run_item)
 
-    def _calculate_metric(self, results=None):
-        """Given results, calculate desired score"""
-        accuracy = len([entry for entry in results if entry["correct"]]) / len(results)
-        return {"acc": accuracy}
+        return run_items
+
+    def _calculate_metrics(self, run_output: list[RunItem]) -> BenchmarkEvaluation:
+        """Given results, calculate desired score."""
+        n_correct = sum(1 for entry in run_output if entry.correct)
+        accuracy = n_correct / len(run_output) if run_output else 0
+
+        return BenchmarkEvaluation(
+            metrics={"acc": accuracy},
+            total_samples=len(run_output),
+        )
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
         metadata = {
-            "source_url": self.source_url,
-            "categories_filter": "categories",
+            "categories": self.categories,
         }
         return metadata

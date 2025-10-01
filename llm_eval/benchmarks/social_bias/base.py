@@ -4,7 +4,6 @@ Base classes for social bias benchmarks.
 This module provides the foundation for evaluating social biases in language models,
 particularly focused on Dutch cultural context and municipal governance applications.
 """
-from abc import abstractmethod
 from typing import Any, Dict, Optional
 
 from llm_eval.benchmarks.base import BaseBenchmark
@@ -59,10 +58,6 @@ class SocialBiasBenchmark(BaseBenchmark):
         """Get the benchmark language"""
         return self._language
 
-    @abstractmethod
-    def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, Any]:
-        raise NotImplementedError("Implement getting targets function")
-
     def _get_own_metadata(self) -> Dict[str, Any]:
         """Get social bias benchmark-specific metadata"""
         return {
@@ -70,6 +65,3 @@ class SocialBiasBenchmark(BaseBenchmark):
             "language": self.language,
             "benchmark_type": "social_bias",
         }
-
-    def _run_task(self, llm, n_samples=0):
-        raise NotImplementedError("Implement getting targets function")

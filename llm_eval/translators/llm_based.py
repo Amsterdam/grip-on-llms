@@ -45,6 +45,7 @@ class LLMTranslator(BaseTranslator):
         else:
             prompt = text
 
-        translation = self.llm.prompt(prompt)
+        llm_response = self.llm.prompt(prompt)
+        translation = llm_response.processed_response
 
         return translation

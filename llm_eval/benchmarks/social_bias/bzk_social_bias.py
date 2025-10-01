@@ -61,14 +61,13 @@ weights = {
 import json
 import logging
 import urllib.request
-from dataclasses import asdict
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from tqdm import tqdm
 
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
 from llm_eval.benchmarks.social_bias.bias_metrics import BiasCalculator
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 
 class BZKSocialBias(SocialBiasBenchmark):
@@ -199,7 +198,7 @@ class BZKSocialBias(SocialBiasBenchmark):
         else:
             return "no"
 
-    def _run_task(self, llm, n_samples=0):
+    def _run_task(self, llm, n_samples=0) -> List[RunItem]:
         """
         Run the BZK social bias evaluation task.
 
@@ -217,30 +216,25 @@ class BZKSocialBias(SocialBiasBenchmark):
             sample_indices = self._sample_data(n_samples)
             data = [data[i] for i in sample_indices if i < len(data)]
 
-        results = {
-            "responses": [],
-            "metadata": {
-                "total_samples": len(data),
-                "language": self.language,
-            },
-        }
         prompts = [item.get("prompt") for item in data]
         responses = llm.process_batch(prompts)
 
-        for i, item in enumerate(tqdm(data)):
-            response = asdict(responses[i])
-            results["responses"].append(
-                {
-                    "prompt": prompts[i],
-                    "response_full": response,
-                    "response": response["processed_response"],
-                    "hired": self._is_hired(response["processed_response"]),
-                    "data_from_csv": item,
-                }
-            )
-        return results
+        run_items = []
+        for i, (item, response) in enumerate(zip(data, responses)):
+            is_hired = self._is_hired(response.processed_response)
 
-    def _calculate_metric(self, results: Dict[str, Any]) -> Dict[str, float]:
+            run_item = RunItem(
+                **response.model_dump(),
+                prompt=prompts[i],
+                prompt_idx_original=i,
+                hired=is_hired,
+                data_from_csv=item,
+            )
+            run_items.append(run_item)
+
+        return run_items
+
+    def _calculate_metrics(self, run_output: List[RunItem]) -> BenchmarkEvaluation:
         """
         Calculate bias scores for each dimension.
 
@@ -254,10 +248,10 @@ class BZKSocialBias(SocialBiasBenchmark):
             Dictionary mapping bias dimensions to bias scores (0-1, lower is better)
         """
         bias_scores = []
-        for result in results["responses"]:
-            hired = {self.target_variable: self._is_hired(result["response"])}
+        for entry in run_output:
+            hired = {self.target_variable: entry.hired}
             bias_score = {
-                protected_variable: result["data_from_csv"][protected_variable]
+                protected_variable: entry.data_from_csv[protected_variable]
                 for protected_variable in self.protected_variables
             }
             bias_scores.append(hired | bias_score)
@@ -271,15 +265,15 @@ class BZKSocialBias(SocialBiasBenchmark):
         )
 
         # Create comprehensive results with all individual metrics for interpretability
-        results = {}
+        metrics = {}
 
         # Basic statistics
-        results["basic_stats"] = bias_calculator.calculate_basic_stats()
+        metrics["basic_stats"] = bias_calculator.calculate_basic_stats()
 
         # Individual metrics for each protected attribute
-        results["individual_metrics"] = {}
+        metrics["individual_metrics"] = {}
         for attr in self.protected_variables:
-            results["individual_metrics"][attr] = {
+            metrics["individual_metrics"][attr] = {
                 "demographic_parity": bias_calculator.calculate_demographic_parity(attr),
                 "disparate_impact": bias_calculator.calculate_disparate_impact(attr),
                 "statistical_parity": bias_calculator.calculate_statistical_parity(attr),
@@ -288,14 +282,18 @@ class BZKSocialBias(SocialBiasBenchmark):
             }
 
         # Intersectional analysis
-        results["intersectional_analysis"] = bias_calculator.calculate_intersectional_bias()
+        metrics["intersectional_analysis"] = bias_calculator.calculate_intersectional_bias()
 
         # Overall fairness scores
-        results["fairness_scores"] = bias_calculator.calculate_fairness_score()
+        metrics["fairness_scores"] = bias_calculator.calculate_fairness_score()
 
         # Leaderboard metrics for ranking/comparison
-        results["leaderboard_metrics"] = bias_calculator.calculate_bias_leaderboard_metrics()
-        return results
+        metrics["leaderboard_metrics"] = bias_calculator.calculate_bias_leaderboard_metrics()
+
+        return BenchmarkEvaluation(
+            metrics=metrics,
+            total_samples=len(run_output),
+        )
 
     def _get_hashing_data_for_sampling(self) -> List[str]:
         """
@@ -311,3 +309,13 @@ class BZKSocialBias(SocialBiasBenchmark):
             f"{item.get('demographic_group', '')}"
             for item in data
         ]
+
+    def _get_own_metadata(self):
+        metadata = super()._get_own_metadata()
+        metadata.update(
+            {
+                "protected_variables": self.protected_variables,
+                "target_variable": self.target_variable,
+            }
+        )
+        return metadata

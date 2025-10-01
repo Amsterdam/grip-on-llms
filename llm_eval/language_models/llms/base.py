@@ -9,7 +9,7 @@ from typing import List
 
 from codecarbon import OfflineEmissionsTracker
 
-from llm_eval.utils.schemas import LLMResponse
+from llm_eval.utils.schemas import LLMMetadata, LLMResponse
 from llm_eval.utils.string_utils import (
     clean_and_extract_multiple_choice,
     clean_and_extract_open_text_answers,
@@ -153,10 +153,20 @@ class BaseLLM:
         """Unload model on demand to free up memory and reduce resource usage"""
         raise NotImplementedError("Implement unload_model function")
 
+    @abstractmethod
+    def _get_inference_engine(self):
+        """Return the inference engine name: 'openai', 'huggingface', or 'vllm'"""
+        raise NotImplementedError
+
+    def _get_own_metadata(self):
+        """To be overwritten in subclasses to add engine-specific metadata"""
+        return {}
+
     def get_metadata(self):
-        """Get model metadata for versioning purposes"""
-        metadata = {
-            "model_name": self.model_name,
-            "params": self.params,
-        }
-        return metadata
+        """Get model metadata for versioning purposes as LLMMetadata object"""
+        return LLMMetadata(
+            model_name=self.model_name,
+            inference_engine=self._get_inference_engine(),
+            params=self.params if hasattr(self, "params") else None,
+            **self._get_own_metadata(),
+        )

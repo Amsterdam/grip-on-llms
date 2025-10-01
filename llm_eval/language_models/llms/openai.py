@@ -96,3 +96,12 @@ class OpenAILLM(BaseLLM):
     def unload_model(self):
         """Unload model on demand to free up memory and reduce resource usage"""
         pass
+
+    def _get_inference_engine(self):
+        return "openai"
+
+    def _get_own_metadata(self):
+        """Get OpenAI-specific information."""
+        return {
+            "api_version": self.api_version,
+        }
