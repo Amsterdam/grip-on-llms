@@ -389,7 +389,7 @@ class CrowSPairsDutchEvaluator:
         processed = []
         for resp in responses:
             # Map response to label type
-            answer = resp["response"].strip().upper()
+            answer = resp["processed_response"].strip().upper()
             if answer not in ["A", "B"]:
                 label_type = "invalid"
             else:
