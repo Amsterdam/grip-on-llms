@@ -167,6 +167,29 @@ class BaseLLM:
         return LLMMetadata(
             model_name=self.model_name,
             inference_engine=self._get_inference_engine(),
-            params=self.params if hasattr(self, "params") else None,
+            params=serialize_params(self.params) if hasattr(self, "params") else None,
             **self._get_own_metadata(),
         )
+
+
+def serialize_params(params):
+    """Convert params to dictionary format."""
+    if params is None:
+        return None
+
+    # Already a dict
+    if isinstance(params, dict):
+        return params
+
+    # Pydantic model
+    if hasattr(params, "model_dump"):
+        return params.model_dump()
+    if hasattr(params, "dict"):  # Pydantic v1
+        return params.dict()
+
+    # Last resort - try to convert to dict
+    try:
+        return dict(params)
+    except (TypeError, ValueError):
+        # If all else fails, return string representation
+        return {"raw": str(params)}
