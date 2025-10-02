@@ -2,9 +2,40 @@
 # flake8: noqa: D106
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, Field
+
+
+class BenchCosts(BaseModel):
+    """Cost information for a benchmark run."""
+
+    # Core fields
+    total_cost: Optional[float] = Field(None, description="Total cost in euros")
+    cost_per_prompt: Optional[float] = Field(None, description="Cost per prompt in euros")
+    n_samples: Optional[int] = Field(
+        None, description="Number of valid samples used in calculation"
+    )
+    method: Literal["api", "gpu", ""] = Field("", description="Cost calculation method")
+    error: bool = Field(default=False, description="Whether cost calculation failed")
+
+    # API-specific fields
+    api_pricing: Optional[dict] = Field(
+        None, description="API pricing: {'input': x, 'output': y} per 1k tokens"
+    )
+    token_counts: Optional[dict] = Field(
+        None, description="Token counts: {'input': x, 'output': y}"
+    )
+
+    # GPU-specific fields
+    gpu_type: Optional[str] = Field(
+        None, description="GPU type (e.g., 'Tesla T4', 'NVIDIA H100 NVL')"
+    )
+    duration_seconds: Optional[float] = Field(None, description="Duration in seconds")
+    gpu_hourly_rate: Optional[float] = Field(None, description="GPU hourly rate in euros")
+
+    class Config:
+        extra = "allow"
 
 
 class LLMResponse(BaseModel):
@@ -121,6 +152,7 @@ class BenchmarkResult(BaseModel):
     metadata: MetadataContainer
     run_output: List[Union[RunItem, Dict[str, Any]]]
     evaluation: BenchmarkEvaluation
+    costs: Optional[BenchCosts] = None
 
     # Error tracking
     error: bool = False
