@@ -84,6 +84,8 @@ def _get_choice_patterns():
 def clean_and_extract_open_text_answers(input_string):
     """Clean response string using regex."""
     # Remove everything between [] and <> (including the brackets)
+    if not input_string:
+        return ""
     cleaned_string = re.sub(r"\[.*?\]|\<.*?\>", "", input_string)
     cleaned_string = cleaned_string.replace("\r\n", "").replace("\n\n", "").lstrip()
     return cleaned_string
