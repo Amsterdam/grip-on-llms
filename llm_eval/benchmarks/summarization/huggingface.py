@@ -27,7 +27,7 @@ class HuggingFaceSummarizationBaseBenchmark(SummarizationBaseBenchmark):
         target_length=(50, "words"),
         document_type="document",
         translator=None,
-        max_translation_entries=100,
+        max_translation_entries=None,
     ):
         """Initialize HuggingFaceSummarizationBaseBenchmark."""
         if not source_field or not summary_field:
@@ -61,37 +61,46 @@ class HuggingFaceSummarizationBaseBenchmark(SummarizationBaseBenchmark):
     def _load_huggingface_data(self):
         raise NotImplementedError("Implement data loading function")
 
+    def _get_dataset_version(self):
+        """Get dataset version depending on translation model and entries to translate"""
+        return (
+            f"{self.language}-"
+            f"{self.translator.model_name}-translated-"
+            f"{self.max_translation_entries}-samples"
+        )
+
+    def _load_existing_translations(self, parquet_file):
+        dataset = load_dataset("parquet", data_files={"train": parquet_file}, split="train")
+        return dataset
+
+    def _sample_data_if_needed(self):
+        if self.max_translation_entries and self.max_translation_entries < len(self.dataset):
+            random_indices = random.sample(range(len(self.dataset)), self.max_translation_entries)
+            self.dataset = self.dataset.select(random_indices)
+
+    def _try_to_translate(self, doc):
+        try:
+            return self.translator.translate(doc)
+        except Exception:
+            return None
+
     def _load_translated_data(self):
         """Load the translated dataset (if available) or translate from scratch"""
         if self.translator is None:
             raise TranslatorMissingError(self.language)
 
-        dataset_version = (
-            f"{self.language}-"
-            f"{self.translator.model_name}-translated-"
-            f"{self.max_translation_entries}-samples"
-        )
-        # Lovely handling of paths, huggingface
+        dataset_version = self._get_dataset_version()
         parquet_file = str(self.data_dir / f"{self.name}-{dataset_version}")
 
         try:
-            self.dataset = load_dataset(
-                "parquet", data_files={"train": parquet_file}, split="train"
-            )
+            self.dataset = self.load_dataset(parquet_file)
             logging.info(f"Loaded the {dataset_version} translations successfully")
         except Exception as e:
             logging.info(f"Couldn't load the translated parquet for {dataset_version}: {e}")
             logging.info(f"Translating {self.name} to {self.language}")
             self.dataset = self._load_huggingface_data()
 
-            random_indices = random.sample(range(len(self.dataset)), self.max_translation_entries)
-            self.dataset = self.dataset.select(random_indices)
-
-            def try_to_translate(doc):
-                try:
-                    return self.translator.translate(doc)
-                except Exception:
-                    return None
+            self.sample_data_if_needed()
 
             logging.info(f"Need to translate: {len(self.dataset[self.source_field])}")
             for column in [self.source_field, self.summary_field]:
@@ -99,7 +108,7 @@ class HuggingFaceSummarizationBaseBenchmark(SummarizationBaseBenchmark):
                 self.dataset = self.dataset.rename_column(column, f"{column}-EN")
                 self.dataset = self.dataset.map(
                     lambda entry, column=column: {
-                        f"{column}": try_to_translate(entry[f"{column}-EN"])
+                        f"{column}": self._try_to_translate(entry[f"{column}-EN"])
                     }
                 )
                 self.dataset = self.dataset.filter(
