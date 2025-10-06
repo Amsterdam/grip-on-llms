@@ -238,8 +238,6 @@ def test_leaderboard():
         target_lang="NL",
     )
 
-    n_samples = 10
-
     simple_benches = []
 
     # for prompt_type in ["detailed", "simple"]:
@@ -275,6 +273,8 @@ def test_leaderboard():
     for prompt_type in ["detailed"]:
         # for language in ["NL", "EN"]
         for sum_lang in ["NL"]:
+            max_translation_entries = 100
+
             bench_name = "CNNDailyMail"
             data_dir = Path(benchmark_data_folder) / bench_name
             summary_benches.append(
@@ -284,7 +284,7 @@ def test_leaderboard():
                     prompt_type=prompt_type,
                     data_dir=data_dir,
                     translator=en_nl_translator,
-                    max_translation_entries=n_samples,
+                    max_translation_entries=max_translation_entries,
                 )
             )
 
@@ -297,7 +297,7 @@ def test_leaderboard():
                     prompt_type=prompt_type,
                     data_dir=data_dir,
                     translator=en_nl_translator,
-                    max_translation_entries=n_samples,
+                    max_translation_entries=max_translation_entries,
                 )
             )
 
@@ -376,7 +376,7 @@ def test_leaderboard():
         llm_judges=[],
     )
 
-    experiment_name = "vllm_rerun_2025-09-30"
+    experiment_name = "2025-10-03-rerun-new-schema"
     results_dir = Path(base_results_folder) / experiment_name
 
     logging.info("Running comparison")
@@ -411,7 +411,7 @@ def test_leaderboard():
         + [arc_nl_bench]
         + [honest_city_bench],
         codecarbon_params=codecarbon_params,
-        n_samples=n_samples,
+        n_samples=15000,
     )
     leaderboard.run_comparison(results_dir=results_dir)
 
