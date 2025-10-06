@@ -50,6 +50,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("experiment_name", type=str)
     parser.add_argument("--metrics", nargs="+", default=["bleu", "rouge", "meteor", "bert_score"])
+    parser.add_argument("--models", nargs="+", default=[])
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--force", action="store_true", help="Re-evaluate even if results already exist"
@@ -92,6 +93,10 @@ if __name__ == "__main__":  # noqa: C901
 
                 if benchmark != bench:
                     logging.warning(f"Glitch! Found a {benchmark} file in {bench} folder.")
+                    continue
+
+                if args.models and model_name not in args.models:
+                    logging.info(f"Skipping {model_name}")
                     continue
 
                 if (
