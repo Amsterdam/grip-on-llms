@@ -110,6 +110,7 @@ def parse_arguments():
     parser.add_argument(
         "--judges", nargs="+", default=["gpt-4o-mini", "qwen-8b", "gemma-12b-instruct"]
     )
+    parser.add_argument("--models", nargs="+", default=[])
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--force", action="store_true", help="Re-evaluate even if results already exist"
@@ -157,8 +158,13 @@ if __name__ == "__main__":  # noqa: C901
                 logging.warning(f"Glitch! Found a {benchmark} file.")
                 continue
 
+            if args.models and model_name not in args.models:
+                logging.info(f"Skipping {model_name}")
+                continue
+
             if (
-                result.evaluation is not None
+                result.evaluation
+                and result.evaluation.eval_metadata
                 and set(result.evaluation.eval_metadata.judges) == set(judge_names)
                 and not args.force
             ):
