@@ -7,11 +7,11 @@ Parameters:
 {% endcomment %}
 
 {% assign aspect = include.aspect %}
-{% assign costs = include.costs %}
+{% assign costs = include.costs | plus: 0 %}
 {% assign costs_category = include.costs_category | plus: 0 %}
 {% assign costs_percent = include.costs_percent | plus: 0 %}
 
-{% if costs == -1 %}
+{% if costs == -1 or costs_category == -1 %}
     {% if aspect == "energy_use" %}
         {% include energy_disclaimer.html %}
     {% else %}
@@ -23,10 +23,13 @@ Parameters:
             <div class="costs-fill costs-category-{{ costs_category }}" style="width: {{ costs_percent }}%"></div>
         </div>
         {% if aspect == 'costs' %}
+            <!-- x1000 for per 1000 prompts -->
+            {% assign costs = costs | times: 1000 | round: 2 %}
             <span class="costs-value">€{{ costs }}</span>
         {% elsif aspect == "energy_use" %}
-            {% assign energy_costs = costs | times: 10000 | round: 1 %}
-            <span class="costs-value">{{ energy_costs }}Wh</span>
+            <!-- x1000 for per 1000 prompts + x1000 for Wh -->
+            {% assign costs = costs | times: 1000000 | round: 2 %}
+            <span class="costs-value">{{ costs }}Wh</span>
         {% endif %}
   </div>
 {% endif %}
