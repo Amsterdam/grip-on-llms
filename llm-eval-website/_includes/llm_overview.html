@@ -19,7 +19,13 @@
             </tr>
         </thead>
         <tbody>
-            {% assign sorted_models = site.data.models | sort: "energy_use" | reverse %}
+            <!-- {% assign sorted_models = site.data.models | sort: "energy_use" | reverse %} -->
+            <!-- {% assign sorted_models = site.data.models | sort: "energy_use" %} -->
+
+            {% assign models_with_energy = site.data.models | where_exp: "item", "item.energy_use >= 0" | sort: "energy_use" %}
+            {% assign models_without_energy = site.data.models | where_exp: "item", "item.energy_use == -1" %}
+            {% assign sorted_models = models_with_energy | concat: models_without_energy %}
+
             {% for model in sorted_models %}
                 {% if site.visible_models contains model.model %}
                 <tr>
@@ -37,13 +43,12 @@
                             </td>
                         {% elsif column == 'costs' %}
                             <td class="costs-cell">
-                                {% include costs_bar.html aspect=column costs=model.costs costs_category=model.costs_category costs_percent=model.costs_percent %}
+                                {% assign costs = model.costs %}
+                                {% include costs_bar.html aspect=column costs=costs costs_category=model.costs_category costs_percent=model.costs_percent %}
                             </td>
                         {% elsif column == 'energy_use' %}
                             <td class="costs-cell">
-                                {% assign energy_use_category = 6 | minus: model.energy_use %}
-                                {% assign energy_use_percent = model.energy_use_score | divided_by: 0.00537  | times: 100 | round %}
-                                {% include costs_bar.html aspect=column costs=model.energy_use_score costs_category=energy_use_category costs_percent=energy_use_percent %}
+                                {% include costs_bar.html aspect=column costs=model.energy_use costs_category=model.energy_use_category costs_percent=model.energy_use_percent %}
                             </td>
                         {% elsif column == 'bias' %}
                             <td class="bias-cell">
