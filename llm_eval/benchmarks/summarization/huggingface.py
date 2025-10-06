@@ -93,14 +93,14 @@ class HuggingFaceSummarizationBaseBenchmark(SummarizationBaseBenchmark):
         parquet_file = str(self.data_dir / f"{self.name}-{dataset_version}")
 
         try:
-            self.dataset = self.load_dataset(parquet_file)
+            self.dataset = self._load_existing_translations(parquet_file)
             logging.info(f"Loaded the {dataset_version} translations successfully")
         except Exception as e:
             logging.info(f"Couldn't load the translated parquet for {dataset_version}: {e}")
             logging.info(f"Translating {self.name} to {self.language}")
             self.dataset = self._load_huggingface_data()
 
-            self.sample_data_if_needed()
+            self._sample_data_if_needed()
 
             logging.info(f"Need to translate: {len(self.dataset[self.source_field])}")
             for column in [self.source_field, self.summary_field]:
