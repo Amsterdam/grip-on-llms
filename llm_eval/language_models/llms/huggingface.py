@@ -4,6 +4,7 @@ from typing import List
 
 import torch
 import torch._dynamo
+from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from llm_eval.language_models.llms.base import BaseLLM
@@ -112,7 +113,7 @@ class HuggingFaceLLM(BaseLLM):
         self, prompts, batch_size=None, context=None, system=None, response_format=None
     ) -> List[LLMResponse]:
         """Process a batch of prompts"""
-        return [self._prompt(prompt, context, system, response_format) for prompt in prompts]
+        return [self._prompt(prompt, context, system, response_format) for prompt in tqdm(prompts)]
 
     def unload_model(self):
         """Unload model on demand to free up memory"""

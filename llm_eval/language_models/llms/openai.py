@@ -4,6 +4,7 @@ import time
 from typing import List
 
 from openai import AzureOpenAI
+from tqdm import tqdm
 
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.utils.schemas import LLMResponse
@@ -115,7 +116,7 @@ class OpenAILLM(BaseLLM):
         self, prompts, batch_size=None, context=None, system=None, response_format=None
     ) -> List[LLMResponse]:
         """Process a batch of prompts"""
-        return [self._prompt(prompt, context, system, response_format) for prompt in prompts]
+        return [self._prompt(prompt, context, system, response_format) for prompt in tqdm(prompts)]
 
     def unload_model(self):
         """Unload model on demand to free up memory and reduce resource usage"""
