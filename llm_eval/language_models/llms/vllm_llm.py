@@ -4,6 +4,7 @@ import logging
 import os
 from typing import Dict, List, Optional
 
+from tqdm import tqdm
 from vllm import LLM, SamplingParams
 from vllm.transformers_utils.tokenizer import get_tokenizer
 
@@ -263,7 +264,7 @@ class VLLMLlm(BaseLLM):
         else:
             outputs = []
             batch = []
-            for prompt in formatted_prompts:
+            for prompt in tqdm(formatted_prompts):
                 batch.append(prompt)
                 if len(batch) == batch_size:
                     outputs.extend(self.model.generate(batch, self.params))
