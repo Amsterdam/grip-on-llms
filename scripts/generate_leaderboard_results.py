@@ -240,7 +240,7 @@ def get_dutch_bias_bench(bench_name):
     bench_class = BENCH_CLASSES[bench_name]
     data_dir = Path(benchmark_data_folder) / bench_name
     return bench_class(
-        benchmark_name=bench_class,
+        benchmark_name=bench_name,
         language="NL",
         data_dir=data_dir,
     )
