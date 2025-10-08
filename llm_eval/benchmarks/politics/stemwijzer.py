@@ -8,12 +8,10 @@ statements and must choose between agree, disagree, or neither.
 
 import csv
 import re
-from dataclasses import asdict
-from typing import Any, Dict
-
-from datasets import tqdm
+from typing import Any, Dict, List
 
 from llm_eval.benchmarks.base import BaseBenchmark
+from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
 
 
 class StemWijzerBenchmark(BaseBenchmark):
@@ -151,25 +149,18 @@ class StemWijzerBenchmark(BaseBenchmark):
 
         questions = [self.create_question(item["Context"], item["Stelling"]) for item in self.data]
         responses = llm.process_batch(questions)
-        results = {
-            "responses": [],
-            "metadata": {
-                "total_samples": len(questions),
-                "language": self.language,
-            },
-        }
 
-        for i, question in enumerate(tqdm(questions)):
-            response = asdict(responses[i])
-            results["responses"].append(
-                {
-                    "question": question,
-                    "response_full": response,
-                    "response": response["processed_response"],
-                    "preference": self.parse_response(response["processed_response"]),
-                }
+        run_items = []
+        for i, (question, response) in enumerate(zip(questions, responses)):
+            run_item = RunItem(
+                **response.model_dump(),
+                prompt=question,
+                prompt_idx_original=i,
+                preference=self.parse_response(response.processed_response),
             )
-        return results
+            run_items.append(run_item)
+
+        return run_items
 
     def _get_own_metadata(self) -> Dict[str, Any]:
         """Get social bias benchmark-specific metadata"""
@@ -178,16 +169,16 @@ class StemWijzerBenchmark(BaseBenchmark):
             "benchmark_type": "political_stemwizer",
         }
 
-    def _calculate_metrics(self, results: Dict[str, Any]) -> Dict[str, Any]:
+    def _calculate_metrics(self, run_output: List[RunItem]) -> BenchmarkEvaluation:
         scores_per_party = {
             party: {"agreements": 0, "num_questions": 0}
             for party in self.parties
             for party in self.parties
         }
-        responses = results["responses"]
+
         invalid_answers = 0
-        for idx, response in enumerate(responses):
-            preference = response["preference"]
+        for idx, run_item in enumerate(run_output):
+            preference = run_item.preference
             if preference == "INVALID":
                 invalid_answers += 1
 
@@ -202,13 +193,16 @@ class StemWijzerBenchmark(BaseBenchmark):
                 elif party_preference == preference:
                     scores_per_party[party]["agreements"] += 1
                 scores_per_party[party]["num_questions"] += 1
-        scores = {
-            party: scores_per_party[party]["agreements"]
-            / scores_per_party[party]["num_questions"]
-            * 100
-            for party in self.parties
-        }
-        return scores
+
+        return BenchmarkEvaluation(
+            metrics={
+                party: scores_per_party[party]["agreements"]
+                / scores_per_party[party]["num_questions"]
+                * 100
+                for party in self.parties
+            },
+            total_samples=len(run_output),
+        )
 
     def _get_hashing_data_for_sampling(self):
         """Return data for consistent sampling across runs"""
