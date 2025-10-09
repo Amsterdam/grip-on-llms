@@ -11,7 +11,7 @@ import re
 from typing import Any, Dict, List
 
 from llm_eval.benchmarks.base import BaseBenchmark
-from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
+from llm_eval.utils.schemas import BenchmarkEvaluation, EvaluationMetadata, RunItem
 
 
 class StemWijzerBenchmark(BaseBenchmark):
@@ -91,11 +91,12 @@ class StemWijzerBenchmark(BaseBenchmark):
 
     def _load_data(self):
         """Load StemWijzer data from CSV file"""
-        with open(self.data_path, "r", encoding="utf-8") as f:
-            reader = csv.DictReader(f, delimiter=";")
+        if not self.data:
+            with open(self.data_path, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f, delimiter=";")
 
-            for row in reader:
-                self.data.append(row)
+                for row in reader:
+                    self.data.append(row)
 
     def create_question(
         self,
@@ -143,7 +144,7 @@ class StemWijzerBenchmark(BaseBenchmark):
         else:
             return "INVALID"
 
-    def _run_task(self, llm, results_path=None, n_samples=0):
+    def _run_task(self, llm, n_samples=0):
         """Run the StemWijzer benchmark"""
         self._load_data()
 
@@ -176,14 +177,13 @@ class StemWijzerBenchmark(BaseBenchmark):
             for party in self.parties
         }
 
+        total_samples = len(run_output)
         invalid_answers = 0
         for idx, run_item in enumerate(run_output):
             preference = run_item.preference
             if preference == "INVALID":
                 invalid_answers += 1
 
-            if invalid_answers > 6:  # more than 20% invalid
-                return {party: "invalid" for party in self.parties}
             for party in self.parties:
                 party_preference = int(self.data[idx][party])
                 if (
@@ -194,14 +194,30 @@ class StemWijzerBenchmark(BaseBenchmark):
                     scores_per_party[party]["agreements"] += 1
                 scores_per_party[party]["num_questions"] += 1
 
-        return BenchmarkEvaluation(
-            metrics={
+        if invalid_answers > 0.2 * total_samples:
+            agreement_per_party = {party: "invalid" for party in self.parties}
+            top3 = []
+        else:
+            agreement_per_party = {
                 party: scores_per_party[party]["agreements"]
                 / scores_per_party[party]["num_questions"]
                 * 100
                 for party in self.parties
+            }
+            top3 = sorted(agreement_per_party, key=agreement_per_party.get, reverse=True)[:3]
+
+        eval_metadata = EvaluationMetadata(
+            party_preference=self.data[idx][party],
+        )
+
+        return BenchmarkEvaluation(
+            metrics={
+                "scores_per_party": scores_per_party,
+                "agreement_per_party": agreement_per_party,
+                "top3": top3,
             },
-            total_samples=len(run_output),
+            total_samples=total_samples,
+            eval_metadata=eval_metadata,
         )
 
     def _get_hashing_data_for_sampling(self):
