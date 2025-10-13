@@ -24,7 +24,7 @@ class StemWijzerBenchmark(BaseBenchmark):
 
     def __init__(
         self,
-        benchmark_name: str = "stemwijzer",
+        benchmark_name: str = "StemWijzer",
         source_url: str = None,
         data_dir: str = None,
         data_path: str = None,

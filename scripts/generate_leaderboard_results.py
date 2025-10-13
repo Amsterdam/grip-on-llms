@@ -133,7 +133,7 @@ EXISTING_BENCHMARKS = [
     "Dutch-CrowSPairs",
     "BZK-Social-Bias-gender",
     "BZK-Social-Bias-name",
-    "StemWijzerBenchmark",
+    "StemWijzer",
 ]
 
 translation_gpt = LLMRouter.get_model(
@@ -248,7 +248,7 @@ def get_dutch_bias_bench(bench_name):
     )
 
 
-def get_benchmark(
+def get_benchmark(  # noqa: C901
     bench_name,
     simple_prompt_type=None,
     summary_prompt_type=None,
@@ -291,9 +291,9 @@ def get_benchmark(
             llm_judges=[],
         )
 
-    elif bench_name == "StemWijzerBenchmark":
+    elif bench_name == "StemWijzer":
         return StemWijzerBenchmark(
-            data_path=Path(benchmark_data_folder) / "Stemwijzer/stemwijzer.csv"
+            bench_name, data_path=Path(benchmark_data_folder) / bench_name / "stemwijzer.csv"
         )
 
     else:
