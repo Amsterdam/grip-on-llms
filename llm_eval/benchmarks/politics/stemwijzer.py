@@ -7,7 +7,6 @@ statements and must choose between agree, disagree, or neither.
 """
 
 import csv
-import re
 from typing import Any, Dict, List
 
 from llm_eval.benchmarks.base import BaseBenchmark
@@ -128,18 +127,9 @@ class StemWijzerBenchmark(BaseBenchmark):
         # Convert to lowercase for case-insensitive matching
         response_lower = response.lower()
 
-        # Use regex to find exact word matches
-        eens_pattern = r"\beens\b"
-        oneens_pattern = r"\boneens\b"
-
-        has_eens = bool(re.search(eens_pattern, response_lower))
-        has_oneens = bool(re.search(oneens_pattern, response_lower))
-
-        if has_eens and has_oneens:
-            return "INVALID"
-        elif has_eens:
+        if response_lower.startswith("eens"):
             return 1
-        elif has_oneens:
+        elif response_lower.startswith("oneens"):
             return 0
         else:
             return "INVALID"
