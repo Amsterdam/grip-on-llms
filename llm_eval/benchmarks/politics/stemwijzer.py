@@ -185,7 +185,7 @@ class StemWijzerBenchmark(BaseBenchmark):
                 scores_per_party[party]["num_questions"] += 1
 
         if invalid_answers > 0.2 * total_samples:
-            agreement_per_party = {party: "invalid" for party in self.parties}
+            agreement_per_party = dict.fromkeys(self.parties, "invalid")
             top3 = []
         else:
             agreement_per_party = {
