@@ -34,7 +34,7 @@ class BaseBenchmark(ABC):
 
         self._source_url = source_url
         self._hf_repository = hf_repository
-        self._data_dir = Path(data_dir) if data_dir else Path("./data")
+        self._data_dir = Path(data_dir) if data_dir else Path("./data") / self.name
 
         self._data_path = (
             Path(data_path) if data_path else self._data_dir / self.name / "data.json"
