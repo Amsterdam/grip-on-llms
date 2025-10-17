@@ -143,13 +143,11 @@ MODEL_MAPPING = {
         "model_size": "large",
         "kwargs": {},
     },
-
-    # XLARGE MODELS (70B+) - H100 "xlarge" profile
-    "llama-3.3-70b-instruct": {
-        "id": "meta-llama/Llama-3.3-70B-Instruct",
-        "model_size": "xlarge",
-        "kwargs": {},
-    },
+    # "llama-3.3-70b-instruct": {
+    #     "id": "meta-llama/Llama-3.3-70B-Instruct",
+    #     "model_size": "xlarge",
+    #     "kwargs": {},
+    # },
     "llama-3.3-70b-gptq": {
         "id": "shuyuej/Llama-3.3-70B-Instruct-GPTQ",
         "model_size": "xlarge",
@@ -171,7 +169,7 @@ MODEL_MAPPING = {
         },
     },
     "apertus-70b-instruct-quantized": {
-        "id": "unsloth/Apertus-70B-Instruct-2509-unsloth-bnb-4bit",
+        "id": "RedHatAI/Apertus-70B-Instruct-2509-quantized.w4a16",
         "model_size": "large",
         "kwargs": {},
     },
@@ -180,24 +178,9 @@ MODEL_MAPPING = {
         "model_size": "large",
         "kwargs": {},
     },
-    "mistral-large-instruct-2407-gptq": {
-        "id": "TechxGenus/Mistral-Large-Instruct-2407-GPTQ",
-        "model_size": "xlarge",
-        "kwargs": {
-            "loading": {
-                "quantization": "gptq",
-                "dtype": "float16",
-            },
-        },
-    },
     "mistral-large-instruct-2407-awq": {
-        "id": "TechxGenus/Mistral-Large-Instruct-2407-AWQ",
+        "id": "TTechxGenus/Mistral-Large-Instruct-2411-AWQ",
         "model_size": "xlarge",
-        "kwargs": {
-            "loading": {
-                "quantization": "awq",
-                "dtype": "float16",
-            },
-        },
+        "kwargs": {},
     },
 }
