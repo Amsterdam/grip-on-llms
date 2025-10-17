@@ -153,8 +153,7 @@ MODEL_MAPPING = {
         "model_size": "xlarge",
         "kwargs": {
             "loading": {
-                "quantization": "gptq",
-                "dtype": "float16",
+                "quantization": "gptq_marlin",
             }
         },
     },
@@ -163,7 +162,7 @@ MODEL_MAPPING = {
         "model_size": "xlarge",
         "kwargs": {
             "loading": {
-                "quantization": "awq",
+                "quantization": "awq_marlin",
                 "dtype": "float16",
             }
         },
