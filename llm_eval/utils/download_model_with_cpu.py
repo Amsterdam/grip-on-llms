@@ -1,7 +1,6 @@
 """Download a model from huggingface without loading it, possible on a cpu"""
 import argparse
 import logging
-import os
 import sys
 from typing import Dict, List
 
@@ -13,22 +12,18 @@ from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 
 def download_model(url):
     """Download model without loading it from huggingface"""
+    hf_secrets = get_hf_secrets()
+    hf_token = hf_secrets["HF_TOKEN"]
+    cache_dir = hf_secrets["HF_CACHE"]
+    
     try:
         logging.info(f"Downloading model: {url}")
-        snapshot_download(url)
+        logging.info(f"Cache directory: {cache_dir}")
+        snapshot_download(url, token=hf_token, cache_dir=cache_dir)
         logging.info(f"Successfully downloaded: {url}")
     except Exception as e:
         logging.error(f"Error downloading model {url}: {e}")
         sys.exit(1)
-
-
-def get_cache_directory():
-    """Get the HuggingFace cache directory"""
-    # Check for custom HF_HOME first, then default cache
-    cache_dir = os.environ.get("HF_HOME")
-    if cache_dir:
-        return cache_dir
-    return os.path.join(os.path.expanduser("~"), ".cache", "huggingface")
 
 
 def download_all_models_from_config():
@@ -37,10 +32,15 @@ def download_all_models_from_config():
     failed_downloads: List[Dict[str, str]] = []
     skipped_downloads: List[str] = []
     
-    cache_dir = get_cache_directory()
+    # Get HF secrets including token and cache directory
+    hf_secrets = get_hf_secrets()
+    hf_token = hf_secrets["HF_TOKEN"]
+    cache_dir = hf_secrets["HF_CACHE"]
+    
     print("🤖 Starting download of all models from llm_config.py")
     print(f"📊 Found {len(MODEL_MAPPING)} models to download")
     print(f"📁 Models will be stored in: {cache_dir}")
+    print(f"🔑 Using HF token: {hf_token[:10]}..." if hf_token else "🔑 No HF token configured")
     print("💡 Press Ctrl+C during a download to skip that model and continue")
     print("=" * 70)
     
@@ -53,7 +53,7 @@ def download_all_models_from_config():
         print(f"   Size category: {model_size}")
         
         try:
-            snapshot_download(hub_id)
+            snapshot_download(hub_id, token=hf_token, cache_dir=cache_dir)
             successful_downloads.append(model_name)
             print(f"   ✅ Successfully downloaded: {model_name}")
             
@@ -106,8 +106,6 @@ def download_all_models_from_config():
 
 
 if __name__ == "__main__":
-    get_hf_secrets()
-
     parser = argparse.ArgumentParser(description="Download models from HuggingFace Hub")
     parser.add_argument("url", type=str, nargs='?', help="Name of model to download, eg 'openai/gpt-oss-20b'")
     parser.add_argument("--all", action="store_true", help="Download all models from llm_config.py")
