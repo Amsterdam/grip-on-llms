@@ -725,12 +725,19 @@ th {
 .bias-aspect.category-4 svg { fill: #ef4444; opacity: 0.9; }
 .bias-aspect.category-5 svg { fill: #ef4444; opacity: 1.0; }  */
 
-.bias-aspect.category-0 svg {  fill: #FFE600; opacity: 1;}
+.bias-aspect.category-0 svg { fill: #d1d1d1; opacity: 0.2; }
+.bias-aspect.category-1 svg { fill: #eab308; opacity: 0.2; }
+.bias-aspect.category-2 svg { fill: #eab308; opacity: 0.4; }
+.bias-aspect.category-3 svg { fill: #eab308; opacity: 0.6; }
+.bias-aspect.category-4 svg { fill: #eab308; opacity: 0.8; }
+.bias-aspect.category-5 svg { fill: #eab308; opacity: 1.0; }
+
+/* .bias-aspect.category-0 svg {  fill: #FFE600; opacity: 1;}
 .bias-aspect.category-1 svg {  fill: #FFE600; opacity: 1;}
 .bias-aspect.category-2 svg { fill: #FF9100; opacity: 1;}
 .bias-aspect.category-3 svg { fill: #FF9100; opacity: 1;}
 .bias-aspect.category-4 svg { fill: #EC0000; opacity: 1;}
-.bias-aspect.category-5 svg { fill: #EC0000; opacity: 1;}
+.bias-aspect.category-5 svg { fill: #EC0000; opacity: 1;} */
 
 /* .bias-aspect.category-0 svg {  fill: #eab308; opacity: 0.2;}
 .bias-aspect.category-1 svg {  fill: #eab308; opacity: 0.3;}
