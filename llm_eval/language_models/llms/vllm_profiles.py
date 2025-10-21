@@ -82,7 +82,7 @@ class GPUModelProfiles:
                 "max_num_seqs": 64,
                 "max_num_batched_tokens": 16384,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
             },
         },
         "small": {
@@ -98,7 +98,7 @@ class GPUModelProfiles:
                 "max_num_seqs": 32,
                 "max_num_batched_tokens": 16384,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
             },
         },
         "medium": {
@@ -115,7 +115,7 @@ class GPUModelProfiles:
                 "max_num_seqs": 16,
                 "max_num_batched_tokens": 16384,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
             },
         },
         "large": {
@@ -132,7 +132,7 @@ class GPUModelProfiles:
                 "max_num_seqs": 8,
                 "max_num_batched_tokens": 16384,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
             },
         },
         "xlarge": {
@@ -163,7 +163,7 @@ class GPUModelProfiles:
                 "max_num_seqs": 512,
                 "max_num_batched_tokens": 131072,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
                 "disable_sliding_window": True,
             },
         },
@@ -179,7 +179,7 @@ class GPUModelProfiles:
                 "max_num_seqs": 384,
                 "max_num_batched_tokens": 98304,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
                 "disable_sliding_window": True,
             },
         },
@@ -195,7 +195,7 @@ class GPUModelProfiles:
                 "max_num_seqs": 192,
                 "max_num_batched_tokens": 49152,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
                 "disable_sliding_window": True,
             },
         },
@@ -206,12 +206,12 @@ class GPUModelProfiles:
                 "max_num_batched_tokens": 8192,
             },
             "quantized": {
-                "quantization": "gptq_marlin",
+                "quantization": "awq_marlin",
                 "gpu_memory_utilization": 0.75,
                 "max_num_seqs": 128,
                 "max_num_batched_tokens": 32768,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
                 "disable_sliding_window": True,
             },
         },
@@ -220,15 +220,15 @@ class GPUModelProfiles:
                 "gpu_memory_utilization": 0.65,
                 "max_num_seqs": 4,
                 "max_num_batched_tokens": 8192,
-                "tensor_parallel_size": 2,  # Need 2+ GPUs for 70B+
+                "tensor_parallel_size": 1,  # Need 2+ GPUs for 70B+
             },
             "quantized": {
-                "quantization": "gptq_marlin",
+                "quantization": "awq_marlin",
                 "gpu_memory_utilization": 0.70,
                 "max_num_seqs": 64,
                 "max_num_batched_tokens": 16384,
                 "enable_prefix_caching": True,
-                "kv_cache_dtype": "fp8",
+                # "kv_cache_dtype": "fp8",
                 "disable_sliding_window": True,
             },
         },
@@ -382,6 +382,8 @@ class GPUModelProfiles:
             "gemma": 8192,
             "olmo": 4096,
             "euro": 4096,
+            "fietje": 2048,
+            "tinyllama": 2048,
         }
         for key, max_len in architecture_defaults.items():
             if key in model_name_lower:
@@ -399,11 +401,11 @@ class GPUModelProfiles:
 
         name_lower = model_name_or_path.lower()
         if "awq" in name_lower:
-            return "awq"
+            return "awq_marlin"
         elif "gptq" in name_lower:
-            return "gptq"
+            return "gptq_marlin"
         elif any(q in name_lower for q in ["4bit", "int4", "q4_"]):
-            return "gptq"
+            return "gptq_marlin"
         elif "fp8" in name_lower or "8bit" in name_lower:
             return "fp8"
 
@@ -454,11 +456,6 @@ class GPUModelProfiles:
         # Add dynamic max length
         max_model_len = cls.get_model_max_length(model_name)
 
-        # Fix complete disasters like gemma's 20 tokens & fix failing summarization
-        force_min_len = 2536
-        if max_model_len < force_min_len:
-            logging.info(f"Context {max_model_len} too small, forcing {force_min_len}")
-            max_model_len = force_min_len
         # if max_model_len < 1024:
         #     logging.info(f"Context {max_model_len} too small, forcing to 2048")
         #     max_model_len = 2048

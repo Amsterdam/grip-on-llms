@@ -30,7 +30,6 @@ MODEL_MAPPING = {
         "model_size": "tiny",
         "kwargs": {},
     },
-
     # SMALL MODELS (3B-8B) - H100 "small" profile
     "falcon3-7b-instruct": {
         "id": "tiiuae/Falcon3-7B-Instruct",
@@ -76,7 +75,6 @@ MODEL_MAPPING = {
         "model_size": "small",
         "kwargs": {},
     },
-
     # MEDIUM MODELS (8B-20B) - H100 "medium" profile
     "eurollm-9b-instruct": {
         "id": "utter-project/EuroLLM-9B-Instruct",
@@ -93,7 +91,6 @@ MODEL_MAPPING = {
         "model_size": "medium",
         "kwargs": {},
     },
-
     # LARGE MODELS (20B-40B) - H100 "large" profile
     "mistral-small-instruct": {
         "id": "mistralai/Mistral-Small-24B-Instruct-2501",
@@ -130,7 +127,8 @@ MODEL_MAPPING = {
         "kwargs": {
             "template": {
                 "enable_thinking": False,
-            }
+            },
+            "loading": {"quantization": "awq_marlin"},
         },
     },
     "aya-expanse-32b": {
@@ -159,13 +157,8 @@ MODEL_MAPPING = {
     },
     "deepseek-r1-distill-llama-70b-awq": {
         "id": "Valdemardi/DeepSeek-R1-Distill-Llama-70B-AWQ",
-        "model_size": "xlarge",
-        "kwargs": {
-            "loading": {
-                "quantization": "awq_marlin",
-                "dtype": "float16",
-            }
-        },
+        "model_size": "large",
+        "kwargs": {"loading": {"quantization": "awq_marlin"}},
     },
     "apertus-70b-instruct-quantized": {
         "id": "RedHatAI/Apertus-70B-Instruct-2509-quantized.w4a16",
@@ -174,12 +167,11 @@ MODEL_MAPPING = {
     },
     "gpt-oss-120b": {
         "id": "openai/gpt-oss-120b",
-        "model_size": "large",
-        "kwargs": {},
-    },
-    "mistral-large-instruct-2407-awq": {
-        "id": "TTechxGenus/Mistral-Large-Instruct-2411-AWQ",
         "model_size": "xlarge",
-        "kwargs": {},
+        "kwargs": {
+            "loading": {
+                "gpu_memory_utilization": 0.90,
+            }
+        },
     },
 }
