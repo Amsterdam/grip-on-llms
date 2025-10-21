@@ -4,17 +4,15 @@ Tests each model with a standard prompt and measures inference speed.
 """
 import argparse
 import json
-import os
 import time
 import traceback
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
-from tests.env_setup import get_hf_secrets
-
 
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
 from llm_eval.language_models.model_router import LLMRouter
+from tests.env_setup import get_hf_secrets
 
 
 def get_test_results_file() -> Path:
@@ -29,7 +27,7 @@ def load_test_results() -> Dict:
     results_file = get_test_results_file()
     if results_file.exists():
         try:
-            with open(results_file, 'r') as f:
+            with open(results_file, "r") as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError) as e:
             print(f"⚠️  Could not load test results file: {e}")
@@ -43,7 +41,7 @@ def save_test_results(results: Dict):
     try:
         # Ensure directory exists
         results_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(results_file, 'w') as f:
+        with open(results_file, "w") as f:
             json.dump(results, f, indent=2, sort_keys=True)
     except IOError as e:
         print(f"⚠️  Could not save test results: {e}")
@@ -52,9 +50,9 @@ def save_test_results(results: Dict):
 def is_model_tested_successfully(model_name: str, results: Dict) -> bool:
     """Check if a model was tested successfully before."""
     return (
-        model_name in results and 
-        results[model_name].get("status") == "success" and
-        results[model_name].get("avg_inference_time") is not None
+        model_name in results
+        and results[model_name].get("status") == "success"
+        and results[model_name].get("avg_inference_time") is not None
     )
 
 
@@ -63,7 +61,7 @@ def test_single_model(model_name: str, save_results: bool = True) -> Dict:  # no
     print(f"Testing: {model_name}")
     hf_secrets = get_hf_secrets()
     test_prompt = "Wat zijn de risico's van Large Language Models voor de overheid?"
-    
+
     test_result = {
         "model_name": model_name,
         "status": "failed",
@@ -80,7 +78,7 @@ def test_single_model(model_name: str, save_results: bool = True) -> Dict:  # no
         "successful_runs": 0,
         "total_runs": 3,
     }
-    
+
     model = None  # Initialize model variable for cleanup
 
     try:
@@ -90,18 +88,30 @@ def test_single_model(model_name: str, save_results: bool = True) -> Dict:  # no
 
         print(f"Model ID: {model_id}")
         print(f"H100 Profile: {h100_profile}")
-        
+
         test_result["model_id"] = model_id
         test_result["h100_profile"] = h100_profile
 
         # Create model with vLLM and H100 optimization
         print("Loading model with vLLM...")
         load_start = time.time()
+        hf_inference_params = {
+            "do_sample": False,
+            # temp, top_k & top_p - unused for greedy decoding (adding for transparency)
+            "temperature": 0,
+            "top_k": 0,
+            "top_p": 1.0,
+            "repetition_penalty": 1.0,
+            "num_return_sequences": 1,
+            # "no_repeat_ngram_size": 3,
+            "max_new_tokens": 200,
+        }
 
         model = LLMRouter.get_model(
             model_name=model_name,
             provider="vllm",
             hf_token=hf_secrets["HF_TOKEN"],
+            params=hf_inference_params,
         )
 
         load_time = time.time() - load_start
@@ -111,7 +121,7 @@ def test_single_model(model_name: str, save_results: bool = True) -> Dict:  # no
         # Get model metadata
         metadata = model.get_metadata()
         print(f"Inference engine: {metadata.get('inference_engine', 'N/A')}")
-        test_result["inference_engine"] = metadata.get('inference_engine', 'N/A')
+        test_result["inference_engine"] = metadata.get("inference_engine", "N/A")
 
         # Test inference speed
         print(f"Testing inference with prompt: '{test_prompt[:50]}...'")
@@ -137,7 +147,7 @@ def test_single_model(model_name: str, save_results: bool = True) -> Dict:  # no
             start_time = time.time()
 
             try:
-                response = model.prompt(test_prompt)
+                response = model.prompt(test_prompt).processed_response
                 inference_time = time.time() - start_time
                 inference_times.append(inference_time)
                 responses.append(response)
@@ -165,18 +175,20 @@ def test_single_model(model_name: str, save_results: bool = True) -> Dict:  # no
             output_tokens_per_second = estimated_output_tokens / avg_time if avg_time > 0 else 0
 
             # Update test result with metrics
-            test_result.update({
-                "status": "success",
-                "avg_inference_time": avg_time,
-                "min_inference_time": min_time,
-                "max_inference_time": max_time,
-                "tokens_per_second": tokens_per_second,
-                "output_tokens_per_second": output_tokens_per_second,
-                "avg_response_length": avg_response_len,
-                "successful_runs": len(inference_times),
-                "estimated_output_tokens": estimated_output_tokens,
-                "sample_response": responses[0][:200] if responses else None
-            })
+            test_result.update(
+                {
+                    "status": "success",
+                    "avg_inference_time": avg_time,
+                    "min_inference_time": min_time,
+                    "max_inference_time": max_time,
+                    "tokens_per_second": tokens_per_second,
+                    "output_tokens_per_second": output_tokens_per_second,
+                    "avg_response_length": avg_response_len,
+                    "successful_runs": len(inference_times),
+                    "estimated_output_tokens": estimated_output_tokens,
+                    "sample_response": responses[0][:200] if responses else None,
+                }
+            )
 
             print("\n✅ Performance Summary:")
             print(f"  Average inference time: {avg_time:.2f}s")
@@ -198,26 +210,23 @@ def test_single_model(model_name: str, save_results: bool = True) -> Dict:  # no
     except Exception as e:
         error_msg = str(e)
         error_traceback = traceback.format_exc()
-        
+
         print(f"❌ Model test failed: {error_msg}")
-        print(f"📍 Error details:")
+        print("📍 Error details:")
         print(f"   Location: {traceback.extract_tb(e.__traceback__)[-1]}")
-        print(f"   Full traceback saved to results")
-        
-        test_result.update({
-            "error": error_msg,
-            "traceback": error_traceback
-        })
-    
+        print("   Full traceback saved to results")
+
+        test_result.update({"error": error_msg, "traceback": error_traceback})
+
     finally:
         # Clean up model to free GPU memory
         try:
-            if 'model' in locals() and model is not None:
+            if "model" in locals() and model is not None:
                 model.unload_model()
                 print("🧹 Model unloaded from GPU")
         except Exception as cleanup_error:
             print(f"⚠️  Could not unload model: {cleanup_error}")
-    
+
     # Save results if requested
     if save_results:
         try:
@@ -227,23 +236,24 @@ def test_single_model(model_name: str, save_results: bool = True) -> Dict:  # no
             print(f"💾 Test results saved for {model_name}")
         except Exception as save_error:
             print(f"⚠️  Could not save test results: {save_error}")
-    
+
     return test_result
 
 
-def test_all_models(skip_successful: bool = True) -> Dict:
+def test_all_models(skip_successful: bool = True) -> Dict:  # noqa: C901
     """Test all models from MODEL_MAPPING with optional skipping of successful tests."""
     print("🚀 Starting comprehensive vLLM testing for all models")
     print(f"📊 Found {len(MODEL_MAPPING)} models to test")
-    
+
     # Load existing results for skip logic
     existing_results = load_test_results() if skip_successful else {}
     results_file = get_test_results_file()
     print(f"📁 Results will be stored in: {results_file}")
-    
+
     if skip_successful and existing_results:
         successful_models = [
-            name for name, result in existing_results.items() 
+            name
+            for name, result in existing_results.items()
             if is_model_tested_successfully(name, existing_results)
         ]
         print(f"✅ Found {len(successful_models)} previously successful tests")
@@ -251,23 +261,23 @@ def test_all_models(skip_successful: bool = True) -> Dict:
             print("   Previously successful models:")
             for model in successful_models:
                 print(f"     • {model}")
-    
+
     print("💡 Press Ctrl+C during a test to skip that model and continue")
     print("=" * 80)
-    
+
     successful_tests: List[str] = []
     failed_tests: List[str] = []
     skipped_tests: List[str] = []
-    
+
     for i, model_name in enumerate(MODEL_MAPPING.keys(), 1):
         print(f"\n🔄 [{i}/{len(MODEL_MAPPING)}] Processing: {model_name}")
-        
+
         # Check if we should skip this model
         if skip_successful and is_model_tested_successfully(model_name, existing_results):
             print(f"   ⏭️  Skipping: {model_name} (previously successful)")
             skipped_tests.append(model_name)
             continue
-        
+
         try:
             result = test_single_model(model_name, save_results=True)
             if result["status"] == "success":
@@ -276,22 +286,22 @@ def test_all_models(skip_successful: bool = True) -> Dict:
             else:
                 failed_tests.append(model_name)
                 print(f"   ❌ {model_name} - FAILED: {result.get('error', 'Unknown error')}")
-                
+
         except KeyboardInterrupt:
             print(f"   ⏭️  Skipping: {model_name} (user interrupted)")
             skipped_tests.append(model_name)
             continue
-            
+
         except Exception as e:
             print(f"   💥 {model_name} - CRASHED: {e}")
             failed_tests.append(model_name)
             # Log the crash
             crash_result = {
                 "model_name": model_name,
-                "status": "crashed", 
+                "status": "crashed",
                 "timestamp": datetime.now().isoformat(),
                 "error": str(e),
-                "traceback": traceback.format_exc()
+                "traceback": traceback.format_exc(),
             }
             try:
                 all_results = load_test_results()
@@ -299,35 +309,35 @@ def test_all_models(skip_successful: bool = True) -> Dict:
                 save_test_results(all_results)
             except Exception:
                 pass  # Don't fail the whole test run if we can't save
-    
+
     # Print comprehensive summary
     print("\n" + "=" * 80)
     print("📋 COMPREHENSIVE TEST SUMMARY")
     print("=" * 80)
-    
+
     total_models = len(MODEL_MAPPING)
     print(f"📊 Total models: {total_models}")
     print(f"✅ Successful tests: {len(successful_tests)}")
     print(f"❌ Failed tests: {len(failed_tests)}")
     print(f"⏭️  Skipped tests: {len(skipped_tests)}")
-    
+
     if successful_tests:
         print(f"\n✅ Successful tests ({len(successful_tests)}):")
         for model in successful_tests:
             print(f"   • {model}")
-    
+
     if failed_tests:
         print(f"\n❌ Failed tests ({len(failed_tests)}):")
         for model in failed_tests:
             print(f"   • {model}")
-    
+
     if skipped_tests:
         print(f"\n⏭️  Skipped tests ({len(skipped_tests)}):")
         for model in skipped_tests:
             print(f"   • {model}")
-    
+
     print(f"\n📁 Full test results stored in: {results_file}")
-    
+
     # Load and return final results
     return load_test_results()
 
@@ -337,19 +347,21 @@ def main():
     parser = argparse.ArgumentParser(description="vLLM Speed Benchmark for All Models")
     parser.add_argument("--model", help="Test only a specific model")
     parser.add_argument("--all", action="store_true", help="Test all models from MODEL_MAPPING")
-    parser.add_argument("--no-skip", action="store_true", help="Don't skip previously successful tests")
+    parser.add_argument(
+        "--no-skip", action="store_true", help="Don't skip previously successful tests"
+    )
     args = parser.parse_args()
 
     if args.all:
         print("🚀 Testing all models from MODEL_MAPPING")
         skip_successful = not args.no_skip
         results = test_all_models(skip_successful=skip_successful)
-        
+
         # Show final summary stats
         successful = sum(1 for r in results.values() if r.get("status") == "success")
         failed = sum(1 for r in results.values() if r.get("status") in ["failed", "crashed"])
-        print(f"\n🏁 Final Results: {successful} successful, {failed} failed out of {len(MODEL_MAPPING)} total models")
-        
+        print(f"{successful} successful, {failed} failed out of {len(MODEL_MAPPING)} total models")
+
     elif args.model:
         if args.model in MODEL_MAPPING:
             print(f"Testing single model: {args.model}")
