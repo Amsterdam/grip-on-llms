@@ -94,13 +94,14 @@ score_explanation:
       We meten de impact van LLMs op het milieu met behulp van een tool genaamd CodeCarbon.
       Deze tool houdt bij hoe lang een programma draait en
       hoeveel rekenkracht en energie worden gebruikt.
-      Vervolgens berekent het hoeveel koolstofdioxide er wordt uitgestoten,
-      afhankelijk van het geografische gebied waar de servers zich bevinden.
-      "
+      Dit kunnen we alleen doen voor modellen die we kunnen downloaden en lokaal kunnen draaien.
+      Alle experimenten worden uitgevoerd met behulp van batch inference
+      op een enkele H100 GPU in West-Europa om consistente resultaten te garanderen."
     example:
     outro: "
-      Wij gebruiken CodeCarbon wanneer we alle andere benchmarks uitvoeren
-      en berekenen vervolgens een gemiddelde score per model."
+      Wij gebruiken CodeCarbon wanneer we resultaten genereren voor
+      taken met open antwoorden, zoals vereenvoudiging en samenvatting.
+      Vervolgens berekenen we het gemiddelde energieverbruik <b>per 1000 prompts</b>."
   data_openness:
     intro: "
       Open datasets maken het mogelijk om privacy- en auteursrechtelijke risico's te beoordelen.
@@ -116,11 +117,11 @@ score_explanation:
   costs:
     intro: "
       Om LLMs eenvoudig te vergelijken, berekenen we de gemiddelde kosten per prompt op basis van een specifieke cloudprovider.
-      Dit schatten we door te meten hoeveel het kost om resultaten te genereren voor taken met open antwoorden, zoals vereenvoudiging of samenvatting.
+      Dit schatten we door te meten hoeveel het kost om resultaten te genereren voor taken met open antwoorden, zoals vereenvoudiging en samenvatting.
       De berekeningsmethode hangt af van of het model lokaal draait of via een API wordt benaderd.
       "
     example: |
-      <b>Lokale modellen:</b> Voor modellen die we kunnen downloaden en lokaal kunnen draaien, meten we hoe lang ze nodig hebben om taken uit te voeren, en vermenigvuldigen dit met de kosten van de gebruikte machine. Alle tests worden uitgevoerd op H100 GPU's in West-Europa om de resultaten consistent en vergelijkbaar te houden.
+      <b>Lokale modellen:</b> Voor modellen die we kunnen downloaden en lokaal kunnen draaien, meten we hoe lang ze nodig hebben om taken uit te voeren, en vermenigvuldigen dit met de kosten van de gebruikte machine. Alle tests worden uitgevoerd met behulp van batch inference op een enkele H100 GPU in West-Europa om de resultaten consistent en vergelijkbaar te houden.
 
       <b>API-modellen:</b> Voor modellen die via een API worden benaderd, worden de kosten meestal berekend op basis van "tokens" (delen van woorden). We berekenen het aantal invoer- en uitvoertokens om de gemiddelde kosten per prompt te bepalen.
     outro: |

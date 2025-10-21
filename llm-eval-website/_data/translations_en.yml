@@ -105,12 +105,14 @@ score_explanation:
       We measure environmental impact using a tool called CodeCarbon.
       This tool tracks how long a program runs and
       how much computational resources and energy are used.
-      Afterwards, it calculates how much carbon dioxide is emitted
-      depending on the geographic area where servers are located."
+      We can only do this when we download and run models locally.
+      All experiments are done using batch inference
+      on a single H100 GPU in West Europe to ensure consistent results."
     example:
     outro: "
-      We use CodeCarbon when we run all other benchmarks
-      and then calculate an average score per model."
+      We use CodeCarbon when generating responses for
+      open-ended generation tasks such as simplification and summarization.
+      We then calculate and report the average energy use <b>per 1000 prompts</b>."
   data_openness:
     intro: |
       Openly available datasets allow us to assess privacy risks and copyright concerns and
@@ -128,11 +130,11 @@ score_explanation:
       To compare LLMs easily, we calculate their avarage cost per prompt
       based on the pricing of a specific cloud provider.
       We estimate this by measuring the cost of generating responses for
-      open-ended generation tasks such as simplification or summarization.
+      open-ended generation tasks such as simplification and summarization.
       The calculation method depends on whether the model runs locally or is accessed via API.
       "
     example: |
-      <b>Local models:</b> For models we can download and run locally, we track how long they take to complete tasks and multiply this by the cost of the machine used. All experiments are done on H100 GPUs in West Europe to ensure consistent results.
+      <b>Local models:</b> For models we can download and run locally, we track how long they take to complete tasks and multiply this by the cost of the machine used. All experiments are done using batch inference on a single H100 GPU in West Europe to ensure consistent results.
 
       <b>API models:</b> For models accessed via an API, costs are usually based on "tokens" (part of words). We calculate the number of input and output tokens to calculate the average cost per prompt.
     outro: |
