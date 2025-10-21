@@ -28,7 +28,8 @@ mission: "
   Om het verantwoord gebruik van LLM's te bevorderen, bieden wij een overzicht van modellen
   die ingezet kunnen worden voor Nederlandse gemeentelijke toepassingen."
 methodology: "
-  Alle experimenten zijn direct in het Nederlands uitgevoerd op een enkele H100 compute."
+  Omdat modellen zich anders gedragen per taal,
+  zijn alle experimenten direct in het Nederlands uitgevoerd."
 energy_disclaimer:
   title: Energieverbruik Inschatten Onmogelijk
   explanation: "Omdat dit model niet open-source is, is het onmogelijk om te berekenen hoeveel energie het verbruikt. Als je je zorgen maakt over ons milieu, raden we je aan een model te gebruiken waarvoor deze informatie beschikbaar is."
