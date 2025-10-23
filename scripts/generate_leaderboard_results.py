@@ -29,6 +29,7 @@ from llm_eval.benchmarks import (
     TinyTruthfulQA,
     XSum,
 )
+from llm_eval.benchmarks.use_cases.kog_classifier import KOGClassifier
 from llm_eval.language_models import LLMRouter
 from llm_eval.leaderboard import Leaderboard
 from llm_eval.translators import TranslatorRouter
@@ -132,6 +133,8 @@ EXISTING_BENCHMARKS = [
     "Dutch-CrowSPairs",
     "BZK-Social-Bias-gender",
     "BZK-Social-Bias-name",
+    # Use Cases
+    "KOG-Classifier",
 ]
 
 translation_gpt = LLMRouter.get_model(
@@ -180,6 +183,7 @@ BENCH_CLASSES = {
     "XSum": XSum,
     "Dutch-BBQ": DutchBBQ,
     "Dutch-CrowSPairs": DutchCrowSPairs,
+    "KOG-Classifier": KOGClassifier,
 }
 
 BENCH_FILES = {
@@ -287,6 +291,11 @@ def get_benchmark(
             bench_name,
             data_path=data_path,
             llm_judges=[],
+        )
+
+    elif bench_name == "KOG-Classifier":
+        return KOGClassifier(
+            benchmark_name=bench_name,
         )
 
     else:
