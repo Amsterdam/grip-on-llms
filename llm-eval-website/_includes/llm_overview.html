@@ -1,5 +1,5 @@
 {% assign translations_key = 'translations_' | append: page.lang %}
-{% assign score_columns = "reasoning,inclusion,simplification,summarization,factuality,honesty,energy_use" | split: "," %}
+{% assign score_columns = "reasoning,inclusion,simplification,summarization,factuality,honesty" | split: "," %}
 <!-- {% assign bias_aspects = "age,religion,origin,race,ability,gender" | split: "," %} -->
 {% assign bias_aspects = "age,origin,ability,gender" | split: "," %}
 {% assign existing_explanations = site.data[translations_key].score_explanation %}
@@ -9,12 +9,8 @@
         <thead>
             <tr>
                 {% for column in site.visible_columns %}
-                    {% if existing_explanations[column] %}
-                        {% include score_header.html score_type=column%}
-                        <!-- <th class="score-cell">{{ site.data[translations_key].table_headers[column] }}</th> -->
-                    {% else %}
-                        <th>{{ site.data[translations_key].table_headers[column] }}</th>
-                    {% endif %}
+                    {% if score_columns contains column %}{% assign is_score_column = true %}{% else %}{% assign is_score_column = false %}{% endif %}
+                    {% include score_header.html score_type=column is_score_column=is_score_column %}
                 {% endfor %}
             </tr>
         </thead>
@@ -42,24 +38,37 @@
                                 </div>
                             </td>
                         {% elsif column == 'costs' %}
-                            <td class="costs-cell">
-                                {% assign costs = model.costs %}
-                                {% include costs_bar.html aspect=column costs=costs costs_category=model.costs_category costs_percent=model.costs_percent %}
+                            {% assign costs = model.costs %}
+                            {% assign category = model.costs_category | plus: 0 %}
+                            <td class="costs-cell" data-sort-value="{% if category == -1 %}9999{% else %}{{ costs }}{% endif %}">
+                                {% include costs_bar.html aspect=column costs=costs costs_category=category costs_percent=model.costs_percent %}
                             </td>
                         {% elsif column == 'energy_use' %}
-                            <td class="costs-cell">
-                                {% include costs_bar.html aspect=column costs=model.energy_use costs_category=model.energy_use_category costs_percent=model.energy_use_percent %}
+                            {% assign energy_use = model.energy_use %}
+                            {% assign category = model.energy_use_category | plus: 0 %}
+                            <td class="costs-cell" data-sort-value="{% if category == -1 %}9999{% else %}{{ energy_use }}{% endif %}">
+                                {% include costs_bar.html aspect=column costs=energy_use costs_category=category costs_percent=model.energy_use_percent %}
                             </td>
                         {% elsif column == 'bias' %}
-                            <td class="bias-cell">
+                            {% assign bias_sum_cat = 0 %}
+                            {% for aspect in bias_aspects %}
+                                {% assign category_key = 'bias_' | append: aspect | append: '_category' %}
+                                {% assign category = model[category_key] | plus: 0 | round %}
+                                {% if category != -1 %}
+                                    {% assign bias_sum_cat = bias_sum_cat | plus: category %}
+                                {% endif %}
+                            {% endfor %}
+                            <td class="bias-cell" data-sort-value="{{ bias_sum_cat }}">
                                 {% include bias_scores.html model=model aspects=bias_aspects %}
                             </td>
                         {% elsif score_columns contains column %}
                             {% assign score_value = model[column] %}
-                            <td class="score-cell">{% include score_circle.html score=score_value %}</td>
+                            <td class="score-cell" data-sort-value="{{ score_value }}">
+                                {% include score_circle.html score=score_value %}
+                            </td>
                         {% elsif column == 'license' %}
                             {% assign license = model[column] %}
-                            <td class="license-cell">
+                            <td class="license-cell" data-sort-value="{{ site.sort_orders.license[model.license] }}">
                                 <div class="license-wrapper">
                                     <span class="license-circle {{ license }}"></span>
                                     <span class="license-label">
@@ -74,7 +83,9 @@
                         {% elsif column == 'data_openness' %}
                             {% assign data_openness = model[column] %}
                             {% assign data_link = model["data_link"] %}
-                            <td class="data-cell">{% include data_openness_cell.html data_openness=data_openness data_link=data_link %}</td>
+                            <td class="data-cell" data-sort-value="{{ site.sort_orders.data_openness[data_openness] }}">
+                                {% include data_openness_cell.html data_openness=data_openness data_link=data_link %}
+                            </td>
                         {% else %}
                             <td>{{ model[column] }}</td>
                         {% endif %}

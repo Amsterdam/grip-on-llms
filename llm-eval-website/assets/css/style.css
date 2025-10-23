@@ -196,7 +196,8 @@ th, td {
     border: 1px solid var(--color-table-separator);
     padding: 12px;
     text-align: left;
-    max-width: 180px;
+    white-space: nowrap;
+    /* max-width: 220px; */
 }
 
 th {
@@ -209,6 +210,12 @@ th {
     z-index: 2;
     position: relative;
     box-shadow: 4px 0 0 0 #E8E8E8, 0 4px 0 0 #E8E8E8; */
+    position: relative;
+    user-select: none;
+    cursor: pointer;
+    padding-right: 20px;
+    white-space: nowrap;
+    /* min-width: 180px; */
 }
 
 /* tr:nth-child(even) {
@@ -219,6 +226,75 @@ th {
     background-color: #f1f1f1;
 } */
 
+
+/* Position info icons to the far right */
+th .score-info-icon,
+th .missing-score-icon {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 12px!;
+}
+
+th .score-info-icon,
+th .missing-score-icon {
+  display: inline-flex;        /* Make it inline */
+  align-items: center;
+  vertical-align: middle;      /* Align with text */
+}
+
+
+.sort-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 2px;
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+}
+
+.sort-icon span {
+    display: none;  /* Hide all by default */
+    width: 16px;
+    height: 16px;
+}
+
+.sort-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Show only the default icon by default */
+.sort-icon .sort-default {
+    display: inline-flex;
+    opacity: 0.3;
+    color: var(--color-text-secondary);
+}
+
+/* Hide default and show appropriate icon when sorted */
+th.sortable.sort-asc .sort-icon .sort-default,
+th.sortable.sort-desc .sort-icon .sort-default {
+    display: none;
+}
+
+th.sortable.sort-asc .sort-icon .sort-asc {
+    display: inline-flex;
+    opacity: 1;
+    color: var(--color-text-secondary);
+}
+
+th.sortable.sort-desc .sort-icon .sort-desc {
+    display: inline-flex;
+    opacity: 1;
+    color: var(--color-text-secondary);
+}
+
+/* Hover effect */
+th.sortable:hover .sort-icon .sort-default {
+    opacity: 0.6;
+}
 
 .license-cell {
   padding: 12px;
@@ -359,7 +435,7 @@ th {
   justify-content: center;
   position: relative;
   cursor: pointer;
-  color: var(--color-text-secondary)
+  color: var(--color-text-secondary);
   font-weight: 1000;
 }
 
@@ -464,12 +540,11 @@ th {
   font-weight: normal;
 }
 
-
-
 .score-header-container {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
+    pointer-events: none;
 }
 
 .score-info-icon {
@@ -480,6 +555,14 @@ th {
     cursor: pointer;
     color: var(--color-info);
     height: 24px;
+    padding: 4px;
+}
+
+
+.score-header-container > *,
+.score-info-icon,
+.sort-icon {
+    pointer-events: auto;
 }
 
 .score-info-icon svg {
@@ -533,10 +616,13 @@ th {
 
 .score-header-container:hover .score-explanation-card,
 .score-header-container:focus .score-explanation-card,
-.score-info-icon:hover .score-explanation-card,
-.score-info-icon:focus .score-explanation-card,
 .bias-aspect:hover .score-explanation-card,
 .bias-aspect:focus .score-explanation-card {
+    display: none;
+}
+
+.score-info-icon:hover .score-explanation-card,
+.score-info-icon:focus .score-explanation-card {
     display: flex;
 }
 

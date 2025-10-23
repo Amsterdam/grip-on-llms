@@ -24,12 +24,12 @@ Parameters:
         </div>
         {% if aspect == 'costs' %}
             <!-- x1000 for per 1000 prompts -->
-            {% assign costs = costs | times: 1000 | round: 2 %}
-            <span class="costs-value">€{{ costs }}</span>
+            {% assign display_costs = costs | times: 1000 | round: 2 %}
+            <span class="costs-value">€{{ display_costs }}</span>
         {% elsif aspect == "energy_use" %}
             <!-- x1000 for per 1000 prompts + x1000 for Wh -->
-            {% assign costs = costs | times: 1000000 | round: 2 %}
-            <span class="costs-value">{{ costs }}Wh</span>
+            {% assign display_energy = costs | times: 1000000 | round: 2 %}
+            <span class="costs-value">{{ display_energy }}Wh</span>
         {% endif %}
-  </div>
+    </div>
 {% endif %}
