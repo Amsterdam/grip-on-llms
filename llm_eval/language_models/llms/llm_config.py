@@ -177,9 +177,4 @@ MODEL_MAPPING = {
         "model_size": "large",
         "kwargs": {},
     },
-    "mistral-large-instruct-2407-awq": {
-        "id": "TTechxGenus/Mistral-Large-Instruct-2411-AWQ",
-        "model_size": "xlarge",
-        "kwargs": {},
-    },
 }
