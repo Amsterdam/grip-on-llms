@@ -30,3 +30,12 @@ visible_models:
   - Qwen3-32B
   - gemma-3-12b-it
   - gemma-3-27b-it
+sort_orders:
+  license:
+    open: 1
+    restricted: 2
+    commercial: 3
+  data_openness:
+    open: 1
+    described: 2
+    closed: 3
