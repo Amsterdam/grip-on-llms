@@ -4,10 +4,13 @@ import logging
 import sys
 from typing import Dict, List
 
-from huggingface_hub import snapshot_download
+# isort off to ensure that paths are set up before transformers imports
+# isort: off
+from llm_eval.utils.setup_utils import get_hf_secrets
+# isort: on
 
+from huggingface_hub import snapshot_download
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
-from tests.env_setup import get_hf_secrets
 
 
 def download_model(url):
