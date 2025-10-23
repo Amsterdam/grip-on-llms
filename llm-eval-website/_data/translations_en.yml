@@ -26,7 +26,7 @@ data_openness_options:
 page_title: Dutch LLM Overview
 mission: "
   To encourage the responsible use of Large Language Models, we create an overview of models,
-  which can be used for Dutch municipal use cases."
+  which can be used for Dutch governmental use cases."
 methodology: "
   As models behave differently in different languages,
   all experiments were performed directly in Dutch."
