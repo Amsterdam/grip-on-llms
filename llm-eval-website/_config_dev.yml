@@ -35,6 +35,19 @@ visible_models:
   - Qwen3-32B
   - gemma-3-12b-it
   - gemma-3-27b-it
+  - smollm3-3b
+  - fietje-2-instruct
+  - command-r7b
+  - geitje-7b-ultra
+  - apertus-8b-instruct
+  - gpt-oss-20b
+  - qwen3-32b-awq
+  - aya-expanse-32b
+  - deepseek-r1-distill-qwen-32b
+  - llama-3.3-70b-gptq
+  - deepseek-r1-distill-llama-70b-awq
+  - apertus-70b-instruct-quantized
+  - gpt-oss-120b
 sort_orders:
   license:
     open: 1
