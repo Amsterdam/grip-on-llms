@@ -30,18 +30,19 @@ visible_models:
   - Qwen3-32B
   - gemma-3-12b-it
   - gemma-3-27b-it
-  - smollm3-3b
-  - fietje-2-instruct
-  - command-r7b
-  - apertus-8b-instruct
+  - SmolLM3-3B
+  # - fietje-2-instruct
+  # - GEITje-7B-ultra
+  - c4ai-command-r7b-12-2024
+  - Apertus-8B-Instruct-2509
+  - Apertus-70B-Instruct-2509-quantized.w4a16
   - gpt-oss-20b
-  - qwen3-32b-awq
+  # - gpt-oss-120b
+  - Qwen3-32B-AWQ
   - aya-expanse-32b
-  - deepseek-r1-distill-qwen-32b
+  - DeepSeek-R1-Distill-Qwen-32B
+  - DeepSeek-R1-Distill-Llama-70B-AWQ
   - llama-3.3-70b-gptq
-  - deepseek-r1-distill-llama-70b-awq
-  - apertus-70b-instruct-quantized
-  - gpt-oss-120b
 sort_orders:
   license:
     open: 1
