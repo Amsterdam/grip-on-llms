@@ -88,14 +88,14 @@ HF_OBJECT_PARAMS = {
 }
 
 DEFAULT_HF_MODELS = [
-    "tiny-llama",
     "mistral-7b-instruct-v0.3",
     "mistral-small-instruct",
-    "mistral-large-instruct",
-    "mistral-large-instruct-quantized",
+    "tiny-llama",
     "llama-3.1-8b-instruct",
-    "llama-3.3-70b-instruct",
+    "llama-3.3-70b-gptq",
+    "geitje-7b-ultra",
     "phi-4-mini-instruct",
+    "fietje-2-instruct",
     "falcon3-7b-instruct",
     "olmo-7b-instruct",
     "olmo-32b-instruct",
@@ -103,8 +103,18 @@ DEFAULT_HF_MODELS = [
     "eurollm-22b-instruct",
     "qwen-8b",
     "qwen-32b",
+    "qwen3-32b-awq",
     "gemma-12b-instruct",
     "gemma-27b-instruct",
+    "smollm3-3b",
+    "aya-expanse-32b",
+    "command-r7b",
+    "apertus-8b-instruct",
+    "apertus-70b-instruct-quantized",
+    "gpt-oss-20b",
+    "gpt-oss-120b",
+    "deepseek-r1-distill-qwen-32b",
+    "deepseek-r1-distill-llama-70b-awq",
 ]
 
 DEFAULT_AZURE_MODELS = [
