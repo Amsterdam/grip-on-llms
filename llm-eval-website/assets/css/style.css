@@ -615,10 +615,13 @@ th.sortable:hover .sort-icon .sort-default {
 
 
 .score-header-container:hover .score-explanation-card,
-.score-header-container:focus .score-explanation-card,
+.score-header-container:focus .score-explanation-card {
+    display: none;
+}
+
 .bias-aspect:hover .score-explanation-card,
 .bias-aspect:focus .score-explanation-card {
-    display: none;
+    display: flex;
 }
 
 .score-info-icon:hover .score-explanation-card,
@@ -854,10 +857,6 @@ th.sortable:hover .sort-icon .sort-default {
     outline: 2px solid var(--color-info);
     outline-offset: 2px;
 }
-
-
-
-
 
 /* --- COLOR OPTIONS ---  */
 
