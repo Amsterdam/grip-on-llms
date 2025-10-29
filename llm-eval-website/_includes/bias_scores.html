@@ -19,7 +19,7 @@ Parameters:
         {% assign category = model[category_key] | plus: 0 | round %}
 
 
-        {% if score_raw == nil or score_raw == "" or score == -1 %}
+        {% if score_raw == nil or score_raw == "" or score == -1 or category == -1 %}
             <div class="score-circles score-unavailable">
                 <span class="missing-score-icon" tabindex="0">
                     ?
