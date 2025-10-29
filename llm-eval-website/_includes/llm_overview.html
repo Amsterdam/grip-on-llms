@@ -9,8 +9,30 @@
         <thead>
             <tr>
                 {% for column in site.visible_columns %}
-                    {% if score_columns contains column %}{% assign is_score_column = true %}{% else %}{% assign is_score_column = false %}{% endif %}
-                    {% include score_header.html score_type=column is_score_column=is_score_column %}
+                    {% if column == 'bias' %}
+                        {% assign is_score_column = true %}
+                        {% assign bias_colspan = bias_aspects | size %}
+                        {% include score_header.html score_type=column is_score_column=is_score_column colspan=bias_colspan %}
+                    {% else %}
+                        {% if score_columns contains column %}{% assign is_score_column = true %}{% else %}{% assign is_score_column = false %}{% endif %}
+                        {% include score_header.html score_type=column is_score_column=is_score_column %}
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            <tr class="bias-subheader-row">
+                {% for column in site.visible_columns %}
+                    {% if column == 'bias' %}
+                        {% for aspect in bias_aspects %}
+                        <th class="bias-subheader">
+                            <span class="subheader-text">
+                                {{ site.data[translations_key].bias_aspects[aspect] | default: aspect | capitalize }}
+                            </span>
+                        </th>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Empty cell for alignment with other columns -->
+                        <th class="spacer-cell"></th>
+                    {% endif %}
                 {% endfor %}
             </tr>
         </thead>
@@ -58,9 +80,36 @@
                                     {% assign bias_sum_cat = bias_sum_cat | plus: category %}
                                 {% endif %}
                             {% endfor %}
-                            <td class="bias-cell" data-sort-value="{{ bias_sum_cat }}">
-                                {% include bias_scores.html model=model aspects=bias_aspects %}
-                            </td>
+
+                            {% for aspect in bias_aspects %}
+                                {% if aspect == 'origin' %}
+                                    {% assign max = 0.52 %}
+                                {% else %}
+                                    {% assign max = 0.27 %}
+                                {% endif %}
+                                {% assign score_key = 'bias_' | append: aspect | append: '_score' %}
+                                {% assign category_key = 'bias_' | append: aspect | append: '_category' %}
+                                {% assign score_raw = model[score_key] | times: 1.0 %}
+                                {% assign score_percent = score_raw | times: 100.0 %}
+                                {% assign score_normalized = score_raw | divided_by: max %}
+                                {% assign score_normalized_percent = score_normalized | times: 100.0 %}
+                                {% assign category = model[category_key] | plus: 0 | round %}
+
+                                <td class="bias-subcell" data-sort-value="{{ bias_sum_cat }}">
+                                    {% if category == -1 %}
+                                        ?
+                                    {% else %}
+                                        <div class="costs-container">
+                                            <div class="costs-bar">
+                                                <div class="costs-fill costs-category-{{ category }}" style="width: {{ score_normalized_percent }}%"></div>
+                                            </div>
+                                            <!-- <span class="costs-value">{{ score_percent | round }}</span> -->
+                                        </div>
+                                    {% endif %}
+                                </td>
+
+                            {% endfor %}
+
                         {% elsif score_columns contains column %}
                             {% assign score_value = model[column] %}
                             <td class="score-cell" data-sort-value="{{ score_value }}">

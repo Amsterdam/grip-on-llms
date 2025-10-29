@@ -767,9 +767,56 @@ th.sortable:hover .sort-icon .sort-default {
 .costs-category-5 { background: var(--color-light-red); }
 .costs-category-6 { background: var(--color-dark-red); }
 
+.bias-subheader-row .spacer-cell {
+    background: transparent;
+    border: none;
+    padding: 0;
+    height: 0;
+    visibility: hidden;
+    font-size: 0;
+    line-height: 0;
+}
 
-.bias-cell {
-    text-align: center;
+/* Ensure no content appears in spacer cells */
+.bias-subheader-row .spacer-cell * {
+    display: none;
+}
+
+/* Make bias columns more compact */
+.bias-subheader {
+    min-width: 60px;
+    padding: 4px 4px;
+    height: 12px;
+    /* font-size: 11px; */
+}
+
+.bias-subcell {
+    min-width: 50px;
+    padding: 6px 4px;
+}
+
+.bias-subcell .costs-container {
+    min-width: 60px;
+    gap: 10px;
+}
+
+.bias-subcell .costs-bar {
+    min-width: 45px;
+    height: 16px;
+}
+
+.bias-subcell .costs-fill {
+    height: 16px;
+}
+
+.bias-subcell .costs-value {
+    min-width: 25px;
+    font-size: 12px;
+}
+
+/* Make main bias header match */
+th.score-cell[colspan] {
+    padding: 8px 12px;
 }
 
 .bias-scores {

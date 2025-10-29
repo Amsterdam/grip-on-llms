@@ -1,9 +1,11 @@
 {% assign score_type = include.score_type %}
 {% assign is_score_column = include.is_score_column %}
+{% assign colspan = include.colspan | default: 1 %}
 {% assign translations_key = 'translations_' | append: page.lang %}
 {% assign existing_explanations = site.data[translations_key].score_explanation %}
 
-<th class="score-cell"{% if is_score_column %} data-default-sort="desc"{% endif %}>
+
+<th class="score-cell"{% if is_score_column %} data-default-sort="desc"{% endif %}{% if colspan > 1 %} colspan="{{ colspan }}"{% endif %}>
     <div class="score-header-container">
         {{ site.data[translations_key].table_headers[score_type] }}
         <span class="sort-icon">
