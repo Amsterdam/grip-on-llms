@@ -24,12 +24,12 @@ from llm_eval.benchmarks import (
     DutchCrowSPairs,
     HonestCityBench,
     INTDuidelijkeTaal,
+    KOGClassifier,
     TinyARC,
     TinyMMLU,
     TinyTruthfulQA,
     XSum,
 )
-from llm_eval.benchmarks.use_cases.kog_classifier import KOGClassifier
 from llm_eval.language_models import LLMRouter
 from llm_eval.leaderboard import Leaderboard
 from llm_eval.translators import TranslatorRouter
@@ -250,7 +250,7 @@ def get_dutch_bias_bench(bench_name):
     )
 
 
-def get_benchmark(
+def get_benchmark(  # noqa: C901
     bench_name,
     simple_prompt_type=None,
     summary_prompt_type=None,
