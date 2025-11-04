@@ -138,6 +138,7 @@ PROMPT_TEMPLATE = (
     "'niet-KOG –' en een korte reden.\n"
     "Bezwaarschrift:\n"
     "{bezwaar}\n"
+    "Uitkomst: "
 )
 
 
@@ -179,7 +180,7 @@ class KOGClassifier(BaseBenchmark):
     def _run_task(self, llm, n_samples=0) -> List[RunItem]:
         """Run the classification task using the provided LLM."""
         if self.data is None:
-            raise ValueError("Benchmark data is not loaded.")
+            self.data = self._load_data()
 
         prompts = []
         for entry in self.data:
@@ -326,16 +327,6 @@ class KOGClassifier(BaseBenchmark):
         metadata = {
             "task_type": "classification",
             "language": "dutch",
+            "prompt": PROMPT_TEMPLATE
         }
         return metadata
-
-    def _load_prompt(self):
-        """Load prompt template from text file."""
-        try:
-            with open(self.prompt_path, "r", encoding="utf-8") as f:
-                prompt_template = f.read().strip()
-            return prompt_template
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Prompt file not found at {self.prompt_path}")
-        except Exception as e:
-            raise Exception(f"Error loading prompt from {self.prompt_path}: {str(e)}")
