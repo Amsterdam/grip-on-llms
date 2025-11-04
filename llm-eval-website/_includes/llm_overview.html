@@ -56,6 +56,8 @@
                                 {% assign category = model[category_key] | plus: 0 | round %}
                                 {% if category != -1 %}
                                     {% assign bias_sum_cat = bias_sum_cat | plus: category %}
+                                {% else %}
+                                    {% assign bias_sum_cat = bias_sum_cat | plus: 5 %}
                                 {% endif %}
                             {% endfor %}
                             <td class="bias-cell" data-sort-value="{{ bias_sum_cat }}">
