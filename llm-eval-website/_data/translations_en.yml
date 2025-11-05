@@ -114,10 +114,33 @@ score_explanation:
       We use CodeCarbon when generating responses for
       open-ended generation tasks such as simplification and summarization.
       We then calculate and report the average energy use <b>per 1000 prompts</b>."
+  provider:
+    intro: "
+      The models in our overview are developed by a wide range of organizations.
+      The visualized flags represent the primary legal jurisdiction of the provider,
+      which determines:"
+    example: |
+      <b>Dispute resolution:</b> Where disputes would be resolved and which courts have authority over conflicts arising from model use.
+
+      <b>Regulatory compliance:</b> Which regulations (e.g. related to data privacy, intellectual property, consumer protection, etc.) apply during development, deployment and use of the model. For example, EU providers must comply with GDPR and the EU AI Act, while US providers follow different frameworks.
+    outro: |
+      The jurisdiction is determined by the courts specified in the license agreement if explicitly stated. Otherwise, we take into account the provider's place of registration.
+  license:
+    intro: "
+      The models in our overview are governed by various licenses,
+      which dictate how they can be used, modified, and redistributed.
+      We distinguish between the following categories:"
+    example: |
+      <b>Open:</b> Permissive licenses such as Apache 2.0 and MIT, which permit use, modification, and redistribution for any purpose with minimal restrictions.
+
+      <b>Restricted:</b> Licenses which permit use under certain conditions such as CC-BY-NC-4.0 (non-commercial only) and Llama/Gemma/Falcon Licenses (use-based restrictions or large-scale deployment requirements).
+
+      <b>Commercial:</b> Proprietary licenses requiring paid subscriptions or API access, with model weights typically not publicly distributed.
+    outro: |
+      When selecting a model, carefully review its specific license terms to ensure compliance with organizational policies and regulatory frameworks.
   data_openness:
     intro: |
-      Openly available datasets allow us to assess privacy risks and copyright concerns and
-      to analyze whether the dataset is inclusive and representative of our society and values.
+      Openly available datasets allow us to assess privacy risks and copyright concerns and to analyze whether the dataset is inclusive and representative of our society and values.
       We distinguish between the following categories:
     example: |
       <b>Open:</b> This model is fully transparent about its training data. The datasets are publicly available and can be inspected and analyzed.
