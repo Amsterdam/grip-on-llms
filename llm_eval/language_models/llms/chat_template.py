@@ -26,6 +26,7 @@ class ChatTemplateHandler:
         self.tokenizer = tokenizer
         self.system_prompt = system_prompt
         self.template_kwargs = template_kwargs or {}
+        self.force_no_thinking = self.template_kwargs.pop("force_no_thinking", False)
 
     def format_conversation(
         self, prompt: str, context: Optional[str] = None, system: Optional[str] = None
@@ -118,12 +119,19 @@ class VLLMChatHandler(ChatTemplateHandler):
 
     def apply_chat_template_for_generation(self, conversation: List[Dict[str, str]]) -> str:
         """Apply chat template and return formatted string for vLLM."""
-        return self.tokenizer.apply_chat_template(
+        formatted_prompt = self.tokenizer.apply_chat_template(
             conversation,
             tokenize=False,
             add_generation_prompt=True,
             **self.template_kwargs,
         )
+        if self.force_no_thinking:
+            no_think_suffix = (
+                "\n</think>" if "<think>" in formatted_prompt else "<think>\n</think>"
+            )
+            formatted_prompt += no_think_suffix
+
+        return formatted_prompt
 
     def apply_chat_template_for_display(self, conversation: List[Dict[str, str]]) -> str:
         """Apply chat template and return formatted string for display/logging."""
