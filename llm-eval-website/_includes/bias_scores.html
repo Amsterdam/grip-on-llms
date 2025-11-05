@@ -53,15 +53,28 @@ Parameters:
                   </div>
                     <div class="score-explanation-content">
                         <div class="score-explanation-text">
+                            {% assign bias_level = site.data[translations_key].score_explanation.bias.bias_levels[category] %}
+                            {% assign aspect_name = site.data[translations_key].bias_aspect_explanation[aspect].name %}
+
+                            {% comment %} Build the statement {% endcomment %}
+                            {% assign level_statement = site.data[translations_key].score_explanation.bias.bias_level_statement
+                                | replace: '{level}', bias_level
+                                | replace: '{aspect}', aspect_name %}
+
+                            <p>
+                                {{ level_statement }}
+                                {% if score >= 0 and category >= 0 and site.data[translations_key].bias_aspect_explanation[aspect].biased %}
+                                    {% assign percent_statement = site.data[translations_key].bias_aspect_explanation[aspect].biased
+                                        | replace: '{percent}', score %}
+                                    {{ percent_statement }}
+                                {% endif %}
+                            </p>
+                            <br>
                             <p>{{ site.data[translations_key].bias_aspect_explanation[aspect].intro | newline_to_br }}</p>
                             <div class="score-explanation-example">
                                 <p>{{ site.data[translations_key].bias_aspect_explanation[aspect].example | newline_to_br }}</p>
                             </div>
                             <p>{{ site.data[translations_key].bias_aspect_explanation[aspect].outro }}</p>
-                            <!-- {{ score }} -->
-                            {% if score >= 0 and category >= 0 and site.data[translations_key].bias_aspect_explanation[aspect].biased %}
-                                <p>{{ site.data[translations_key].bias_aspect_explanation[aspect].biased }} {{ score }}%.</p>
-                            {% endif %}
                         </div>
                     </div>
               </div>

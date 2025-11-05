@@ -152,9 +152,19 @@ score_explanation:
       Onze methodologie is beperkt - we testen slechts een aantal individuele kenmerken (leeftijd, nationaliteit, beperkingen, geslacht) in een klein aantal scenario's.
 
       Bias moet altijd onderzocht worden binnen de specifieke toepassing en context.
+    bias_levels:
+      0: "geen"
+      1: "zeer laag"
+      2: "laag"
+      3: "gemiddeld"
+      4: "hoog"
+      5: "zeer hoog"
+    bias_level_statement: "Dit model heeft <strong>{level} {aspect}</strong>."
+
 
 bias_aspect_explanation:
   age:
+    name: leeftijdsbias
     intro: "
       We meten leeftijdsbias met behulp van de
       <a href=https://arxiv.org/pdf/2406.07243 target='_blank'> MBBQ benchmark</a>.
@@ -170,8 +180,10 @@ bias_aspect_explanation:
       We stellen het model meerdere varianten van dezelfde vraag, waarbij we de volgorde van antwoorden aanpassen
       of extra informatie toevoegen die het juiste antwoord duidelijk maakt (bijvoorbeeld dat de dochter vergeetachtig is).
       Vervolgens berekenen we hoe vaak het model een stereotiep antwoord kiest, zelfs als dat onjuist is.
-    biased:
+    biased: "
+      Dit model selecteert onterecht een stereotiep antwoord in <strong>{percent}%</strong> van de vragen."
   origin:
+    name: afkomstbias
     intro: "
       We meten of het model discrimineert op afkomst met behulp van de
       <a href=https://github.com/MinBZK/llm-benchmark/blob/main/benchmarks/social-bias/README.md target='_blank'> Social Bias Benchmark</a>
@@ -185,8 +197,9 @@ bias_aspect_explanation:
       of de naam (Avinash, Yassine, Daan, etc.).
       Vervolgens berekenen we hoe vaak het model ervoor kiest om mensen met verschillende nationaliteiten aan te nemen.
     biased: "
-      Het maximale verschil in aanstellingspercentages tussen verschillende nationaliteiten voor dit model is:"
+      Het maximale verschil in aanstellingspercentages tussen verschillende nationaliteiten voor dit model is: <strong>{percent}%</strong>."
   ability:
+    name: beperkingenbias
     intro: "
       We meten bias tegen personen met een lichamelijke, zintuigelijke, mentale en/of verstandelijke beperking met behulp van de
       <a href=https://arxiv.org/pdf/2406.07243 target='_blank'> MBBQ dataset</a>.
@@ -202,8 +215,10 @@ bias_aspect_explanation:
       We stellen het model meerdere varianten van dezelfde vraag, waarbij we de volgorde van antwoorden aanpassen
       of informatie toevoegen die het juiste antwoord duidelijk maakt.
       Vervolgens berekenen we hoe vaak het model (ten onrechte) een stereotiep antwoord kiest.
-    biased:
+    biased: "
+      Dit model selecteert onterecht een stereotiep antwoord in <strong>{percent}%</strong> van de vragen."
   gender:
+    name: geslachtsbias
     intro: "
       We meten of het model discrimineert op gender met behulp van de
       <a href=https://github.com/MinBZK/llm-benchmark/blob/main/benchmarks/social-bias/README.md target='_blank'> Social Bias Benchmark</a>
@@ -217,4 +232,4 @@ bias_aspect_explanation:
       of de naam (Yasmina, Michael, etc.).
       Vervolgens berekenen we hoe vaak het model ervoor kiest om mensen met verschillende genders aan te nemen.
     biased: "
-      Het maximale verschil in aanstellingspercentages tussen verschillende genders voor dit model is:"
+      Het maximale verschil in aanstellingspercentages tussen verschillende genders voor dit model is: <strong>{percent}%</strong>."
