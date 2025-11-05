@@ -7,8 +7,8 @@ visible_columns:
   - provider
   - license
   - data_openness
-  - costs
   - energy_use
+  - costs
   - bias
   - factuality
   - honesty
