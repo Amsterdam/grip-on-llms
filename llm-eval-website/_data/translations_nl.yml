@@ -103,6 +103,30 @@ score_explanation:
       Wij gebruiken CodeCarbon wanneer we resultaten genereren voor
       taken met open antwoorden, zoals vereenvoudiging en samenvatting.
       Vervolgens berekenen we het gemiddelde energieverbruik <b>per 1000 prompts</b>."
+  provider:
+    intro: "
+      De modellen in ons overzicht zijn ontwikkeld door een breed scala aan organisaties.
+      De gevisualiseerde vlaggen vertegenwoordigen de primaire juridische jurisdictie van de aanbieder,
+      wat het volgende bepaalt:"
+    example: |
+      <b>Geschillenbeslechting:</b> Waar geschillen worden opgelost en welke rechtbanken bevoegd zijn bij conflicten die voortvloeien uit modelgebruik.
+
+      <b>Naleving van regelgeving:</b> Welke regelgeving (bijv. met betrekking tot privacy, intellectueel eigendom, consumentenbescherming, etc.) van toepassing is tijdens de ontwikkeling, implementatie en het gebruik van het model. EU-aanbieders moeten bijvoorbeeld voldoen aan de AVG en de EU AI-verordening, terwijl Amerikaanse aanbieders andere kaders volgen.
+    outro: |
+      De jurisdictie wordt bepaald door de rechtbanken die expliciet vermeld staan in de licentieovereenkomst. Anders houden we rekening met de registratieplaats van de aanbieder.
+  license:
+    intro: "
+      De modellen in ons overzicht vallen onder verschillende licenties,
+      die bepalen hoe ze gebruikt, aangepast en herverdeeld kunnen worden.
+      We maken onderscheid tussen de volgende categorieën:"
+    example: |
+      <b>Open:</b> Permissieve licenties zoals Apache 2.0 en MIT, die gebruik, aanpassing en herdistributie voor elk doel toestaan met minimale beperkingen.
+
+      <b>Beperkt:</b> Licenties die gebruik onder bepaalde voorwaarden toestaan, zoals CC-BY-NC-4.0 (alleen niet-commercieel) en Llama/Gemma/Falcon Licenties (gebruiksbeperkingen of vereisten voor grootschalige implementatie).
+
+      <b>Commercieel:</b> Propriëtaire licenties die betaalde abonnementen of API-toegang vereisen, waarbij modelgewichten doorgaans niet publiekelijk worden verspreid.
+    outro: |
+      Bekijk bij het selecteren van een model zorgvuldig de specifieke licentievoorwaarden om naleving van organisatiebeleid en regelgevingskaders te waarborgen.
   data_openness:
     intro: "
       Open datasets maken het mogelijk om privacy- en auteursrechtelijke risico's te beoordelen.
