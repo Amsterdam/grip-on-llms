@@ -349,14 +349,19 @@ class GPUModelProfiles:
             "max_length",
         ]
 
-        for attr in max_length_attrs:
-            if hasattr(config, attr):
-                max_len = getattr(config, attr)
-                if max_len and max_len > 0:
-                    logging.info(
-                        f"Found max_model_len={max_len} from config.{attr} for {model_id}"
-                    )
-                    return max_len
+        configs_to_check = []
+        if hasattr(config, "text_config") and config.text_config is not None:
+            configs_to_check.append(("text_config", config.text_config))
+        configs_to_check.append(("config", config))
+
+        for config_name, cfg in configs_to_check:
+            for attr in max_length_attrs:
+                if hasattr(cfg, attr):
+                    max_len = getattr(cfg, attr)
+                    if max_len and max_len > 0:
+                        source = f"{config_name}.{attr}"
+                        logging.info(f"Found max_model_len={max_len} from {source} for {model_id}")
+                        return max_len
 
         # Special handling for sliding window
         if hasattr(config, "sliding_window") and config.sliding_window:
@@ -465,7 +470,7 @@ class GPUModelProfiles:
         if max_model_len > max_len_cap:
             logging.info(
                 f"Limiting context from {max_model_len} to {max_len_cap}"
-                "for {model_size} on {gpu_type}"
+                f"for {model_size} on {gpu_type}"
             )
             max_model_len = min(max_model_len, max_len_cap)
 
