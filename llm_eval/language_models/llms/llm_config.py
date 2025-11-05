@@ -23,14 +23,17 @@ MODEL_MAPPING = {
     "smollm3-3b": {
         "id": "HuggingFaceTB/SmolLM3-3B",
         "model_size": "tiny",
-        "kwargs": {},
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     "fietje-2-instruct": {
         "id": "BramVanroy/fietje-2-instruct",
         "model_size": "tiny",
         "kwargs": {},
     },
-
     # SMALL MODELS (3B-8B) - H100 "small" profile
     "falcon3-7b-instruct": {
         "id": "tiiuae/Falcon3-7B-Instruct",
@@ -76,7 +79,6 @@ MODEL_MAPPING = {
         "model_size": "small",
         "kwargs": {},
     },
-
     # MEDIUM MODELS (8B-20B) - H100 "medium" profile
     "eurollm-9b-instruct": {
         "id": "utter-project/EuroLLM-9B-Instruct",
@@ -91,9 +93,13 @@ MODEL_MAPPING = {
     "gpt-oss-20b": {
         "id": "openai/gpt-oss-20b",
         "model_size": "medium",
-        "kwargs": {},
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+                "thinking": False,
+            }
+        },
     },
-
     # LARGE MODELS (20B-40B) - H100 "large" profile
     "mistral-small-instruct": {
         "id": "mistralai/Mistral-Small-24B-Instruct-2501",
@@ -141,7 +147,11 @@ MODEL_MAPPING = {
     "deepseek-r1-distill-qwen-32b": {
         "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
         "model_size": "large",
-        "kwargs": {},
+        "kwargs": {
+            "template": {
+                "force_no_thinking": True,
+            }
+        },
     },
     # "llama-3.3-70b-instruct": {
     #     "id": "meta-llama/Llama-3.3-70B-Instruct",
@@ -154,7 +164,7 @@ MODEL_MAPPING = {
         "kwargs": {
             "loading": {
                 "quantization": "gptq_marlin",
-            }
+            },
         },
     },
     "deepseek-r1-distill-llama-70b-awq": {
@@ -164,7 +174,10 @@ MODEL_MAPPING = {
             "loading": {
                 "quantization": "awq_marlin",
                 "dtype": "float16",
-            }
+            },
+            "template": {
+                "force_no_thinking": True,
+            },
         },
     },
     "apertus-70b-instruct-quantized": {
@@ -175,6 +188,10 @@ MODEL_MAPPING = {
     "gpt-oss-120b": {
         "id": "openai/gpt-oss-120b",
         "model_size": "large",
-        "kwargs": {},
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
 }
