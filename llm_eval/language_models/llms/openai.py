@@ -81,7 +81,7 @@ class OpenAILLM(BaseLLM):
         conversation.append({"role": "user", "content": prompt})
         return conversation
 
-    def _prompt(self, prompt, context=None, system=None, force_format=None, limit_requests=False):
+    def _prompt(self, prompt, context=None, system=None, force_format=None, limit_requests=True):
         """Prompt model by optionally providing a custom system prompt or context"""
         if not self.client:
             self.client = self._get_client()
@@ -108,6 +108,7 @@ class OpenAILLM(BaseLLM):
 
             response.raw_response = api_response.choices[0].message.content or ""
         except Exception as e:
+            logging.error(f"{self.model_name} failed: {e}")
             response.exception = str(e)
             response.error = True
         return response
