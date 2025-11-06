@@ -21,13 +21,22 @@ visible_models:
   - Mistral-Small-24B-Instruct-2501
   - Phi-4-mini-instruct
   - Llama-3.1-8B-Instruct
+  - llama-3.3-70b-gptq
+  # - Llama-3-3-70B-Instruct
+  # - Llama-4-Maverick-17B-128E-Instruct-FP8
   - GPT-4o-mini
   - GPT-4o
+  - GPT-5-nano
+  - GPT-5-mini
+  - GPT-5
+  # - o1-mini
   - OLMo-2-1124-7B-Instruct
   - OLMo-2-0325-32B-Instruct
   - EuroLLM-9B-Instruct
+  # - EuroLLM-22B-Instruct-Preview
   - Qwen3-8B
   - Qwen3-32B
+  - Qwen3-32B-AWQ
   - gemma-3-12b-it
   - gemma-3-27b-it
   - SmolLM3-3B
@@ -38,11 +47,9 @@ visible_models:
   - Apertus-70B-Instruct-2509-quantized.w4a16
   - gpt-oss-20b
   # - gpt-oss-120b
-  - Qwen3-32B-AWQ
   - aya-expanse-32b
-  - DeepSeek-R1-Distill-Qwen-32B
-  - DeepSeek-R1-Distill-Llama-70B-AWQ
-  - llama-3.3-70b-gptq
+  # - DeepSeek-R1-Distill-Qwen-32B
+  # - DeepSeek-R1-Distill-Llama-70B-AWQ
 sort_orders:
   license:
     open: 1
