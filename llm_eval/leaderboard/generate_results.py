@@ -35,6 +35,7 @@ class Leaderboard:
 
         results = []
         for llm in tqdm(self.llms, desc="LLMs"):
+            logging.info(f"Evaluating {llm.model_name}")
             try:
                 # Warm up LLM: temp fix for duration discrepancy
                 llm.prompt("Let's benchmark some models!!")
