@@ -33,6 +33,14 @@ methodology: "
 energy_disclaimer:
   title: Energieverbruik Inschatten Onmogelijk
   explanation: "Omdat dit model niet open-source is, is het onmogelijk om te berekenen hoeveel energie het verbruikt. Als je je zorgen maakt over ons milieu, raden we je aan een model te gebruiken waarvoor deze informatie beschikbaar is."
+bias_disclaimer:
+  title: Biasschatting Onmogelijk
+  explanation: "
+    Om bias te testen, voeren we prompts meerdere keren uit door een gevoelige variabele te wijzigen.
+    Als sommige van deze prompts mislukken, bijvoorbeeld door inhoudsfilters in het model
+    of omdat het model geen antwoord in het verwachte formaat produceerde,
+    kunnen de uiteindelijke biasscores onjuist of misleidend zijn.
+    In deze gevallen verwerpen we de scores."
 copyright_footer: "Grip op LLMs, Gemeente Amsterdam"
 
 score_explanation:
