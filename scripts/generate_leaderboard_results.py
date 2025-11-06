@@ -345,12 +345,12 @@ def parse_arguments():
         help=f"Benchmarks to run (default/existing: {EXISTING_BENCHMARKS})",
     )
 
-    default_models = HF_MODELS + AZURE_MODELS
+    # default_models = HF_MODELS + AZURE_MODELS
     parser.add_argument(
         "--models",
         nargs="+",
-        default=default_models,
-        help=f"List of models to evaluate (default: {default_models})",
+        default=[],
+        help="List of models to evaluate",
     )
     parser.add_argument("--private_data", action="store_true", help="Only run compliant models.")
     parser.add_argument(
@@ -418,13 +418,19 @@ if __name__ == "__main__":  # noqa: C901
         target_lang="NL",
     )
 
-    if args.only_self_hosted:
+    if args.models:
+        models = args.models
+        logging.info(f"Running provided models: {models}")
+    elif args.only_self_hosted:
         models = HF_MODELS
+        logging.info(f"Running self-hosted models: {models}")
     elif args.only_azure:
         models = PRIVATE_AZURE_MODELS if args.private_data else AZURE_MODELS
+        logging.info(f"Running azure models: {models}")
     else:
         models = HF_MODELS.copy()
         models += PRIVATE_AZURE_MODELS if args.private_data else AZURE_MODELS
+        logging.info(f"Running all models: {models}")
 
     llms = [get_model(model_name) for model_name in models]
     benches = [
