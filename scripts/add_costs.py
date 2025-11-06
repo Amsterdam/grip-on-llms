@@ -14,11 +14,19 @@ from llm_eval.utils.setup_utils import base_results_folder
 
 from llm_eval.utils.schemas import BenchCosts, BenchmarkResult
 
-# API pricing table (€ per 1k tokens as of 26 August 2025)
-# considering an exchange rate of 1 USD = 0.8679 EUR
+# API pricing table (€ per 1k tokens as of 6 November 2025)
+# considering an ECB exchange rate of 1 USD = 0.8702 EUR
 API_MODEL_PRICING = {
-    "gpt-4o": {"input": 0.0026253, "output": 0.0105012},
-    "gpt-4o-mini": {"input": 0.00014320, "output": 0.0005728},
+    # $2.50 / $10.00
+    "gpt-4o": {"input": 0.0021755, "output": 0.008702},
+    # $0.15 / $0.60
+    "gpt-4o-mini": {"input": 0.00013053, "output": 0.00052212},
+    # $1.25 / $10.00
+    "gpt-5": {"input": 0.00108775, "output": 0.008702},
+    # $0.25 / $2.00
+    "gpt-5-mini": {"input": 0.00021755, "output": 0.0017404},
+    # $0.05 / $0.40
+    "gpt-5-nano": {"input": 0.00004351, "output": 0.00034808},
 }
 
 # Current GPU rates on Azure (in € per hour as of 26 August 2025,
