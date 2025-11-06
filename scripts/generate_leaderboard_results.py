@@ -24,6 +24,7 @@ from llm_eval.benchmarks import (
     DutchCrowSPairs,
     HonestCityBench,
     INTDuidelijkeTaal,
+    KOGClassifier,
     TinyARC,
     TinyMMLU,
     TinyTruthfulQA,
@@ -142,6 +143,8 @@ EXISTING_BENCHMARKS = [
     "Dutch-CrowSPairs",
     "BZK-Social-Bias-gender",
     "BZK-Social-Bias-name",
+    # Use Cases
+    "KOG-Classifier",
 ]
 
 translation_gpt = LLMRouter.get_model(
@@ -190,6 +193,7 @@ BENCH_CLASSES = {
     "XSum": XSum,
     "Dutch-BBQ": DutchBBQ,
     "Dutch-CrowSPairs": DutchCrowSPairs,
+    "KOG-Classifier": KOGClassifier,
 }
 
 BENCH_FILES = {
@@ -256,7 +260,7 @@ def get_dutch_bias_bench(bench_name):
     )
 
 
-def get_benchmark(
+def get_benchmark(  # noqa: C901
     bench_name,
     simple_prompt_type=None,
     summary_prompt_type=None,
@@ -297,6 +301,11 @@ def get_benchmark(
             bench_name,
             data_path=data_path,
             llm_judges=[],
+        )
+
+    elif bench_name == "KOG-Classifier":
+        return KOGClassifier(
+            benchmark_name=bench_name,
         )
 
     else:

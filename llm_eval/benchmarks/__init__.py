@@ -7,6 +7,7 @@ from .simplification import AmsterdamSimplification, INTDuidelijkeTaal
 from .social_bias import BZKSocialBias, DutchBBQ, DutchCrowSPairs
 from .summarization import CNNDailyMail, XSum
 from .tiny_benchmarks import TinyARC, TinyMMLU, TinyTruthfulQA
+from .use_cases import KOGClassifier
 
 __all__ = [
     "MMLU",
@@ -15,10 +16,12 @@ __all__ = [
     "AmsterdamSimplification",
     "BZKSocialBias",
     "DutchBBQ",
-    "DutchCrowsPairs" "XSum",
+    "DutchCrowsPairs",
+    "XSum",
     "CNNDailyMail",
     "TinyARC",
     "TinyMMLU",
     "TinyTruthfulQA",
     "HonestCityBench",
+    "KOGClassifier",
 ]
