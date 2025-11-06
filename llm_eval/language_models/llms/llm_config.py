@@ -93,12 +93,7 @@ MODEL_MAPPING = {
     "gpt-oss-20b": {
         "id": "openai/gpt-oss-20b",
         "model_size": "medium",
-        "kwargs": {
-            "template": {
-                "enable_thinking": False,
-                "thinking": False,
-            }
-        },
+        "kwargs": {},
     },
     # LARGE MODELS (20B-40B) - H100 "large" profile
     "mistral-small-instruct": {
@@ -188,10 +183,6 @@ MODEL_MAPPING = {
     "gpt-oss-120b": {
         "id": "openai/gpt-oss-120b",
         "model_size": "large",
-        "kwargs": {
-            "template": {
-                "enable_thinking": False,
-            }
-        },
+        "kwargs": {},
     },
 }
