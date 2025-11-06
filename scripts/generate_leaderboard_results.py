@@ -67,6 +67,17 @@ GPT_PARAMS = {
     "max_tokens": 200,
 }
 
+GPT_5_PARAMS = {
+    # "temperature": 0,
+    "top_p": 1,
+    # Don't penalize to ensure greedy decoding
+    "frequency_penalty": 0,
+    "presence_penalty": 0,
+    "n": 1,
+    # "stop": None,
+    "max_completion_tokens": 200,
+}
+
 HF_INFERENCE_PARAMS = {
     "do_sample": False,
     # temp, top_k & top_p - unused for greedy decoding (adding for transparency)
@@ -87,15 +98,15 @@ HF_OBJECT_PARAMS = {
     "uses_api": False,
 }
 
-DEFAULT_HF_MODELS = [
+HF_MODELS = [
     "mistral-7b-instruct-v0.3",
     "mistral-small-instruct",
     "tiny-llama",
     "llama-3.1-8b-instruct",
     "llama-3.3-70b-gptq",
+    "fietje-2-instruct",
     "geitje-7b-ultra",
     "phi-4-mini-instruct",
-    "fietje-2-instruct",
     "falcon3-7b-instruct",
     "olmo-7b-instruct",
     "olmo-32b-instruct",
@@ -112,15 +123,26 @@ DEFAULT_HF_MODELS = [
     "apertus-8b-instruct",
     "apertus-70b-instruct-quantized",
     "gpt-oss-20b",
-    "gpt-oss-120b",
+    # "gpt-oss-120b",
     "deepseek-r1-distill-qwen-32b",
     "deepseek-r1-distill-llama-70b-awq",
 ]
 
-DEFAULT_AZURE_MODELS = [
+PRIVATE_AZURE_MODELS = [
     "gpt-4o",
     "gpt-4o-mini",
+    "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
 ]
+
+NON_PRIVATE_AZURE_MODELS = [
+    "o1-mini",
+    "Llama-3-3-70B-Instruct",
+    "Llama-4-Maverick-17B-128E-Instruct-FP8",
+]
+
+AZURE_MODELS = PRIVATE_AZURE_MODELS + NON_PRIVATE_AZURE_MODELS
 
 EXISTING_BENCHMARKS = [
     # Simplification
@@ -157,8 +179,9 @@ translation_gpt = LLMRouter.get_model(
 
 def get_model(model_name, params=None):
     logging.info(f"Initializing {model_name}")
-    if model_name in DEFAULT_AZURE_MODELS:
-        params = params or GPT_PARAMS
+    if model_name in AZURE_MODELS:
+        params = params or (GPT_PARAMS if "gpt-4o" in model_name else GPT_5_PARAMS)
+        print(params)
         return LLMRouter.get_model(
             provider="azure",
             model_name=model_name,
@@ -168,7 +191,7 @@ def get_model(model_name, params=None):
             params=params,
             uses_api=True,
         )
-    elif model_name in DEFAULT_HF_MODELS:
+    elif model_name in HF_MODELS:
         params = params or HF_OBJECT_PARAMS
         return LLMRouter.get_model(
             model_name=model_name,
@@ -322,13 +345,18 @@ def parse_arguments():
         help=f"Benchmarks to run (default/existing: {EXISTING_BENCHMARKS})",
     )
 
-    default_models = DEFAULT_HF_MODELS + DEFAULT_AZURE_MODELS
+    default_models = HF_MODELS + AZURE_MODELS
     parser.add_argument(
         "--models",
         nargs="+",
         default=default_models,
         help=f"List of models to evaluate (default: {default_models})",
     )
+    parser.add_argument("--private_data", action="store_true", help="Only run compliant models.")
+    parser.add_argument(
+        "--only_self_hosted", action="store_true", help="Only run self-hosted models."
+    )
+    parser.add_argument("--only_azure", action="store_true", help="Only run azure models.")
 
     default_n_samples = 15000
     parser.add_argument(
@@ -390,7 +418,15 @@ if __name__ == "__main__":  # noqa: C901
         target_lang="NL",
     )
 
-    llms = [get_model(model_name) for model_name in args.models]
+    if args.only_self_hosted:
+        models = HF_MODELS
+    elif args.only_azure:
+        models = PRIVATE_AZURE_MODELS if args.private_data else AZURE_MODELS
+    else:
+        models = HF_MODELS.copy()
+        models += PRIVATE_AZURE_MODELS if args.private_data else AZURE_MODELS
+
+    llms = [get_model(model_name) for model_name in models]
     benches = [
         get_benchmark(
             bench_name,

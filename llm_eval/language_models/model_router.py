@@ -62,19 +62,14 @@ class LLMRouter:
         logging.info(f"Getting a model. Provider: {provider}; Model: {model_name}")
 
         if provider == "azure":
-            if "gpt" in model_name:
-                return OpenAILLM(
-                    model_name=model_name,
-                    api_endpoint=api_endpoint,
-                    api_key=api_key,
-                    api_version=api_version,
-                    params=params,
-                    uses_api=uses_api,
-                )
-            else:
-                raise NotImplementedError(
-                    "Currently there is no support for models other than GPT on Azure."
-                )
+            return OpenAILLM(
+                model_name=model_name,
+                api_endpoint=api_endpoint,
+                api_key=api_key,
+                api_version=api_version,
+                params=params,
+                uses_api=uses_api,
+            )
         elif provider == "huggingface":
             return HuggingFaceLLM(
                 model_name=model_name,
