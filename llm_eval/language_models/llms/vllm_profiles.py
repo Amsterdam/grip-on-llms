@@ -349,6 +349,8 @@ class GPUModelProfiles:
             "max_length",
         ]
 
+        # most models contain the args above but others (e.g. gemma) have a "text_config" field
+        # which contains max_position_embeddings. To be on the safe side, check both if available
         configs_to_check = []
         if hasattr(config, "text_config") and config.text_config is not None:
             configs_to_check.append(("text_config", config.text_config))
