@@ -21,6 +21,8 @@ References:
 arXiv preprint arXiv:2009.03300 (2020).
 """
 import json
+from collections import Counter
+from typing import Dict, List
 
 import requests
 
@@ -156,6 +158,29 @@ class MMLU(BaseBenchmark):
             metrics={"acc": accuracy},
             total_samples=len(run_output),
         )
+
+    def _check_validity(self, run_output: List[RunItem], scores: BenchmarkEvaluation) -> Dict:
+        """Check the validity of run output and scores"""
+        unparseable = [
+            entry
+            for entry in run_output
+            if not entry.processed_response or entry.processed_response not in ["A", "B", "C", "D"]
+        ]
+        answers = [entry.processed_response for entry in run_output if entry.processed_response]
+        answers_counts = Counter(answers)
+        most_common_answer_rate = (
+            answers_counts.most_common(1)[0][1] / len(answers) if answers else 0
+        )
+
+        validity = {
+            "n_unparsable_responses": len(unparseable),
+            "unparsable_responses_rate": len(unparseable) / len(run_output),
+            "answers": answers_counts,
+            "most_common_answer_rate": most_common_answer_rate,
+            "is_invalid_reasons": [],
+        }
+
+        return validity
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""

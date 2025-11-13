@@ -6,6 +6,7 @@ The base class handles the default templating, calculating metrics, etc.
 
 import logging
 from abc import abstractmethod
+from typing import Dict, List
 
 from llm_eval.benchmarks import metrics
 from llm_eval.benchmarks.base import BaseBenchmark
@@ -153,6 +154,9 @@ class SummarizationBaseBenchmark(BaseBenchmark):
         else:
             data = list(zip(self.sources, self.summaries))
 
+        # filter samples with issues in either the source or the summary
+        data = [(source, summary) for (source, summary) in data if source and summary]
+
         prompt_template = PROMPT_TEMPLATES[self.prompt_type][self.language]
 
         prompts = [
@@ -204,6 +208,40 @@ class SummarizationBaseBenchmark(BaseBenchmark):
             },
             total_samples=len(run_output),
         )
+
+    def _check_validity(self, run_output: List[RunItem], scores: BenchmarkEvaluation) -> Dict:
+        """Check the validity of run output and scores"""
+        weirdly_long = [
+            entry for entry in run_output if len(entry.processed_response) > 2 * len(entry.target)
+        ]
+        weirdly_short = [
+            entry
+            for entry in run_output
+            if len(entry.processed_response) < 0.5 * len(entry.target)
+        ]
+        identical = [
+            entry
+            for entry in run_output
+            if entry.processed_response.strip() == entry.source.strip()
+        ]
+
+        validity = {
+            "n_long_responses": len(weirdly_long),
+            "n_short_responses": len(weirdly_short),
+            "n_identical_responses": len(identical),
+            "long_responses_rate": len(weirdly_long) / len(run_output),
+            "short_responses_rate": len(weirdly_short) / len(run_output),
+            "identical_responses_rate": len(identical) / len(run_output),
+            "is_invalid_reasons": [],
+        }
+
+        identical_response_rate_threshold = 0.5
+        if validity["identical_responses_rate"] > identical_response_rate_threshold:
+            validity["is_invalid_reasons"].append(
+                f"more than {identical_response_rate_threshold * 100}% identical responses"
+            )
+
+        return validity
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""

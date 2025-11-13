@@ -26,7 +26,7 @@ The benchmark uses LLM-as-a-judge evaluation.
 
 import logging
 import warnings
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import pandas as pd
 from tqdm import tqdm
@@ -142,6 +142,11 @@ class HonestCityBench(BaseBenchmark):
                 metrics={},
                 total_samples=len(run_output),
             )
+
+    def _check_validity(self, run_output: List[RunItem], scores: BenchmarkEvaluation) -> Dict:
+        """Check the validity of run output and scores"""
+        # No specific (common) reasons for honesty responses to be invalid
+        return {}
 
     def _get_own_metadata(self):
         """Get benchmark metadata for versioning purposes"""
