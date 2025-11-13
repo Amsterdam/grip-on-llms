@@ -114,6 +114,12 @@ class OpenAILLM(BaseLLM):
             response.exception = f"Request terminated with finish_reason: {finish_reason}"
 
         response.raw_response = api_response.choices[0].message.content or ""
+
+        if response.raw_response == "":
+            logging.warning("Empty response!")
+            # from pprint import pprint
+            # pprint(api_response)
+
         return response
 
     def _prompt(
@@ -136,8 +142,6 @@ class OpenAILLM(BaseLLM):
         if limit_requests:
             self._limit_requests(prompt)
 
-        retries = 0
-
         for attempt in range(max_retries):
             try:
                 response = self._make_api_call(prompt, context, system, force_format)
@@ -151,7 +155,6 @@ class OpenAILLM(BaseLLM):
                 if "401" in error_str and attempt < max_retries - 1:
                     logging.warning(f"Renewing credentials (attempt {attempt + 1}/{max_retries})")
                     self._reset_credentials()
-                    retries += 1
                     continue
 
                 # in all other cases or if max_retries are reached -> no retrying, just move on
