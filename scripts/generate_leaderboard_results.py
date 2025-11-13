@@ -67,6 +67,7 @@ GPT_PARAMS = {
     "max_tokens": 200,
 }
 
+# gpt-5 models use 200 tokens for reasoning => increasing max tokens or turn off reasoning
 GPT_5_PARAMS = {
     # "temperature": 0,
     "top_p": 1,
@@ -76,6 +77,7 @@ GPT_5_PARAMS = {
     "n": 1,
     # "stop": None,
     "max_completion_tokens": 200,
+    "reasoning_effort": "minimal",
 }
 
 HF_INFERENCE_PARAMS = {
