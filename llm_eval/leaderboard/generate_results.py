@@ -48,7 +48,9 @@ class Leaderboard:
                         llm.initialize_carbon_tracking(self.codecarbon_params)
 
                         start_time = datetime.now()
-                        run_output, evaluation = benchmark.eval(llm, n_samples=self.n_samples)
+                        run_output, evaluation, validity = benchmark.eval(
+                            llm, n_samples=self.n_samples
+                        )
 
                         end_time = datetime.now()
 
@@ -68,6 +70,7 @@ class Leaderboard:
                             ),
                             run_output=run_output,
                             evaluation=evaluation,
+                            validity=validity,
                         )
 
                         if results_dir:

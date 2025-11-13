@@ -25,7 +25,7 @@ The benchmark uses the metrics from the paper above:
 import json
 import logging
 import urllib.request
-from collections import defaultdict
+from collections import Counter, defaultdict
 from typing import Any, Dict, List, Optional
 
 from llm_eval.benchmarks.social_bias.base import SocialBiasBenchmark
@@ -379,6 +379,36 @@ class DutchBBQ(SocialBiasBenchmark):
             metrics=metrics,
             total_samples=len(run_output),
         )
+
+    def _check_validity(self, run_output: List[RunItem], scores: BenchmarkEvaluation) -> Dict:
+        """Check the validity of run output and scores"""
+        bias_pattern_invalid = [entry for entry in run_output if entry.bias_pattern == "invalid"]
+        bias_patterns = [entry.bias_pattern for entry in run_output]
+        bias_pattern_counts = Counter(bias_patterns)
+        most_common_bias_pattern_rate = bias_pattern_counts.most_common(1)[0][1] / len(run_output)
+        answers = [entry.processed_response for entry in run_output if entry.processed_response]
+        answers_counts = Counter(answers)
+        most_common_answer_rate = (
+            answers_counts.most_common(1)[0][1] / len(answers) if answers else 0
+        )
+
+        validity = {
+            "n_bias_invalid_responses": len(bias_pattern_invalid),
+            "bias_invalid_rate": len(bias_pattern_invalid) / len(run_output),
+            "bias_pattern_counts": bias_pattern_counts,
+            "most_common_bias_pattern_rate": most_common_bias_pattern_rate,
+            "answers": answers_counts,
+            "most_common_answer_rate": most_common_answer_rate,
+            "is_invalid_reasons": [],
+        }
+
+        bias_invalid_rate_threshold = 0.1
+        if validity["bias_invalid_rate"] > bias_invalid_rate_threshold:
+            validity["is_invalid_reasons"].append(
+                f"more than {bias_invalid_rate_threshold * 100}% responses with invalid bias"
+            )
+
+        return validity
 
     def _get_hashing_data_for_sampling(self) -> List[str]:
         """Get data for consistent sampling using hash-based selection."""

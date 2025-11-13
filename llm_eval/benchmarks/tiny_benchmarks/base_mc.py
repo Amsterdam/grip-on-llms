@@ -5,6 +5,9 @@ This is the implementation of common functionality such as
 templating the question and corresponding A/B/C/D answers,
 as well as running the task itself and calculating metrics.
 """
+from collections import Counter
+from typing import Dict, List
+
 from llm_eval.benchmarks.metrics import tiny_scores
 from llm_eval.benchmarks.tiny_benchmarks.base import BaseTinyBenchmark
 from llm_eval.utils.schemas import BenchmarkEvaluation, RunItem
@@ -121,6 +124,43 @@ class BaseTinyMultipleChoiceBenchmark(BaseTinyBenchmark):
             },
             total_samples=len(run_output),
         )
+
+    def _check_validity(self, run_output: List[RunItem], scores: BenchmarkEvaluation) -> Dict:
+        """Check the validity of run output and scores"""
+        unparseable = [
+            entry
+            for entry in run_output
+            if not entry.processed_response or entry.processed_response not in ANSWERS.values()
+        ]
+        answers = [entry.processed_response for entry in run_output if entry.processed_response]
+        answers_counts = Counter(answers)
+        most_common_answer_rate = (
+            answers_counts.most_common(1)[0][1] / len(answers) if answers else 0
+        )
+
+        validity = {
+            "n_unparsable_responses": len(unparseable),
+            "unparsable_responses_rate": len(unparseable) / len(run_output),
+            "answers": answers_counts,
+            "most_common_answer_rate": most_common_answer_rate,
+            "is_invalid_reasons": [],
+        }
+
+        # Quality?!
+        # answer_rate_threshold = 0.9
+        # if validity["most_common_answer_rate"] > answer_rate_threshold:
+        #     validity["is_invalid_reasons"].append(
+        #         f"more than {answer_rate_threshold * 100}% same answers"
+        #     )
+
+        # Quality?!
+        # unparseable_threshold = 0.90
+        # if validity["unparsable_responses_rate"] > unparseable_threshold:
+        #     validity["is_invalid_reasons"].append(
+        #         f"more than {unparseable_threshold * 100}% unparsable responses"
+        #     )
+
+        return validity
 
 
 def template_question(question, choices):

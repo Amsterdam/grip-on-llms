@@ -29,7 +29,7 @@ import json
 import logging
 import random
 import urllib.request
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -312,6 +312,24 @@ class DutchCrowSPairs(SocialBiasBenchmark):
             metrics=metrics,
             total_samples=len(run_output),
         )
+
+    def _check_validity(self, run_output: List[RunItem], scores: BenchmarkEvaluation) -> Dict:
+        """Check the validity of run output and scores"""
+        # Only report answer counts in case model always defaults to A/B,
+        # But do not explicitly mark as invalid
+        answers = [entry.processed_response for entry in run_output if entry.processed_response]
+        answers_counts = Counter(answers)
+        most_common_answer_rate = (
+            answers_counts.most_common(1)[0][1] / len(answers) if answers else 0
+        )
+
+        validity = {
+            "answers": answers_counts,
+            "most_common_answer_rate": most_common_answer_rate,
+            "is_invalid_reasons": [],
+        }
+
+        return validity
 
     def _get_hashing_data_for_sampling(self) -> List[str]:
         """Get data for consistent sampling using hash-based selection."""

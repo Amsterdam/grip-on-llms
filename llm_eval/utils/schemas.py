@@ -59,10 +59,10 @@ class RunItem(LLMResponse):
     prompt: Optional[str] = None  # May differ from raw_prompt
     prompt_idx_original: Optional[int] = None
     category: Optional[str] = None
-    source: Optional[str] = None
+    source: Optional[str] = ""
 
     # Answer evaluation fields
-    target: Optional[str] = None
+    target: Optional[str] = ""
     correct: Optional[bool] = None
 
     # Per-item evaluation (e.g., judge scores)
@@ -153,6 +153,7 @@ class BenchmarkResult(BaseModel):
     run_output: List[Union[RunItem, Dict[str, Any]]]
     evaluation: BenchmarkEvaluation
     costs: Optional[BenchCosts] = None
+    validity: Optional[Dict] = None
 
     # Error tracking
     error: bool = False
