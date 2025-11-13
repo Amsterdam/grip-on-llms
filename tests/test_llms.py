@@ -6,7 +6,7 @@ from env_setup import get_gpt_secrets, get_hf_secrets
 from llm_eval.language_models import LLMRouter
 
 
-def test_gpt(test_prompt):
+def test_openai(test_prompt, model_name="gpt-4o"):
     logging.info("Testing GPT")
 
     gpt_secrets = get_gpt_secrets()
@@ -20,7 +20,7 @@ def test_gpt(test_prompt):
     # Test GPT
     model = LLMRouter.get_model(
         provider="azure",
-        model_name="gpt-4o",
+        model_name=model_name,
         api_endpoint=gpt_secrets["API_ENDPOINT"],
         api_key=gpt_secrets["API_KEY"],
         api_version=gpt_secrets["API_VERSION"],
@@ -61,13 +61,25 @@ def test_hf(test_prompt, model_name="tiny_llama"):
 
 if __name__ == "__main__":
     # test = "Test!"
+    openai_models = [
+        "gpt-4o",
+        "gpt-4o-mini",
+        "gpt-5",
+        "gpt-5-mini",
+        "gpt-5-nano",
+        "o1-mini",
+        "Llama-3-3-70B-Instruct",
+        "Llama-4-Maverick-17B-128E-Instruct-FP8",
+    ]
+
     test_prompt = "Hoe maak ik een melding in Amsterdam?"
 
-    # test_gpt(test_prompt)
+    for model_name in openai_models:
+        test_openai(test_prompt=test_prompt, model_name=model_name)
     # test_hf(test_prompt)
 
     models = [
-        "gpt-oss-120b",
+        # "gpt-oss-120b",
         # "tiny-llama",
         # "phi-4-mini-instruct",
         # "llama-3.1-8b-instruct",
@@ -76,5 +88,5 @@ if __name__ == "__main__":
         # "llama-3.2-3b-instruct",
     ]
 
-    for model in models:
-        test_hf(test_prompt=test_prompt, model_name=model)
+    for model_name in models:
+        test_hf(test_prompt=test_prompt, model_name=model_name)
