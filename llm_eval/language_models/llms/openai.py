@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.utils.schemas import LLMResponse
+from llm_eval.utils.setup_utils import get_gpt_secrets
 
 
 class OpenAILLM(BaseLLM):
@@ -19,10 +20,7 @@ class OpenAILLM(BaseLLM):
     def __init__(self, model_name, api_endpoint, api_key, api_version, uses_api, params=dict):
         super().__init__(model_name, uses_api, params if params is not None else {})
 
-        self.api_endpoint = api_endpoint
-        self.api_key = api_key
-        self.api_version = api_version
-        self.client = self._get_client()
+        self._reset_credentials(api_endpoint, api_key, api_version)
 
     def _get_client(self):
         client = AzureOpenAI(
@@ -37,6 +35,22 @@ class OpenAILLM(BaseLLM):
         limit_per_minute = 400000
         limit_per_second = limit_per_minute / 60
         time.sleep(len(prompt) / limit_per_second)
+
+    def _reset_credentials(self, api_endpoint=None, api_key=None, api_version=None):
+        logging.info(f"(Re)setting {self.model_name} credentials.")
+
+        if not all([api_endpoint, api_key, api_version]):
+            credentials = get_gpt_secrets()
+            api_endpoint = credentials["API_ENDPOINT"]
+            api_key = credentials["API_KEY"]
+            api_version = credentials["API_VERSION"]
+
+        self.api_endpoint = api_endpoint
+        self.api_key = api_key
+        self.api_version = api_version
+        self.client = self._get_client()
+
+        self.prompt_count_credentials = 0
 
     def _get_api_response(self, conversation, force_format):
         if force_format:
@@ -81,36 +95,74 @@ class OpenAILLM(BaseLLM):
         conversation.append({"role": "user", "content": prompt})
         return conversation
 
-    def _prompt(self, prompt, context=None, system=None, force_format=None, limit_requests=True):
+    def _make_api_call(self, prompt, context, system, force_format):
+        response = LLMResponse()
+        response.raw_prompt = prompt
+
+        conversation = self._get_formatted_conversation(prompt, context, system)
+        response.formatted_prompt = conversation
+
+        api_response = self._get_api_response(conversation, force_format)
+
+        finish_reason = api_response.choices[0].finish_reason
+        if finish_reason != "stop":
+            logging.info(f"Finish reason: {finish_reason}")
+
+        # Handle non-stop finish reasons which we want to treat as exceptions
+        if finish_reason == "content_filter":
+            response.error = True
+            response.exception = f"Request terminated with finish_reason: {finish_reason}"
+
+        response.raw_response = api_response.choices[0].message.content or ""
+        return response
+
+    def _prompt(
+        self,
+        prompt,
+        context=None,
+        system=None,
+        force_format=None,
+        limit_requests=False,
+        renew_credentials_after=100,
+        max_retries=3,
+    ):
         """Prompt model by optionally providing a custom system prompt or context"""
         if not self.client:
             self.client = self._get_client()
 
+        if renew_credentials_after and (self.prompt_count_credentials > renew_credentials_after):
+            self._reset_credentials()
+
         if limit_requests:
             self._limit_requests(prompt)
 
-        response = LLMResponse()
-        response.raw_prompt = prompt
-        try:
-            conversation = self._get_formatted_conversation(prompt, context, system)
-            response.formatted_prompt = conversation
+        retries = 0
 
-            api_response = self._get_api_response(conversation, force_format)
+        for attempt in range(max_retries):
+            try:
+                response = self._make_api_call(prompt, context, system, force_format)
+                break
 
-            finish_reason = api_response.choices[0].finish_reason
-            if finish_reason != "stop":
-                logging.info(f"Finish reason: {finish_reason}")
+            except Exception as e:
+                error_str = str(e)
+                logging.error(f"{self.model_name} failed: {error_str}")
 
-            # Handle non-stop finish reasons which we want to treat as exceptions
-            if finish_reason == "content_filter":
+                # Allowed reasons to retry: currently only 401s
+                if "401" in error_str and attempt < max_retries - 1:
+                    logging.warning(f"Renewing credentials (attempt {attempt + 1}/{max_retries})")
+                    self._reset_credentials()
+                    retries += 1
+                    continue
+
+                # in all other cases or if max_retries are reached -> no retrying, just move on
+                response = LLMResponse()
+                response.raw_prompt = prompt
+                response.exception = error_str
                 response.error = True
-                response.exception = f"Request terminated with finish_reason: {finish_reason}"
+                break
 
-            response.raw_response = api_response.choices[0].message.content or ""
-        except Exception as e:
-            logging.error(f"{self.model_name} failed: {e}")
-            response.exception = str(e)
-            response.error = True
+        self.prompt_count_credentials += 1
+
         return response
 
     def _process_batch(
