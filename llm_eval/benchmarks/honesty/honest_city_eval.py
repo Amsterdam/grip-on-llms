@@ -145,36 +145,22 @@ class HonestCityEvaluator:
 
                 response_field = f"{judge_name}-score-raw"
 
+                if entry.error:
+                    logging.warning(f"Entry {ind} contains an error, skipping judgement")
+                    entry.eval[f"{judge_name}-error"] = True
+                    entry.eval[
+                        f"{judge_name}-exception"
+                    ] = "Model response missing or contains an error; Nothing to judge."
+                    entry.eval[response_field] = ""
+                    continue
+
                 # Add llm response if not there
                 if (
                     force
                     or response_field not in entry.eval
                     or entry.eval.get(f"{judge_name}-error", False)
                 ):
-                    self._clear_judgements(entry, judge_name=judge_name)
-                    try:
-                        category = HONESTY_CATEGORIES[entry.category]
-                        prompt = JUDGE_PROMPT.format(
-                            NAME=category["name"],
-                            DEFINITION=category["definition"],
-                            EXPECTED_BEHAVIOR=category["expected_behavior"],
-                            EXAMPLES=honesty_formatted_examples[entry.category],
-                            PROMPT=entry.prompt,
-                            RESPONSE=entry.processed_response,
-                        )
-
-                        llm_response = judge.prompt(prompt)
-                        entry.eval[response_field] = llm_response.processed_response
-                        entry.eval[f"{response_field}-full"] = llm_response.model_dump()
-
-                        if not llm_response.processed_response:
-                            raise EmptyResponseError
-
-                    except Exception as e:
-                        logging.error(f"{judge_name} eval failed on {ind}: {e}")
-                        entry.eval[f"{judge_name}-error"] = True
-                        entry.eval[f"{judge_name}-exception"] = str(e)
-                        entry.eval[response_field] = ""
+                    self._judge_entry(entry, judge)
 
                 else:
                     logging.debug(f"{judge_name} judgements for model already done")
@@ -183,6 +169,41 @@ class HonestCityEvaluator:
             torch.cuda.empty_cache()
 
         return responses
+
+    def _judge_entry(self, entry, judge):
+        """
+        Generate a judgement for a single entry
+        If it fails, log the error and the reason for it
+        """
+        judge_name = judge.model_name
+        response_field = f"{judge_name}-score-raw"
+
+        self._clear_judgements(entry, judge_name=judge_name)
+        try:
+            category = HONESTY_CATEGORIES[entry.category]
+            prompt = JUDGE_PROMPT.format(
+                NAME=category["name"],
+                DEFINITION=category["definition"],
+                EXPECTED_BEHAVIOR=category["expected_behavior"],
+                EXAMPLES=honesty_formatted_examples[entry.category],
+                PROMPT=entry.prompt,
+                RESPONSE=entry.processed_response,
+            )
+
+            llm_response = judge.prompt(prompt)
+            entry.eval[response_field] = llm_response.processed_response
+            entry.eval[f"{response_field}-full"] = llm_response.model_dump()
+
+            if not llm_response.processed_response:
+                raise EmptyResponseError
+
+        except Exception as e:
+            logging.error(f"{judge_name} eval failed: {e}")
+            entry.eval[f"{judge_name}-error"] = True
+            entry.eval[f"{judge_name}-exception"] = str(e)
+            entry.eval[response_field] = ""
+
+        return entry
 
     def _parse_judgements(self, responses: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
