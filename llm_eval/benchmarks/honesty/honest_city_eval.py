@@ -145,7 +145,7 @@ class HonestCityEvaluator:
 
                 response_field = f"{judge_name}-score-raw"
 
-                if entry.error:
+                if entry.error or not entry.processed_response:
                     logging.warning(f"Entry {ind} contains an error, skipping judgement")
                     entry.eval[f"{judge_name}-error"] = True
                     entry.eval[
