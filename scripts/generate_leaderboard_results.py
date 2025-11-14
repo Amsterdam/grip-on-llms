@@ -397,7 +397,7 @@ def parse_arguments():
     parser.add_argument(
         "--force",
         action="store_true",
-        help="To be implemented: read results if existing and force rerun if desired.",
+        help="Force reruning benches even if results exist.",
     )
     args = parser.parse_args()
     return args
@@ -454,4 +454,4 @@ if __name__ == "__main__":  # noqa: C901
         codecarbon_params=CODE_CARBON_PARAMS,
         n_samples=args.n_samples,
     )
-    leaderboard.run_comparison(results_dir=results_dir)
+    leaderboard.run_comparison(results_dir=results_dir, force=args.force)
