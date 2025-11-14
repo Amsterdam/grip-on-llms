@@ -27,6 +27,12 @@ API_MODEL_PRICING = {
     "gpt-5-mini": {"input": 0.00021755, "output": 0.0017404},
     # $0.05 / $0.40
     "gpt-5-nano": {"input": 0.00004351, "output": 0.00034808},
+    # $1.10	/ $4.40
+    "o1-mini": {"input": 0.00095722, "output": 0.00382888},
+    # as of 14 November 2025
+    # https://azure.microsoft.com/en-us/pricing/details/ai-foundry-models/llama/
+    "Llama-3-3-70B-Instruct": {"input": 0.000670, "output": 0.000670},
+    "Llama-4-Maverick-17B-128E-Instruct-FP8": {"input": 0.000236, "output": 0.000944},
 }
 
 # Current GPU rates on Azure (in € per hour as of 26 August 2025,
