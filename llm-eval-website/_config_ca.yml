@@ -1,0 +1,45 @@
+title: Grip op LLMs
+baseurl: "" # for project sites
+url: "http://127.0.0.1:4000"
+description: Om het verantwoord gebruik van LLM's te bevorderen, bieden wij een overzicht van modellen die ingezet kunnen worden voor Nederlandse gemeentelijke toepassingen.
+default_lang: nl
+visible_columns:
+  - model
+  - provider
+  # - license
+  - data_openness
+  - energy_use
+  - costs
+  - bias
+  - factuality
+  - honesty
+  # - simplification
+  # - summarization
+visible_models:
+  # - Mistral-7B-Instruct-v0.3
+  - Mistral-Small-24B-Instruct-2501
+  # - Mistral-Large-Instruct-2411
+  # - llama-3.3-70b-gptq
+  # - Llama-3-3-70B-Instruct
+  # - Llama-4-Maverick-17B-128E-Instruct-FP8
+  # - GPT-4o-mini
+  - GPT-4o
+  # - GPT-5-nano
+  # - GPT-5-mini
+  # - GPT-5
+  # - o1-mini
+  - OLMo-2-0325-32B-Instruct
+  # - EuroLLM-22B-Instruct-Preview
+#  # - Qwen3-32B
+  # - Qwen3-32B-AWQ
+  - gemma-3-27b-it
+  - Apertus-70B-Instruct-2509-quantized.w4a16
+sort_orders:
+  license:
+    open: 1
+    restricted: 2
+    commercial: 3
+  data_openness:
+    open: 1
+    described: 2
+    closed: 3
