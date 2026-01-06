@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 import tiktoken
+from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
 from tqdm import tqdm
 
 # isort: off
@@ -17,6 +18,12 @@ from llm_eval.utils.schemas import BenchCosts, BenchmarkResult
 # API pricing table (€ per 1k tokens as of 6 November 2025)
 # considering an ECB exchange rate of 1 USD = 0.8702 EUR
 API_MODEL_PRICING = {
+    # $0.0003 / $0.0001 per 1000
+    "Mistral-small-2503": {"input": 0.00026106, "output": 0.00008702},
+    # $0.0004 / $0.002 per 1000
+    "Mistral-medium-2505": {"input": 0.00034808, "output": 0.0017404},
+    # $0.0005 / $0.0015 per 1000
+    "Mistral-Large-3": {"input": 0.0004351, "output": 0.0013053},
     # $2.50 / $10.00
     "gpt-4o": {"input": 0.0021755, "output": 0.008702},
     # $0.15 / $0.60
@@ -47,9 +54,15 @@ GPU_HOURLY_RATES = {
 def count_tokens(model_name, text):
     """Count tokens using tiktoken for a given model and text."""
     try:
-        enc = tiktoken.encoding_for_model(model_name)
-        return len(enc.encode(text))
-    except Exception:
+        if "Mistral" in model_name:
+            tokenizer = MistralTokenizer.v3().instruct_tokenizer.tokenizer
+            tokens = tokenizer.encode(text, bos=True, eos=False)
+            return len(tokens)
+        else:
+            enc = tiktoken.encoding_for_model(model_name)
+            return len(enc.encode(text))
+    except Exception as e:
+        print(f"Couldn't count tokens for {model_name}: {e}")
         return 0
 
 

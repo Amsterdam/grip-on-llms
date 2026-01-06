@@ -70,6 +70,9 @@ if __name__ == "__main__":
         "o1-mini",
         "Llama-3-3-70B-Instruct",
         "Llama-4-Maverick-17B-128E-Instruct-FP8",
+        "Mistral-Large-3",
+        "Mistral-medium-2505",
+        "Mistral-small-2503",
     ]
 
     test_prompt = "Hoe maak ik een melding in Amsterdam?"
