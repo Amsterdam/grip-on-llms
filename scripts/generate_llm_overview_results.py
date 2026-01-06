@@ -139,9 +139,12 @@ PRIVATE_AZURE_MODELS = [
 ]
 
 NON_PRIVATE_AZURE_MODELS = [
-    "o1-mini",
+    # "o1-mini",
     "Llama-3-3-70B-Instruct",
     "Llama-4-Maverick-17B-128E-Instruct-FP8",
+    "Mistral-Large-3",
+    "Mistral-medium-2505",
+    "Mistral-small-2503",
 ]
 
 AZURE_MODELS = PRIVATE_AZURE_MODELS + NON_PRIVATE_AZURE_MODELS
@@ -182,7 +185,9 @@ translation_gpt = LLMRouter.get_model(
 def get_model(model_name, params=None):
     logging.info(f"Initializing {model_name}")
     if model_name in AZURE_MODELS:
-        params = params or (AZURE_PARAMS if "gpt-4o" in model_name else GPT_5_PARAMS)
+        params = params or (
+            AZURE_PARAMS if "gpt-4o" in model_name or "Mistral" in model_name else GPT_5_PARAMS
+        )
         print(params)
         return LLMRouter.get_model(
             provider="azure",

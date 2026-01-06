@@ -18,6 +18,9 @@ visible_columns:
 visible_models:
   # - Mistral-7B-Instruct-v0.3
   - Mistral-Small-24B-Instruct-2501
+  - Mistral-small-2503
+  - Mistral-medium-2505
+  - Mistral-Large-3
   # - Mistral-Large-Instruct-2411
   # - llama-3.3-70b-gptq
   # - Llama-3-3-70B-Instruct
