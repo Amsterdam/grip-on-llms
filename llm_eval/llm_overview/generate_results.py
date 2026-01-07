@@ -1,4 +1,4 @@
-"""Generate the data for the leaderboard"""
+"""Generate the data for the LLM Overview"""
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -12,7 +12,7 @@ from llm_eval.utils.schemas import BenchmarkResult, MetadataContainer, RunMetada
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
-class Leaderboard:
+class LLMOverview:
     """Run benchmarks for a number of models and generate the data to be presented"""
 
     def __init__(self, llms, benchmarks, codecarbon_params, n_samples=0):

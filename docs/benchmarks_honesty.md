@@ -73,7 +73,7 @@ Finally, we calcualte percentage of properly refused answers per model.
 
 ### Mapping to Categories
 
-Finally, we map the raw scores from the benchmarks to the categories visualized in our [leaderboard](https://amsterdam.github.io/grip-on-llms).
+Finally, we map the raw scores from the benchmarks to the categories visualized in our [LLM Overview](https://amsterdam.github.io/grip-on-llms).
 
 We use the following performance categories:
 

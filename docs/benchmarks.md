@@ -53,12 +53,12 @@ How to add benchmarks
 1. Check if a Dutch version of the benchmark exists.
     * If yes, check the quality of translations in case it was automatically translated.
     * If not, ensure we support translation functionality (e.g. as we did for [XSum](/llm_eval/benchmarks/summarization/xsum.py) where we pass a [translator object](/llm_eval/translators/translator_router.py)). Consider publishing the translated version for others to reuse.
-1. Add a new module, extending the [BaseBenchmark](/llm_eval/benchmarks/base.py) class. In this way we ensure consistently running, scoring and documenting benchmarks for the leaderboard.
+1. Add a new module, extending the [BaseBenchmark](/llm_eval/benchmarks/base.py) class. In this way we ensure consistently running, scoring and documenting benchmarks for the LLM Overview.
 1. Add to the list of benchmarks in the corresponding aspect page (see all [aspects](./aspects.md))
-1. Add to the list of benchmarks in the [generate_leaderboard_results.py](/scripts/generate_leaderboard_results.py) script and run the benchmark(s) and models of interest using the script.
+1. Add to the list of benchmarks in the [generate_llm_overview_results.py](/scripts/generate_llm_overview_results.py) script and run the benchmark(s) and models of interest using the script.
 1. If applicable run any scripts for post-processing of the results, for example:
     * [scripts/add_honesty_judgements.py](/scripts/add_honesty_judgements.py) to retroactively add the honesty judgements
     * [scripts/add_summarization_scores.py](/scripts/add_summarization_scores.py) to add summarization scores in case anything went wrong with loading the required embedding models at run time
     * [scripts/add_costs.py](/scripts/add_costs.py) - to calculate the costs incured by running open generation tasks.
-1. Next, adjust and follow the [process_leaderboard_data.ipynb](/notebooks/process_leaderboard_data.ipynb) notebook to process the generated results and to ensure that no runs failed. Furthermore, map scores to categories. The final purpose of the notebook is to generate the [models.json](/llm-eval-website/_data/models.json) file which is used for visualizing the LLM Overview.
+1. Next, adjust and follow the [process_llm_overview_data.ipynb](/notebooks/process_llm_overview_data.ipynb) notebook to process the generated results and to ensure that no runs failed. Furthermore, map scores to categories. The final purpose of the notebook is to generate the [models.json](/llm-eval-website/_data/models.json) file which is used for visualizing the LLM Overview.
 1. Finally, make the corresponding changes in the [LLM Overview](/llm-eval-website/_includes/llm_overview.html). Do not forget all corresponding descriptions in the [English](/llm-eval-website/_data/translations_en.yml) and [Dutch](/llm-eval-website/_data/translations_nl.yml) translations.

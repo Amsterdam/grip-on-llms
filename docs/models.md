@@ -6,9 +6,9 @@ Introduction
 
 Our Model Zoo is a curated collection of both open-source and closed-source large language models (LLMs) that are tested and benchmarked
 to provide insights into their performance, environmental impact and alignment with municipal values.
-As soon as new models are added to the Model Zoo and evaluated, they are ranked on a publicly available [leaderboard](https://amsterdam.github.io/grip-on-llms)
+As soon as new models are added to the Model Zoo and evaluated, they are ranked on a publicly available [LLM Overview](https://amsterdam.github.io/grip-on-llms)
 based on various aspects, including facutality, inclusivity, and carbon footprint.
-This leaderboard helps users identify the strengths and weaknesses of each model, facilitating informed decisions based on specific needs and criteria.
+This LLM Overview helps users identify the strengths and weaknesses of each model, facilitating informed decisions based on specific needs and criteria.
 
 Model Selection
 ---------------
@@ -25,7 +25,7 @@ We currently support a number of open-source models hosted on HuggingFace (
 [Phi 4 Mini Instruct](https://huggingface.co/microsoft/Phi-4-mini-instruct),
 [Falcon 3 7B Instruct](https://huggingface.co/tiiuae/Falcon3-7B-Instruct)
 ), as well as closed-source models securely hosted in our Azure environment (
-[GPT-4o](https://openai.com/index/hello-gpt-4o/), 
+[GPT-4o](https://openai.com/index/hello-gpt-4o/),
 [GPT-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/)
 ).
 
@@ -40,7 +40,7 @@ How to add models
    * Check whether **training data** poses privacy or copyright concerns (guidelines below)
    * Check if the model **can be hosted or deployed** in our cloud environment
 2. Add to the **list of supported models** in this docs page
-3. Add to the **[leaderboard](/llm-eval-website/_data/models.json)** including information such as provider, costs, etc
+3. Add to the **[LLM Overview](/llm-eval-website/_data/models.json)** including information such as provider, costs, etc
 
 ### HuggingFace models:
 1. **Add to [model_config.py](/llm_eval/language_models/llms/llm_config.py)**
@@ -93,7 +93,7 @@ Checklist for Training Data
 To make informed decisions about which models to use based on their licenses, consider the following checklist:
 1.  **Openess Training Data:**
     1. Open. Provider shares the training data, everyone can see it.
-    2. Described. Provider described training data details in, for example, paper or Huggingface. 
+    2. Described. Provider described training data details in, for example, paper or Huggingface.
     3. Closed. Provider does not give any details about training data.
 2.  **Copyright & Private (if Training Data is Available):**
     *   Does the provider describe any strategies to remove private or copyrighted data?

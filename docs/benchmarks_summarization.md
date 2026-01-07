@@ -22,7 +22,7 @@ Evaluation Metrics
 
 ### Mapping to Categories
 
-Finally, we describe our methodology for mapping the raw scores from the benchmarks to the categories visualized in our [leaderboard](https://amsterdam.github.io/grip-on-llms).
+Finally, we describe our methodology for mapping the raw scores from the benchmarks to the categories visualized in our [LLM Overview](https://amsterdam.github.io/grip-on-llms).
 As all currently supported benchmarks consist of comparable tasks (article summarization)
 and use the same scores (BERTScore),
 we simply average the scores from the different benchmarks.
