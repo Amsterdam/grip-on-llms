@@ -211,13 +211,18 @@ class SummarizationBaseBenchmark(BaseBenchmark):
 
     def _check_validity(self, run_output: List[RunItem], scores: BenchmarkEvaluation) -> Dict:
         """Check the validity of run output and scores"""
+        long_response_to_target_ratio = 2
         weirdly_long = [
-            entry for entry in run_output if len(entry.processed_response) > 2 * len(entry.target)
+            entry
+            for entry in run_output
+            if len(entry.processed_response) > long_response_to_target_ratio * len(entry.target)
         ]
+
+        short_response_to_target_ratio = 0.5
         weirdly_short = [
             entry
             for entry in run_output
-            if len(entry.processed_response) < 0.5 * len(entry.target)
+            if len(entry.processed_response) < short_response_to_target_ratio * len(entry.target)
         ]
         identical = [
             entry
@@ -226,11 +231,13 @@ class SummarizationBaseBenchmark(BaseBenchmark):
         ]
 
         validity = {
+            "long_response_to_target_ratio": long_response_to_target_ratio,
             "n_long_responses": len(weirdly_long),
-            "n_short_responses": len(weirdly_short),
-            "n_identical_responses": len(identical),
             "long_responses_rate": len(weirdly_long) / len(run_output),
+            "short_response_to_target_ratio": short_response_to_target_ratio,
+            "n_short_responses": len(weirdly_short),
             "short_responses_rate": len(weirdly_short) / len(run_output),
+            "n_identical_responses": len(identical),
             "identical_responses_rate": len(identical) / len(run_output),
             "is_invalid_reasons": [],
         }

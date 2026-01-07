@@ -459,7 +459,7 @@ if __name__ == "__main__":  # noqa: C901
                     logging.info(f"Skipping {model_name}")
                     continue
 
-                if result.validity:
+                if result.validity and not args.force:
                     logging.info(f"Skipping {model_name} (validity exists)")
                     skipped += 1
                     continue

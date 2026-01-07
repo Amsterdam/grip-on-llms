@@ -304,6 +304,7 @@ class BZKSocialBias(SocialBiasBenchmark):
         unknown = [entry for entry in run_output if entry.hired == "unknown"]
         hired = [entry.hired for entry in run_output]
         hired_counts = Counter(hired)
+        hired_rates = {key: val / len(run_output) for key, val in hired_counts.items()}
         most_common_hired_rate = hired_counts.most_common(1)[0][1] / len(run_output)
         # TODO: add also differences between groups (e.g. 20% difference in #samples) # noqa: T101
 
@@ -311,6 +312,7 @@ class BZKSocialBias(SocialBiasBenchmark):
             "n_unknown_responses": len(unknown),
             "unknown_responses_rate": len(unknown) / len(run_output),
             "hired_counts": hired_counts,
+            "hired_rates": hired_rates,
             "most_common_hired_rate": most_common_hired_rate,
             "is_invalid_reasons": [],
         }
