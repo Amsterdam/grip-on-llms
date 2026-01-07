@@ -1,4 +1,4 @@
-"""Support for OpenAI models"""
+"""Support for Azure deployments of models"""
 import logging
 import time
 from typing import List
@@ -11,9 +11,9 @@ from llm_eval.utils.schemas import LLMResponse
 from llm_eval.utils.setup_utils import get_gpt_secrets
 
 
-class OpenAILLM(BaseLLM):
+class AzureLLM(BaseLLM):
     """
-    A class to support use of OpenAI LLMs.
+    A class to support use of LLMs using Azure endpoints.
     Expects Azure deployment and corresponding endpoint, key, etc.
     """
 
@@ -179,10 +179,10 @@ class OpenAILLM(BaseLLM):
         pass
 
     def _get_inference_engine(self):
-        return "openai"
+        return "azure"
 
     def _get_own_metadata(self):
-        """Get OpenAI-specific information."""
+        """Get Azure-specific information."""
         return {
             "api_version": self.api_version,
         }

@@ -1,19 +1,19 @@
 """
 Functionality for routing to different LLMs.
-Currently supports Azure OpenAI deployments, HuggingFace models, and vLLM inference.
+Currently supports Azure deployments, HuggingFace models, and vLLM inference.
 vLLM is now the default provider for local models with H100-optimized profiles.
 
 Usage Examples:
     model = LLMRouter.get_model(model_name="llama-3.1-8b-instruct")  # Uses vLLM by default
     model = LLMRouter.get_model(provider="huggingface", model_name="falcon-7b")  # Explicit HF
-    model = LLMRouter.get_model(provider="azure", model_name="gpt-4")  # Azure OpenAI
+    model = LLMRouter.get_model(provider="azure", model_name="gpt-4")  # Azure Foundry
 """
 
 import logging
 
+from llm_eval.language_models.llms.azure import AzureLLM
 from llm_eval.language_models.llms.huggingface import HuggingFaceLLM
 from llm_eval.language_models.llms.llm_config import MODEL_MAPPING
-from llm_eval.language_models.llms.openai import OpenAILLM
 from llm_eval.language_models.llms.vllm_llm import VLLMLlm
 from llm_eval.language_models.llms.vllm_profiles import get_optimal_vllm_config
 
@@ -42,7 +42,7 @@ class LLMRouter:
             model_name (str): The name of the model to load.
             provider (str, optional): The provider of the model.
                 Defaults to "vllm" for local models. Supported: "azure", "huggingface", "vllm".
-            api_endpoint (str, optional): The endpoint for API-based models (e.g. Azure OpenAI).
+            api_endpoint (str, optional): The endpoint for API-based models (e.g. Azure models).
             api_key (str, optional): The API key for authentication (for API-based models).
             api_version (str, optional): The API version for API-based models.
             hf_token (str, optional): The Hugging Face token for accessing private models.
@@ -53,7 +53,7 @@ class LLMRouter:
             trust_remote_code (bool, optional): Whether to trust remote code.
 
         Returns:
-            An instance of `OpenAILLM`, `HuggingFaceLLM`, or `VLLMLlm`.
+            An instance of `AzureLLM`, `HuggingFaceLLM`, or `VLLMLlm`.
 
         Raises:
             NotImplementedError: If an unsupported model is requested on Azure.
@@ -62,7 +62,7 @@ class LLMRouter:
         logging.info(f"Getting a model. Provider: {provider}; Model: {model_name}")
 
         if provider == "azure":
-            return OpenAILLM(
+            return AzureLLM(
                 model_name=model_name,
                 api_endpoint=api_endpoint,
                 api_key=api_key,
