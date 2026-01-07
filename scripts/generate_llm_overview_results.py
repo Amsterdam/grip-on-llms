@@ -30,7 +30,7 @@ from llm_eval.benchmarks import (
     XSum,
 )
 from llm_eval.language_models import LLMRouter
-from llm_eval.leaderboard import Leaderboard
+from llm_eval.llm_overview import LLMOverview
 from llm_eval.translators import TranslatorRouter
 
 gpt_secrets = get_gpt_secrets()
@@ -448,10 +448,10 @@ if __name__ == "__main__":  # noqa: C901
     ]
 
     logging.info("Running comparison")
-    leaderboard = Leaderboard(
+    llm_overview = LLMOverview(
         llms=llms,
         benchmarks=benches,
         codecarbon_params=CODE_CARBON_PARAMS,
         n_samples=args.n_samples,
     )
-    leaderboard.run_comparison(results_dir=results_dir, force=args.force)
+    llm_overview.run_comparison(results_dir=results_dir, force=args.force)

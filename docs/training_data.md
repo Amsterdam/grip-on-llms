@@ -10,7 +10,7 @@ A model’s behaviour is bounded by the corpus it was trained on.  An ideal data
 * personal data are handled in line with the GDPR and the AI Act;
 * copyrighted works are respected (or licensed);
 * finetuning data is annotated in an ethical manner.
-* the data is inclusive and representative of our values and society 
+* the data is inclusive and representative of our values and society
 
 
 ---
@@ -20,7 +20,7 @@ A model’s behaviour is bounded by the corpus it was trained on.  An ideal data
 
 We classify every model against three transparency levels:
 
-| Level         | Definition                                                                                                                                              | Leaderboard flag |
+| Level         | Definition                                                                                                                                              | LLM Overview flag |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
 | **Open**      | The full corpus is published under an open licence.                                                                        | *open* ✓         |
 | **Described** | The corpus is not released in full, but is documented in a paper, card, or Hugging Face model card with enough detail to understand scope and provenance. | *described* △    |
@@ -43,7 +43,7 @@ We prefer providers that describe clear mitigations strategies are described for
 
 ## Ethical red flags (disqualifying)
 
-When trustworthy sources shows that a training corpus contains serious ethical violations, for example large‑scale scraping of paid medical forums, or leaked personal messages, we mark the model as **non‑admissible** on the leaderboard and remove it from ranking.
+When trustworthy sources shows that a training corpus contains serious ethical violations, for example large‑scale scraping of paid medical forums, or leaked personal messages, we mark the model as **non‑admissible** on the LLM Overview and remove it from ranking.
 
 ---
 

@@ -1,7 +1,7 @@
 Documentation
 ============================
 
-Here, you can find all important information about our [leaderboard](https://amsterdam.github.io/grip-on-llms), the choices behind it and its practical implementation. 
+Here, you can find all important information about our [LLM Overview](https://amsterdam.github.io/grip-on-llms), the choices behind it and its practical implementation.
 
 Most importantly, there are:
 

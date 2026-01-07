@@ -401,7 +401,7 @@ class BiasCalculator:
         self, weights: Optional[Dict[str, float]] = None, method: str = "weighted_average"
     ) -> Dict[str, Any]:  # noqa
         """
-        Calculate a single fairness score for leaderboard ranking.
+        Calculate a single fairness score for LLM Overview ranking.
 
         Args:
             weights: Custom weights for different metrics. If None, uses defaults.
@@ -510,9 +510,9 @@ class BiasCalculator:
             "weights_used": weights,
         }
 
-    def calculate_bias_leaderboard_metrics(self) -> Dict[str, Any]:
+    def calculate_bias_llm_overview_metrics(self) -> Dict[str, Any]:
         """
-        Calculate comprehensive metrics suitable for a bias leaderboard.
+        Calculate comprehensive metrics suitable for the LLM Overview.
 
         Returns multiple scoring approaches to choose from.
         """
@@ -526,10 +526,10 @@ class BiasCalculator:
             "weighted_average": self.calculate_fairness_score(method="weighted_average"),
         }
 
-        # Create recommended leaderboard entry
+        # Create recommended LLM Overview entry
         primary_score = metrics["scores"]["weighted_average"]["overall_score"]
 
-        metrics["leaderboard_entry"] = {
+        metrics["llm_overview_entry"] = {
             "primary_score": primary_score,  # Main ranking metric (0-100, higher is better)
             "grade": self._score_to_grade(primary_score),
             "passed_80_rule": self._check_80_rule_all_attributes(),

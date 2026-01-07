@@ -4,7 +4,7 @@ Sustainability Information
 Introduction
 ------------
 
-This documentation provides guidelines on using [CodeCarbon](https://codecarbon.io/) to measure CO2-equivalent emissions and energy usage for benchmarking large language models (LLMs). The goal of using CodeCarbon in this project is to accurately measure and compare the CO2-equivalent emissions and energy usage of different large language models (LLMs) during benchmarking. This helps assess their environmental impact and make informed decisions about model selection based on sustainability criteria. Due to limited information about the Azure Cloud environment, we utilize the OfflineEmissionsTracker instead of the online version (EmissionsTracker). 
+This documentation provides guidelines on using [CodeCarbon](https://codecarbon.io/) to measure CO2-equivalent emissions and energy usage for benchmarking large language models (LLMs). The goal of using CodeCarbon in this project is to accurately measure and compare the CO2-equivalent emissions and energy usage of different large language models (LLMs) during benchmarking. This helps assess their environmental impact and make informed decisions about model selection based on sustainability criteria. Due to limited information about the Azure Cloud environment, we utilize the OfflineEmissionsTracker instead of the online version (EmissionsTracker).
 
 Please note that certain LLMs, such as OpenAI's GPT models, were not included in the CodeCarbon assessment. Due to the lack of transparency regarding energy usage and other relevant data when using their API, it is not possible to make an accurate environmental impact assessment, resulting in null values for these models.
 
@@ -23,15 +23,15 @@ Setup
 -----
 
 1.  **Install CodeCarbon:** Ensure CodeCarbon is installed in your Python environment:
-    
+
         pip install codecarbon
-        
-    
+
+
 2.  **Import CodeCarbon:** In your Python script, import the necessary module:
-    
+
         from codecarbon import OfflineEmissionsTracker
-        
-    
+
+
 
 Measuring Energy Usage
 ----------------------
@@ -39,26 +39,26 @@ Measuring Energy Usage
 ### Step-by-Step Guide
 
 1.  **Initialize the Emissions Tracker:** Create an instance of the `OfflineEmissionsTracker` at the beginning of your benchmark script:
-    
+
         tracker = OfflineEmissionsTracker(country_iso_code="SE")
-        
-    
+
+
 2.  **Start Tracking:** Begin tracking emissions and energy usage before running your benchmarks:
-    
+
         tracker.start()
-        
-    
+
+
 3.  **Run Benchmark Tests:** Execute your benchmark tests for each LLM. Ensure that the code for running the models is encapsulated between the start and stop tracking commands.
-    
+
 4.  **Stop Tracking:** After the benchmark run completes, stop the tracker to record the emissions data:
-    
+
         tracker.stop()
-        
-    
+
+
 5.  **Retrieve Results:** CodeCarbon will automatically log the CO2-eq emissions in kilograms and energy usage. We use the energy use value to compare LLMs. You can access these logs to compare the environmental impact of each LLM. Obtain the CodeCarbon emissions logs as a dictionary:
 
         final_results = tracker.final_emissions_data.__dict__
-    
+
 Results Description
 ------------------
 
@@ -87,7 +87,7 @@ Evaluation Metrics
 
 ### Mapping to Categories
 
-Finally, we describe our methodology for mapping the raw scores from the benchmarks to the categories visualized in our [leaderboard](https://amsterdam.github.io/grip-on-llms).
+Finally, we describe our methodology for mapping the raw scores from the benchmarks to the categories visualized in our [LLM Overview](https://amsterdam.github.io/grip-on-llms).
 
 We currently calculate average energy use per benchmark. This is based on the total energy usage across all prompts in a benchmark (e.g. 100 prompts) and then averages it. The normalized energy usage is then categorized into five levels:
 

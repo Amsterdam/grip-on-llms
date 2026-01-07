@@ -53,7 +53,7 @@ In this way, it is shown to be more reliable than directly calculating accuracy.
 
 ### Mapping to Categories
 
-Finally, we describe our methodology for mapping the raw scores from the benchmarks to the categories visualized in our [leaderboard](https://amsterdam.github.io/grip-on-llms).
+Finally, we describe our methodology for mapping the raw scores from the benchmarks to the categories visualized in our [LLM Overview](https://amsterdam.github.io/grip-on-llms).
 As all currently supported benchmarks consist of comparable tasks (multiple-choice questions)
 and use the same scores (gp-IRT estimation of accuracy),
 we simply average the scores from the different benchmarks.

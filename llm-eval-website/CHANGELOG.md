@@ -1,4 +1,4 @@
-# Notable Changes to the Leaderboard
+# Notable Changes to the LLM Overview
 
 | Date          | Title             | Description       |
 |:--------------|:------------------|:------------------|
