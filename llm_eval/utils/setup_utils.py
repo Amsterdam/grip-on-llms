@@ -61,10 +61,11 @@ def get_hf_secrets():
 def get_gpt_secrets():
     logging.info("Getting GPT secrets")
 
-    # Define the Azure OpenAI scope and obtain access token for it
+    # Define the Azure scope and obtain access token for it
     cs_scope = "https://cognitiveservices.azure.com/.default"
     cs_token = azure_credential.get_token(cs_scope).token
 
+    # TODO: implement support for different endpoints (e.g. openai + mistral) # noqa: T101
     api_endpoint = key_vault.get_secret("gp-openai-endpoint")
     api_version = key_vault.get_secret("gp-openai-api-version")
 

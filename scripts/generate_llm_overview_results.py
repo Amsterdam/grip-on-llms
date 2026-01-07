@@ -56,7 +56,7 @@ GPT_TRANSLATION_PARAMS = {
     "n": 1,
 }
 
-GPT_PARAMS = {
+AZURE_PARAMS = {
     "temperature": 0,
     "top_p": 1,
     # Don't penalize to ensure greedy decoding
@@ -182,7 +182,7 @@ translation_gpt = LLMRouter.get_model(
 def get_model(model_name, params=None):
     logging.info(f"Initializing {model_name}")
     if model_name in AZURE_MODELS:
-        params = params or (GPT_PARAMS if "gpt-4o" in model_name else GPT_5_PARAMS)
+        params = params or (AZURE_PARAMS if "gpt-4o" in model_name else GPT_5_PARAMS)
         print(params)
         return LLMRouter.get_model(
             provider="azure",

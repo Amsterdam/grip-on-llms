@@ -1,6 +1,6 @@
 """
 Module for handling of LLMs and prompting them.
-Currently supports the OpenAI models on Azure
+Currently supports the models on Azure
 as well as some HuggingFace models.
 """
 import logging
@@ -155,7 +155,7 @@ class BaseLLM:
 
     @abstractmethod
     def _get_inference_engine(self):
-        """Return the inference engine name: 'openai', 'huggingface', or 'vllm'"""
+        """Return the inference engine name: 'azure', 'huggingface', or 'vllm'"""
         raise NotImplementedError
 
     def _get_own_metadata(self):

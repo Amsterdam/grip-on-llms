@@ -6,7 +6,7 @@ from env_setup import get_gpt_secrets, get_hf_secrets
 from llm_eval.language_models import LLMRouter
 
 
-def test_openai(test_prompt, model_name="gpt-4o"):
+def test_azure(test_prompt, model_name="gpt-4o"):
     logging.info("Testing GPT")
 
     gpt_secrets = get_gpt_secrets()
@@ -61,7 +61,7 @@ def test_hf(test_prompt, model_name="tiny_llama"):
 
 if __name__ == "__main__":
     # test = "Test!"
-    openai_models = [
+    azure_models = [
         "gpt-4o",
         "gpt-4o-mini",
         "gpt-5",
@@ -74,8 +74,8 @@ if __name__ == "__main__":
 
     test_prompt = "Hoe maak ik een melding in Amsterdam?"
 
-    for model_name in openai_models:
-        test_openai(test_prompt=test_prompt, model_name=model_name)
+    for model_name in azure_models:
+        test_azure(test_prompt=test_prompt, model_name=model_name)
     # test_hf(test_prompt)
 
     models = [
