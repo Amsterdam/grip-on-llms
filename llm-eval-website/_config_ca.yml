@@ -16,25 +16,12 @@ visible_columns:
   # - simplification
   # - summarization
 visible_models:
-  # - Mistral-7B-Instruct-v0.3
   - Mistral-Small-24B-Instruct-2501
   - Mistral-small-2503
   - Mistral-medium-2505
   - Mistral-Large-3
-  # - Mistral-Large-Instruct-2411
-  # - llama-3.3-70b-gptq
-  # - Llama-3-3-70B-Instruct
-  # - Llama-4-Maverick-17B-128E-Instruct-FP8
-  # - GPT-4o-mini
   - GPT-4o
-  # - GPT-5-nano
-  # - GPT-5-mini
-  # - GPT-5
-  # - o1-mini
   - OLMo-2-0325-32B-Instruct
-  # - EuroLLM-22B-Instruct-Preview
-#  # - Qwen3-32B
-  # - Qwen3-32B-AWQ
   - gemma-3-27b-it
   - Apertus-70B-Instruct-2509-quantized.w4a16
 sort_orders:

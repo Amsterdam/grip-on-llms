@@ -5,9 +5,9 @@ description: Om het verantwoord gebruik van LLM's te bevorderen, bieden wij een 
 default_lang: nl
 visible_columns:
   - model
-  # - provider
-  # - license
-  # - data_openness
+  - provider
+  - license
+  - data_openness
   - energy_use
   - costs
   - bias
@@ -23,8 +23,6 @@ visible_models:
   - Mistral-small-2503
   - Mistral-medium-2505
   - Mistral-Large-3
-  # - Mistral-Medium-2505
-  # - Mistral-Large-Instruct-2411
   - Phi-4-mini-instruct
   # - Llama-3.2-3B-Instruct
   - Llama-3.1-8B-Instruct
@@ -33,9 +31,9 @@ visible_models:
   # - Llama-4-Maverick-17B-128E-Instruct-FP8
   - GPT-4o-mini
   - GPT-4o
-  # - GPT-5-nano
-  # - GPT-5-mini
-  # - GPT-5
+  - GPT-5-nano
+  - GPT-5-mini
+  - GPT-5
   # - o1-mini
   - OLMo-2-1124-7B-Instruct
   - OLMo-2-0325-32B-Instruct
@@ -47,13 +45,13 @@ visible_models:
   - gemma-3-12b-it
   - gemma-3-27b-it
   - SmolLM3-3B
-  # - fietje-2-instruct
-  # - GEITje-7B-ultra
+  - fietje-2-instruct
+  - GEITje-7B-ultra
   - c4ai-command-r7b-12-2024
   - Apertus-8B-Instruct-2509
   - Apertus-70B-Instruct-2509-quantized.w4a16
   - gpt-oss-20b
-  # - gpt-oss-120b
+  - gpt-oss-120b
   - aya-expanse-32b
   - DeepSeek-R1-Distill-Qwen-32B
   - DeepSeek-R1-Distill-Llama-70B-AWQ
