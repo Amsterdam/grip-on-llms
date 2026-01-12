@@ -19,7 +19,17 @@ lang: en
 <body>
     {% include header.html %}
     {% include intro.html %}
-    {% include llm_overview.html %}
+    <div class="content">
+        {% include llm_overview.html %}
+    </div>
+    <div class="content">
+        <p> For more information about the project, please visit
+            <a href link="https://openresearch.amsterdam/nl/page/128337/grip-op-llms">Openresearch.</a>
+        </p>
+        <p> Further technical details can be found in our
+            <a href link="https://github.com/Amsterdam/grip-on-llms">GitHub repository.</a>
+        </p>
+    </div>
     <div class="content">
         <h2>Disclaimer: Use with caution </h2>
         <p> This website is work in progress.
