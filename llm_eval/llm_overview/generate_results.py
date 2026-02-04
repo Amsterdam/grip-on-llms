@@ -15,7 +15,7 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 class LLMOverview:
     """Run benchmarks for a number of models and generate the data to be presented"""
 
-    def __init__(self, llms, benchmarks, codecarbon_params, n_samples=0):
+    def __init__(self, llms, benchmarks, codecarbon_params, system_prompt=None, n_samples=0):
         """
         Args:
             llms (list): List of LLMs.
@@ -25,6 +25,7 @@ class LLMOverview:
         self.llms = llms
         self.benchmarks = benchmarks
         self.codecarbon_params = codecarbon_params
+        self.system_prompt = system_prompt
         self.n_samples = n_samples
 
     def run_comparison(self, results_dir=None, force=False):
@@ -64,7 +65,9 @@ class LLMOverview:
         llm.initialize_carbon_tracking(self.codecarbon_params)
 
         start_time = datetime.now()
-        run_output, evaluation, validity = benchmark.eval(llm, n_samples=self.n_samples)
+        run_output, evaluation, validity = benchmark.eval(
+            llm, system_prompt=self.system_prompt, n_samples=self.n_samples
+        )
 
         end_time = datetime.now()
 
@@ -80,6 +83,7 @@ class LLMOverview:
                     system=get_system_metadata(),
                 ),
                 code_carbon=llm.get_carbon_data(),
+                system_prompt=self.system_prompt,
                 n_samples=self.n_samples,
             ),
             run_output=run_output,

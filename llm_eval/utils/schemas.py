@@ -129,6 +129,7 @@ class MetadataContainer(BaseModel):
     benchmark: BenchmarkMetadata
     run: RunMetadata
     code_carbon: Optional[Dict[str, Any]] = None
+    system_prompt: Optional[str] = None
     n_samples: int
 
     class Config:
