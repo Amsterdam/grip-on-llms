@@ -6,7 +6,7 @@ default_lang: nl
 visible_columns:
   - model
   - provider
-  # - license
+  - license
   - data_openness
   - energy_use
   - costs
@@ -17,7 +17,7 @@ visible_columns:
   # - summarization
 visible_models:
   - Mistral-Small-24B-Instruct-2501
-  - Mistral-small-2503
+  # - Mistral-small-2503
   - Mistral-medium-2505
   - Mistral-Large-3
   - GPT-4o
