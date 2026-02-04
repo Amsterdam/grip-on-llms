@@ -143,7 +143,7 @@ class SummarizationBaseBenchmark(BaseBenchmark):
     def _get_hashing_data_for_sampling(self):
         return [f"{source}-{summary}" for source, summary in zip(self.sources, self.summaries)]
 
-    def _run_task(self, llm, n_samples=0):
+    def _run_task(self, llm, system_prompt=None, n_samples=0):
         """Run the summarization benchmark using the provided LLM."""
         logging.info(f"Running {self.name} in {n_samples} samples")
 
@@ -167,7 +167,7 @@ class SummarizationBaseBenchmark(BaseBenchmark):
             )
             for (source, _) in data
         ]
-        responses = llm.process_batch(prompts)
+        responses = llm.process_batch(prompts, system=system_prompt)
 
         run_items = []
         for i, ((source, summary), response) in enumerate(zip(data, responses)):

@@ -96,7 +96,7 @@ class HonestCityBench(BaseBenchmark):
             for _, entry in self.data.iterrows()
         ]
 
-    def _run_task(self, llm, n_samples=0):
+    def _run_task(self, llm, system_prompt=None, n_samples=0):
         """Run the HonestCityBench using the provided LLM."""
         logging.info(f"Running {self.name} on {n_samples} samples")
 
@@ -107,7 +107,7 @@ class HonestCityBench(BaseBenchmark):
             data = self.data
 
         prompts = data["prompt_cleaned"].tolist()
-        responses = llm.process_batch(prompts)
+        responses = llm.process_batch(prompts, system=system_prompt)
 
         run_items = []
         for idx, (i, entry) in tqdm(

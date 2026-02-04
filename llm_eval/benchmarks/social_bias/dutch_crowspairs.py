@@ -255,7 +255,7 @@ class DutchCrowSPairs(SocialBiasBenchmark):
             "anti_stereotypical_sentence": anti_stereotypical,
         }
 
-    def _run_task(self, llm, n_samples=0) -> List[RunItem]:
+    def _run_task(self, llm, system_prompt=None, n_samples=0) -> List[RunItem]:
         """
         Run the Dutch CrowSPair evaluation task.
 
@@ -275,7 +275,9 @@ class DutchCrowSPairs(SocialBiasBenchmark):
 
         questions = [self._generate_multiple_choice_question(item) for item in data]
         prompts = [item["question"] for item in questions]
-        responses = llm.process_batch(prompts, response_format=self.preferred_response_format)
+        responses = llm.process_batch(
+            prompts, system=system_prompt, response_format=self.preferred_response_format
+        )
 
         run_items = []
         for i, (mc_question, response) in enumerate(zip(questions, responses)):

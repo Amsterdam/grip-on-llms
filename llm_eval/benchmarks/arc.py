@@ -120,7 +120,7 @@ class ARC(BaseBenchmark):
     def _get_hashing_data_for_sampling(self):
         return [entry["id"] for entry in self.data]
 
-    def _run_task(self, llm, n_samples=0):
+    def _run_task(self, llm, system_prompt=None, n_samples=0):
         """Run the ARC benchmark using the provided LLM."""
         if self.data is None:
             raise ValueError("Benchmark data is not loaded.")
@@ -141,7 +141,9 @@ class ARC(BaseBenchmark):
             )
             for entry in data
         ]
-        responses = llm.process_batch(prompts, response_format=self.preferred_response_format)
+        responses = llm.process_batch(
+            prompts, system=system_prompt, response_format=self.preferred_response_format
+        )
 
         run_items = []
         for i, (entry, response) in enumerate(zip(data, responses)):

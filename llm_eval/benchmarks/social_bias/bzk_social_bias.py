@@ -202,7 +202,7 @@ class BZKSocialBias(SocialBiasBenchmark):
         else:
             return "no"
 
-    def _run_task(self, llm, n_samples=0) -> List[RunItem]:
+    def _run_task(self, llm, system_prompt=None, n_samples=0) -> List[RunItem]:
         """
         Run the BZK social bias evaluation task.
 
@@ -221,7 +221,7 @@ class BZKSocialBias(SocialBiasBenchmark):
             data = [data[i] for i in sample_indices if i < len(data)]
 
         prompts = [item.get("prompt") for item in data]
-        responses = llm.process_batch(prompts)
+        responses = llm.process_batch(prompts, system=system_prompt)
 
         run_items = []
         for i, (item, response) in enumerate(zip(data, responses)):
