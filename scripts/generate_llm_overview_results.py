@@ -31,6 +31,7 @@ from llm_eval.benchmarks import (
 )
 from llm_eval.language_models import LLMRouter
 from llm_eval.llm_overview import LLMOverview
+from llm_eval.prompts import SYSTEM_PROMPT_EN, SYSTEM_PROMPT_MIX, SYSTEM_PROMPT_NL
 from llm_eval.translators import TranslatorRouter
 
 gpt_secrets = get_gpt_secrets()
@@ -398,6 +399,14 @@ def parse_arguments():
     parser.add_argument(
         "--language", type=str, default="NL", help="Benchmark language (default: NL)"
     )
+
+    parser.add_argument(
+        "--system_prompt",
+        type=str,
+        default=None,
+        help="System prompt language (default: None; choose nl, en or mix for default prompt)",
+    )
+
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--force",
@@ -452,11 +461,20 @@ if __name__ == "__main__":  # noqa: C901
         for bench_name in args.benches
     ]
 
+    PROMPT_MAP = {
+        "en": SYSTEM_PROMPT_EN,
+        "nl": SYSTEM_PROMPT_NL,
+        "mix": SYSTEM_PROMPT_MIX,
+    }
+
+    system_prompt = PROMPT_MAP.get(args.system_prompt.lower()) if args.system_prompt else None
+
     logging.info("Running comparison")
     llm_overview = LLMOverview(
         llms=llms,
         benchmarks=benches,
         codecarbon_params=CODE_CARBON_PARAMS,
+        system_prompt=system_prompt,
         n_samples=args.n_samples,
     )
     llm_overview.run_comparison(results_dir=results_dir, force=args.force)
