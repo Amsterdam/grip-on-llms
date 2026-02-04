@@ -73,19 +73,19 @@ class BaseBenchmark(ABC):
         """Property to get the preferred response format"""
         return self._preferred_response_format
 
-    def run(self, llm, n_samples=0) -> List[RunItem]:
+    def run(self, llm, system_prompt=None, n_samples=0) -> List[RunItem]:
         """Run the benchmark using the provided LLM."""
-        return self._run_task(llm, n_samples=n_samples)
+        return self._run_task(llm, system_prompt=system_prompt, n_samples=n_samples)
 
     def score(self, run_output: List[RunItem]) -> BenchmarkEvaluation:
         """Calculate evaluation from run output"""
         return self._calculate_metrics(run_output)
 
     def eval(
-        self, llm, results_path=None, n_samples=0
+        self, llm, results_path=None, system_prompt=None, n_samples=0
     ) -> Tuple[List[RunItem], BenchmarkEvaluation, Dict]:
         """Run benchmark and calculate corresponding scores"""
-        run_output = self.run(llm, n_samples=n_samples)
+        run_output = self.run(llm, system_prompt=system_prompt, n_samples=n_samples)
         scores = self.score(run_output)
         validity = self.check_validity(run_output=run_output, scores=scores)
         return run_output, scores, validity
@@ -150,7 +150,7 @@ class BaseBenchmark(ABC):
         return validity
 
     @abstractmethod
-    def _run_task(self, llm, n_samples=0):
+    def _run_task(self, llm, system_prompt=None, n_samples=0):
         """Function to run a task should always be implemented"""
         raise NotImplementedError("Implement _run_task function")
 

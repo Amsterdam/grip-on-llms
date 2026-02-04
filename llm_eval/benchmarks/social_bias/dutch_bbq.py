@@ -226,7 +226,7 @@ class DutchBBQ(SocialBiasBenchmark):
 
         return mc_question
 
-    def _run_task(self, llm, n_samples=0) -> List[RunItem]:
+    def _run_task(self, llm, system_prompt=None, n_samples=0) -> List[RunItem]:
         """
         Run the Dutch BBQ evaluation task.
 
@@ -248,6 +248,7 @@ class DutchBBQ(SocialBiasBenchmark):
         prompts = [item["question_full"] for item in questions]
         responses = llm.process_batch(
             prompts,
+            system=system_prompt,
             response_format=self.preferred_response_format,
         )
 

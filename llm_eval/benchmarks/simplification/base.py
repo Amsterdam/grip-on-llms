@@ -120,7 +120,7 @@ class SimplificationBaseBenchmark(BaseBenchmark):
     def _get_hashing_data_for_sampling(self):
         return [f"{source}-{target}" for source, target in zip(self.sources, self.targets)]
 
-    def _run_task(self, llm, n_samples=0):
+    def _run_task(self, llm, system_prompt=None, n_samples=0):
         """Run the simplification benchmark using the provided LLM."""
         logging.info(f"Running {self.name} in {n_samples} samples")
 
@@ -137,7 +137,7 @@ class SimplificationBaseBenchmark(BaseBenchmark):
             prompt_template.format(GRANULARITY=self.granularity, LEVEL=self.level, TEXT=source)
             for source, target in data
         ]
-        responses = llm.process_batch(prompts)
+        responses = llm.process_batch(prompts, system=system_prompt)
 
         run_items = []
         for i, ((source, target), response) in enumerate(zip(data, responses)):
