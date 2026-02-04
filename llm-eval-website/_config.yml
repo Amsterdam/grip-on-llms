@@ -19,6 +19,9 @@ visible_models:
   - Falcon3-7B-Instruct
   - Mistral-7B-Instruct-v0.3
   - Mistral-Small-24B-Instruct-2501
+  # - Mistral-small-2503
+  - Mistral-medium-2505
+  - Mistral-Large-3
   - Phi-4-mini-instruct
   - Llama-3.1-8B-Instruct
   - llama-3.3-70b-gptq
