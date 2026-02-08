@@ -176,7 +176,8 @@ if __name__ == "__main__":  # noqa: C901
 
         if not results_dir.exists():
             logging.error(f"Directory not found: {results_dir}")
-            exit(1)
+            # exit(1)
+            continue
 
         results_files = [f for f in os.listdir(results_dir) if f.endswith(".json")]
         logging.info(f"Found {len(results_files)} result files: {results_files}")
