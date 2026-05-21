@@ -8,10 +8,14 @@ import tiktoken
 from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
 from tqdm import tqdm
 
-# isort: off
-from llm_eval.utils.setup_utils import base_results_folder
+# Quick bypass: skip the keyvault-touching setup_utils import when RESULTS_FOLDER
+# is already in the env. add_costs.py doesn't need any other secret.
+base_results_folder = os.environ.get("RESULTS_FOLDER")
+if not base_results_folder:
+    # isort: off
+    from llm_eval.utils.setup_utils import base_results_folder  # noqa: F811
 
-# isort: on
+    # isort: on
 
 from llm_eval.utils.schemas import BenchCosts, BenchmarkResult
 
@@ -58,9 +62,13 @@ def count_tokens(model_name, text):
             tokenizer = MistralTokenizer.v3().instruct_tokenizer.tokenizer
             tokens = tokenizer.encode(text, bos=True, eos=False)
             return len(tokens)
-        else:
+        try:
             enc = tiktoken.encoding_for_model(model_name)
-            return len(enc.encode(text))
+        except KeyError:
+            # tiktoken's registry has prefix "gpt-5-" (covering -mini/-nano) but
+            # no bare "gpt-5"; fall back to the GPT-4o/GPT-5 family tokenizer.
+            enc = tiktoken.get_encoding("o200k_base")
+        return len(enc.encode(text))
     except Exception as e:
         print(f"Couldn't count tokens for {model_name}: {e}")
         return 0
