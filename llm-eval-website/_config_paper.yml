@@ -1,0 +1,38 @@
+title: Grip op LLMs
+baseurl: "" # for project sites
+url: "http://127.0.0.1:4000"
+description: Paper-figure build — large fonts, curated model subset for the LLM overview figure.
+default_lang: nl
+paper_mode: true
+visible_columns:
+  - model
+  - provider
+  - license
+  - data_openness
+  - energy_use
+  - costs
+  - bias
+  - factuality
+  - honesty
+visible_models:
+  - aya-expanse-32b
+  - gemma-3-27b-it
+  - Qwen3-32B
+  - Apertus-70B-Instruct-2509-quantized.w4a16
+  - OLMo-2-0325-32B-Instruct
+  - Mistral-medium-2505
+  - Mistral-Large-3
+  - GPT-4o-mini
+  - GPT-4o
+  - GPT-5
+model_aliases:
+  Apertus-70B-Instruct-2509-quantized.w4a16: Apertus-70B-Instruct (w4a16)
+sort_orders:
+  license:
+    open: 1
+    restricted: 2
+    commercial: 3
+  data_openness:
+    open: 1
+    described: 2
+    closed: 3

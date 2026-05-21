@@ -1,0 +1,124 @@
+/* Paper-figure overrides: large fonts + no scroll, so a single screenshot
+   stays readable when shrunk into a paper column. Loaded only when
+   site.paper_mode is true. */
+
+body.paper-mode {
+    font-size: 26px;
+}
+
+body.paper-mode .header,
+body.paper-mode .content > p,
+body.paper-mode .content > h2,
+body.paper-mode #nav-menu,
+body.paper-mode .intro,
+body.paper-mode .footer,
+body.paper-mode .score-info-icon {
+    display: none !important;
+}
+
+/* The table itself is the whole screenshot — show it all, no scrollbar */
+body.paper-mode .table-container {
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+}
+
+/* Cap table width so text dominates the figure. The browser viewport can
+   be as wide as you like — the table won't grow past this, so big fonts
+   stay big relative to the figure when shrunk into a paper column. */
+body.paper-mode .table-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+body.paper-mode table {
+    font-size: 26px;
+    table-layout: auto;
+    width: 100%;
+}
+
+body.paper-mode th,
+body.paper-mode td {
+    padding: 20px 22px;
+}
+
+body.paper-mode th {
+    height: auto;
+    font-size: 32px;
+    font-weight: 700;
+    padding-right: 12px;
+}
+
+body.paper-mode .sort-icon {
+    margin-right: 0;
+}
+
+body.paper-mode .license-label,
+body.paper-mode .data-label {
+    font-size: 26px;
+}
+
+body.paper-mode .license-circle {
+    width: 16px;
+    height: 16px;
+}
+
+body.paper-mode .data-icon,
+body.paper-mode .location-icon {
+    width: 32px;
+    height: 32px;
+}
+
+body.paper-mode .score-circle {
+    width: 30px;
+    height: 30px;
+}
+
+body.paper-mode .score-circles {
+    gap: 12px;
+}
+
+body.paper-mode .bias-aspect,
+body.paper-mode .bias-aspect svg {
+    width: 30px;
+    height: 30px;
+}
+
+body.paper-mode .bias-scores {
+    gap: 10px;
+}
+
+body.paper-mode .costs-container {
+    min-width: 180px;
+    gap: 8px;
+}
+
+body.paper-mode .costs-bar {
+    height: 30px;
+}
+
+body.paper-mode .costs-value {
+    font-size: 22px;
+    min-width: 64px;
+}
+
+/* Header info circle (the small "i" next to each column header) —
+   keep wrapper and svg in proportion so it doesn't overflow. */
+body.paper-mode .score-explanation-header-info-circle,
+body.paper-mode .score-explanation-header-info-circle svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Missing-score warning triangle */
+body.paper-mode .missing-score-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+body.paper-mode .sort-icon,
+body.paper-mode .sort-icon span,
+body.paper-mode .sort-icon svg {
+    width: 22px;
+    height: 22px;
+}

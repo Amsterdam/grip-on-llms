@@ -27,7 +27,8 @@
                 <tr>
                     {% for column in site.visible_columns %}
                         {% if column == 'model' %}
-                            <td><a href="{{ model.model_url }}" target="_blank">{{ model.model }}</a></td>
+                            {% assign display_name = site.model_aliases[model.model] | default: model.model %}
+                            <td><a href="{{ model.model_url }}" target="_blank">{{ display_name }}</a></td>
                         {% elsif column == 'provider' %}
                             <td class="provider-cell">
                                 <div class="provider-wrapper">
