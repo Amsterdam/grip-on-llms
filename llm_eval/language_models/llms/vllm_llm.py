@@ -124,7 +124,7 @@ class VLLMLlm(BaseLLM):
         self.model = LLM(**vllm_kwargs)
 
         self.chat_handler = create_chat_handler(
-            "vllm", self.tokenizer, None, self.system_prompt, template_kwargs
+            "vllm", self.tokenizer, None, self.system_prompt, template_kwargs, model_id=model_id
         )
 
         if self.tracker and pause_tracker:

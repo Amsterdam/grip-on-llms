@@ -67,6 +67,7 @@ class HuggingFaceLLM(BaseLLM):
             device=self.device,
             system_prompt=self.system_prompt,
             template_kwargs=template_kwargs,
+            model_id=model_id,
         )
 
         if self.tracker and pause_tracker:

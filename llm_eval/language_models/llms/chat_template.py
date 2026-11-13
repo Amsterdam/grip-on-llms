@@ -1,6 +1,11 @@
 """Unified chat template handling for HuggingFace and vLLM implementations."""
 
+import json
+import logging
 from typing import Any, Dict, List, Optional, Union
+
+from huggingface_hub import hf_hub_download
+from huggingface_hub.errors import EntryNotFoundError
 
 
 class ChatTemplateHandler:
@@ -14,6 +19,7 @@ class ChatTemplateHandler:
         tokenizer,
         system_prompt: Optional[str] = None,
         template_kwargs: Optional[Dict] = None,
+        model_id: Optional[str] = None,
     ):
         """
         Initialize the chat template handler.
@@ -22,11 +28,29 @@ class ChatTemplateHandler:
             tokenizer: Either HuggingFace tokenizer or vLLM tokenizer
             system_prompt: Optional system prompt to prepend to conversations
             template_kwargs: Additional kwargs for chat template application
+            model_id: HF repo id, used to find a chat template the tokenizer does not have
         """
         self.tokenizer = tokenizer
         self.system_prompt = system_prompt
         self.template_kwargs = template_kwargs or {}
         self.force_no_thinking = self.template_kwargs.pop("force_no_thinking", False)
+
+        if model_id and getattr(self.tokenizer, "chat_template", None) is None:
+            self._load_processor_chat_template(model_id)
+
+    def _load_processor_chat_template(self, model_id: str):
+        """
+        Some repos (e.g. Mistral Small 3.1) only ship their chat template in
+        chat_template.json, which tokenizers do not read. Load it from there.
+        """
+        try:
+            template_path = hf_hub_download(model_id, "chat_template.json")
+        except EntryNotFoundError:
+            return
+
+        with open(template_path, encoding="utf-8") as f:
+            self.tokenizer.chat_template = json.load(f)["chat_template"]
+        logging.info(f"Loaded chat template for {model_id} from chat_template.json")
 
     def format_conversation(
         self, prompt: str, context: Optional[str] = None, system: Optional[str] = None
@@ -80,8 +104,9 @@ class HuggingFaceChatHandler(ChatTemplateHandler):
         device,
         system_prompt: Optional[str] = None,
         template_kwargs: Optional[Dict] = None,
+        model_id: Optional[str] = None,
     ):
-        super().__init__(tokenizer, system_prompt, template_kwargs)
+        super().__init__(tokenizer, system_prompt, template_kwargs, model_id)
         self.device = device
 
     def apply_chat_template_for_generation(self, conversation: List[Dict[str, str]]):
@@ -147,6 +172,7 @@ def create_chat_handler(
     device=None,
     system_prompt: Optional[str] = None,
     template_kwargs: Optional[Dict] = None,
+    model_id: Optional[str] = None,
 ) -> ChatTemplateHandler:
     """
     Factory function to create appropriate chat handler.
@@ -157,6 +183,7 @@ def create_chat_handler(
         device: Device for HuggingFace (ignored for vLLM)
         system_prompt: Optional system prompt
         template_kwargs: Template-specific kwargs
+        model_id: HF repo id, used to find a chat template the tokenizer does not have
 
     Returns:
         Appropriate ChatTemplateHandler instance
@@ -164,8 +191,8 @@ def create_chat_handler(
     if engine.lower() == "huggingface":
         if device is None:
             raise ValueError("Device must be provided for HuggingFace handler")
-        return HuggingFaceChatHandler(tokenizer, device, system_prompt, template_kwargs)
+        return HuggingFaceChatHandler(tokenizer, device, system_prompt, template_kwargs, model_id)
     elif engine.lower() == "vllm":
-        return VLLMChatHandler(tokenizer, system_prompt, template_kwargs)
+        return VLLMChatHandler(tokenizer, system_prompt, template_kwargs, model_id)
     else:
         raise ValueError(f"Unsupported engine: {engine}")
