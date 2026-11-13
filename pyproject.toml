@@ -14,8 +14,10 @@ cryptography = "~43.0.3"
 dotenv = "*"
 numpy="^2.0"
 openai = "^2.25.0"
-torch = "2.14.0"
-transformers = ">=5.16.1, <5.21.0"
+torch = { version = "2.13.0", source = "pytorch-cu129" }
+torchvision = { version = "0.28.0", source = "pytorch-cu129" }
+torchaudio = { version = "2.11.0", source = "pytorch-cu129" }
+transformers = ">=5.16.1, <5.20.0"
 codecarbon = "^2.8.3"
 evaluate = "^0.4.3"
 bert_score = "^0.3.13"
@@ -34,10 +36,21 @@ sentencepiece = "0.2.0"
 tinyBenchmarks = { git = "https://github.com/felipemaiapolo/tinyBenchmarks" }
 urllib3 = "1.26.15"
 tiktoken = "0.11.0"
-vllm = "0.33.0"
-flashinfer-python = "0.7.2.post1"
+vllm = { version = "0.32.0", source = "vllm-cu129" }
+flashinfer-python = "0.7.0.post1"
 openpyxl = "^3.1.5"
 mistral_common = "^1.11.6"
+
+# CUDA 12.9 builds: the H100 driver supports CUDA 12.x only (vllm >= 0.33 is CUDA 13 only)
+[[tool.poetry.source]]
+name = "pytorch-cu129"
+url = "https://download.pytorch.org/whl/cu129"
+priority = "explicit"
+
+[[tool.poetry.source]]
+name = "vllm-cu129"
+url = "https://wheels.vllm.ai/0.32.0/cu129"
+priority = "explicit"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
