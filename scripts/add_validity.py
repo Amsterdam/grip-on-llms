@@ -338,7 +338,7 @@ def get_benchmark(
 def parse_arguments():
     parser = argparse.ArgumentParser(description=__doc__)
 
-    default_experiment = "2025-10-03-rerun-new-schema"
+    default_experiment = "2026-11-rerun"
     parser.add_argument(
         "experiment_name",
         type=str,
