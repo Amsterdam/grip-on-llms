@@ -93,6 +93,8 @@ class HuggingFaceChatHandler(ChatTemplateHandler):
             tokenize=True,
             add_generation_prompt=True,
             return_tensors="pt",
+            # transformers >= 5 returns a dict by default
+            return_dict=False,
             **self.template_kwargs,
         ).to(self.device)
 

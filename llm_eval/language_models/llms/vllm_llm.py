@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 
 from tqdm import tqdm
 from vllm import LLM, SamplingParams
-from vllm.transformers_utils.tokenizer import get_tokenizer
+from vllm.tokenizers import get_tokenizer
 
 from llm_eval.language_models.llms.base import BaseLLM
 from llm_eval.language_models.llms.chat_template import create_chat_handler
@@ -139,11 +139,9 @@ class VLLMLlm(BaseLLM):
         vllm_params = {
             "skip_special_tokens": True,
             "include_stop_str_in_output": False,
-            # "truncate_prompt_tokens": True,
             "temperature": params.get("temperature"),
             "top_p": params.get("top_p"),
             "top_k": params.get("top_k"),
-            "truncate_prompt_tokens": self.max_model_len - params.get("max_new_tokens"),
             "max_tokens": params.get("max_new_tokens") or params.get("max_length"),
         }
 
@@ -159,6 +157,15 @@ class VLLMLlm(BaseLLM):
         # Handle do_sample parameter
         if "do_sample" in params and not params["do_sample"]:
             vllm_params["temperature"] = 0.0
+
+        # Prompt truncation is no longer part of SamplingParams (vLLM >= 0.17);
+        # it is passed to generate() via tokenization_kwargs instead.
+        # vLLM <= 0.16 truncated from the left ("use only the last k tokens"),
+        # so the side is set explicitly to keep results comparable.
+        self.tokenization_kwargs = {
+            "truncate_prompt_tokens": self.max_model_len - params.get("max_new_tokens"),
+            "truncation_side": "left",
+        }
 
         return SamplingParams(**vllm_params)
 
@@ -216,7 +223,9 @@ class VLLMLlm(BaseLLM):
         response.formatted_prompt = formatted_prompt
 
         # Generate response
-        outputs = self.model.generate(formatted_prompt, self.params)
+        outputs = self.model.generate(
+            formatted_prompt, self.params, tokenization_kwargs=self.tokenization_kwargs
+        )
 
         if not outputs or not outputs[0].outputs:
             response.error = True
@@ -260,18 +269,28 @@ class VLLMLlm(BaseLLM):
 
         # Generate responses in batch
         if batch_size is None:
-            outputs = self.model.generate(formatted_prompts, self.params)
+            outputs = self.model.generate(
+                formatted_prompts, self.params, tokenization_kwargs=self.tokenization_kwargs
+            )
         else:
             outputs = []
             batch = []
             for prompt in tqdm(formatted_prompts):
                 batch.append(prompt)
                 if len(batch) == batch_size:
-                    outputs.extend(self.model.generate(batch, self.params))
+                    outputs.extend(
+                        self.model.generate(
+                            batch, self.params, tokenization_kwargs=self.tokenization_kwargs
+                        )
+                    )
                     batch = []
             # flush
             if batch:
-                outputs.extend(self.model.generate(batch, self.params))
+                outputs.extend(
+                    self.model.generate(
+                        batch, self.params, tokenization_kwargs=self.tokenization_kwargs
+                    )
+                )
 
         # Extract responses
         responses = []
