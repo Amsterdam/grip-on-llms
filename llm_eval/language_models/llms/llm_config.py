@@ -20,6 +20,16 @@ MODEL_MAPPING = {
         "model_size": "tiny",
         "kwargs": {},
     },
+    "ministral-3-3b-instruct": {
+        "id": "mistralai/Ministral-3-3B-Instruct-2512",
+        "model_size": "tiny",
+        "kwargs": {
+            "loading": {
+                "config_format": "mistral",
+                "load_format": "mistral",
+            },
+        },
+    },
     "smollm3-3b": {
         "id": "HuggingFaceTB/SmolLM3-3B",
         "model_size": "tiny",
@@ -44,6 +54,16 @@ MODEL_MAPPING = {
         "id": "mistralai/Mistral-7B-Instruct-v0.3",
         "model_size": "small",
         "kwargs": {},
+    },
+    "ministral-3-8b-instruct": {
+        "id": "mistralai/Ministral-3-8B-Instruct-2512",
+        "model_size": "small",
+        "kwargs": {
+            "loading": {
+                "config_format": "mistral",
+                "load_format": "mistral",
+            },
+        },
     },
     "llama-3.1-8b-instruct": {
         "id": "meta-llama/Llama-3.1-8B-Instruct",
@@ -95,11 +115,31 @@ MODEL_MAPPING = {
         "model_size": "medium",
         "kwargs": {},
     },
+    "ministral-3-14b-instruct": {
+        "id": "mistralai/Ministral-3-14B-Instruct-2512",
+        "model_size": "medium",
+        "kwargs": {
+            "loading": {
+                "config_format": "mistral",
+                "load_format": "mistral",
+            },
+        },
+    },
     # LARGE MODELS (20B-40B) - H100 "large" profile
     "mistral-small-instruct": {
         "id": "mistralai/Mistral-Small-24B-Instruct-2501",
         "model_size": "large",
         "kwargs": {},
+    },
+    "mistral-small-3.1-instruct": {
+        "id": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+        "model_size": "large",
+        "kwargs": {
+            "loading": {
+                "config_format": "mistral",
+                "load_format": "mistral",
+            },
+        },
     },
     "eurollm-22b-instruct": {
         "id": "utter-project/EuroLLM-22B-Instruct-Preview",

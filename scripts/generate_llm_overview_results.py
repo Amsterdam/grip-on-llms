@@ -104,6 +104,10 @@ HF_OBJECT_PARAMS = {
 HF_MODELS = [
     "mistral-7b-instruct-v0.3",
     "mistral-small-instruct",
+    "mistral-small-3.1-instruct",
+    "ministral-3-3b-instruct",
+    "ministral-3-8b-instruct",
+    "ministral-3-14b-instruct",
     "tiny-llama",
     "llama-3.1-8b-instruct",
     "llama-3.3-70b-gptq",
