@@ -17,6 +17,7 @@ openai = "^2.25.0"
 torch = { version = "2.13.0", source = "pytorch-cu129" }
 torchvision = { version = "0.28.0", source = "pytorch-cu129" }
 torchaudio = { version = "2.11.0", source = "pytorch-cu129" }
+torchcodec = { version = "0.16.0", source = "pytorch-cu129" }
 transformers = ">=5.16.1, <5.20.0"
 codecarbon = "^2.8.3"
 evaluate = "^0.4.3"
@@ -27,7 +28,7 @@ rouge_score = "^0.1.2"
 nltk = "^3.9.1"
 mmh3 = "5.1.0"
 datasets = "^4.4.0"
-# vllm 0.33 pins protobuf 7.36.1 on s390x only; poetry resolves for all platforms
+# vllm 0.32 pins protobuf 7.36.1 on s390x only; poetry resolves for all platforms
 protobuf = [
     { version = "^6.33.5", markers = "platform_machine != 's390x'" },
     { version = "7.36.1", markers = "platform_machine == 's390x'" },
