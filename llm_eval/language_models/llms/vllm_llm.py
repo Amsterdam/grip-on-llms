@@ -15,6 +15,10 @@ from llm_eval.language_models.llms.llm_utils import aggressive_gpu_cleanup
 from llm_eval.utils.exceptions import UnsupportedModelError
 from llm_eval.utils.schemas import LLMResponse
 
+# FlashInfer's sampler JIT-compiles with the system nvcc (CUDA 12.2 on the H100), which fails.
+# vLLM reads this variable lazily, so setting it after the import still takes effect.
+os.environ.setdefault("VLLM_USE_FLASHINFER_SAMPLER", "0")
+
 
 class VLLMLlm(BaseLLM):
     """A class to handle HuggingFace models via vLLM for accelerated inference."""
