@@ -108,12 +108,30 @@ MODEL_MAPPING = {
     # so loading fails. Once supported, check its thinking mode before trusting results.
     "apertus-v1.5-8b": {
         "id": "swiss-ai/Apertus-v1.5-8B",
-        "model_size": "medium",
+        "model_size": "small",
         "kwargs": {},
+    },
+    "granite-4.2-8b": {
+        "id": "ibm-granite/granite-4.2-8b",
+        "model_size": "small",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     "gemma-4-e4b-instruct": {
         "id": "google/gemma-4-E4B-it",
         "model_size": "small",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
+    },
+    "granite-4.2-3b": {
+        "id": "ibm-granite/granite-4.2-3b",
+        "model_size": "tiny",
         "kwargs": {
             "template": {
                 "enable_thinking": False,
@@ -159,6 +177,11 @@ MODEL_MAPPING = {
                 "load_format": "mistral",
             },
         },
+    },
+    "phi-4-14b": {
+        "id": "microsoft/phi-4",
+        "model_size": "medium",
+        "kwargs": {},
     },
     # LARGE MODELS (20B-40B) - H100 "large" profile
     "mistral-small-instruct": {
@@ -241,6 +264,15 @@ MODEL_MAPPING = {
         "id": "CohereLabs/aya-expanse-32b",
         "model_size": "large",
         "kwargs": {},
+    },
+    "granite-4.2-30b": {
+        "id": "ibm-granite/granite-4.2-30b",
+        "model_size": "large",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     "deepseek-r1-distill-qwen-32b": {
         "id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",

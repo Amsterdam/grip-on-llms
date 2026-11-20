@@ -27,6 +27,7 @@ visible_models:
   # - Ministral-3-8B-Instruct-2512
   # - Ministral-3-14B-Instruct-2512
   - Phi-4-mini-instruct
+  # - phi-4
   - Llama-3.1-8B-Instruct
   - llama-3.3-70b-gptq
   # - Llama-3-3-70B-Instruct
@@ -60,6 +61,9 @@ visible_models:
   - c4ai-command-r7b-12-2024
   - Apertus-8B-Instruct-2509
   # - Apertus-v1.5-8B
+  # - granite-4.2-3b
+  # - granite-4.2-8b
+  # - granite-4.2-30b
   - Apertus-70B-Instruct-2509-quantized.w4a16
   - gpt-oss-20b
   # - gpt-oss-120b
