@@ -127,6 +127,10 @@ HF_MODELS = [
     "qwen-8b",
     "qwen-32b",
     "qwen3-32b-awq",
+    "qwen3.5-0.8b",
+    "qwen3.5-4b",
+    "qwen3.5-9b",
+    "qwen3.8-27b",
     "gemma-12b-instruct",
     "gemma-27b-instruct",
     "gemma-4-e4b-instruct",
@@ -146,6 +150,8 @@ HF_MODELS = [
     # "gpt-oss-120b",
     "deepseek-r1-distill-qwen-32b",
     "deepseek-r1-distill-llama-70b-awq",
+    "moonlight-16b-a3b-instruct",
+    "kimi-linear-48b-a3b-instruct",
 ]
 
 PRIVATE_AZURE_MODELS = [

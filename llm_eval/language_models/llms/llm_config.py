@@ -44,6 +44,15 @@ MODEL_MAPPING = {
         "model_size": "tiny",
         "kwargs": {},
     },
+    "qwen3.5-0.8b": {
+        "id": "Qwen/Qwen3.5-0.8B",
+        "model_size": "tiny",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
+    },
     # SMALL MODELS (3B-8B) - H100 "small" profile
     "falcon3-7b-instruct": {
         "id": "tiiuae/Falcon3-7B-Instruct",
@@ -89,6 +98,15 @@ MODEL_MAPPING = {
             }
         },
     },
+    "qwen3.5-4b": {
+        "id": "Qwen/Qwen3.5-4B",
+        "model_size": "small",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
+    },
     "command-r7b": {
         "id": "CohereLabs/c4ai-command-r7b-12-2024",
         "model_size": "small",
@@ -119,6 +137,11 @@ MODEL_MAPPING = {
                 "enable_thinking": False,
             }
         },
+    },
+    "moonlight-16b-a3b-instruct": {
+        "id": "moonshotai/Moonlight-16B-A3B-Instruct",
+        "model_size": "medium",
+        "kwargs": {},
     },
     "gemma-4-e4b-instruct": {
         "id": "google/gemma-4-E4B-it",
@@ -182,6 +205,15 @@ MODEL_MAPPING = {
         "id": "microsoft/phi-4",
         "model_size": "medium",
         "kwargs": {},
+    },
+    "qwen3.5-9b": {
+        "id": "Qwen/Qwen3.5-9B",
+        "model_size": "medium",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     # LARGE MODELS (20B-40B) - H100 "large" profile
     "mistral-small-instruct": {
@@ -260,6 +292,15 @@ MODEL_MAPPING = {
             }
         },
     },
+    "qwen3.8-27b": {
+        "id": "Qwen/Qwen3.8-27B",
+        "model_size": "large",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
+    },
     "aya-expanse-32b": {
         "id": "CohereLabs/aya-expanse-32b",
         "model_size": "large",
@@ -272,6 +313,15 @@ MODEL_MAPPING = {
             "template": {
                 "enable_thinking": False,
             }
+        },
+    },
+    "kimi-linear-48b-a3b-instruct": {
+        "id": "cyankiwi/Kimi-Linear-48B-A3B-Instruct-AWQ-4bit",
+        "model_size": "large",
+        "kwargs": {
+            "loading": {
+                "quantization": None,
+            },
         },
     },
     "deepseek-r1-distill-qwen-32b": {
