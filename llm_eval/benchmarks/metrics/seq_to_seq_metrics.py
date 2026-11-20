@@ -2,6 +2,7 @@
 
 import logging
 
+import bert_score.utils
 import evaluate
 
 hf_rouge = evaluate.load("rouge")
@@ -10,6 +11,22 @@ hf_bleu = evaluate.load("bleu")
 hf_meteor = evaluate.load("meteor")
 # FYI: bertscore for dutch supposedly uses bert-base-multilingual-cased
 hf_bertscore = evaluate.load("bertscore")
+
+_bert_score_sent_encode = bert_score.utils.sent_encode
+
+
+def _sent_encode(tokenizer, sent):
+    """Encode empty sentences without build_inputs_with_special_tokens (gone in transformers 5).
+
+    bert_score 0.3.13 calls tokenizer.build_inputs_with_special_tokens([]) for empty strings;
+    encoding "" with special tokens gives the same ids ([CLS] [SEP]), so scores are unchanged.
+    """
+    if sent.strip() == "":
+        return tokenizer("", add_special_tokens=True)["input_ids"]
+    return _bert_score_sent_encode(tokenizer, sent)
+
+
+bert_score.utils.sent_encode = _sent_encode
 
 
 def rouge(predictions, references):
