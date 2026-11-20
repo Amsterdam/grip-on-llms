@@ -40,9 +40,13 @@ visible_models:
   - GPT-5
   # - o1-mini
   - OLMo-2-1124-7B-Instruct
+  # - Olmo-3-7B-Instruct
   - OLMo-2-0325-32B-Instruct
+  # - Olmo-3.1-32B-Instruct
   - EuroLLM-9B-Instruct
+  # - EuroLLM-9B-Instruct-2512
   # - EuroLLM-22B-Instruct-Preview
+  # - EuroLLM-22B-Instruct-2512
   - Qwen3-8B
   - Qwen3-32B
   - Qwen3-32B-AWQ
@@ -57,6 +61,7 @@ visible_models:
   - GEITje-7B-ultra
   - c4ai-command-r7b-12-2024
   - Apertus-8B-Instruct-2509
+  # - Apertus-v1.5-8B
   - Apertus-70B-Instruct-2509-quantized.w4a16
   - gpt-oss-20b
   - gpt-oss-120b

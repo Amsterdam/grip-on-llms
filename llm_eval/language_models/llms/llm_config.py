@@ -75,6 +75,11 @@ MODEL_MAPPING = {
         "model_size": "small",
         "kwargs": {},
     },
+    "olmo-3-7b-instruct": {
+        "id": "allenai/Olmo-3-7B-Instruct",
+        "model_size": "small",
+        "kwargs": {},
+    },
     "qwen-8b": {
         "id": "Qwen/Qwen3-8B",
         "model_size": "small",
@@ -99,6 +104,13 @@ MODEL_MAPPING = {
         "model_size": "small",
         "kwargs": {},
     },
+    # Apertus1p5ForConditionalGeneration is not supported by vLLM 0.32 / transformers 5.19 yet,
+    # so loading fails. Once supported, check its thinking mode before trusting results.
+    "apertus-v1.5-8b": {
+        "id": "swiss-ai/Apertus-v1.5-8B",
+        "model_size": "medium",
+        "kwargs": {},
+    },
     "gemma-4-e4b-instruct": {
         "id": "google/gemma-4-E4B-it",
         "model_size": "small",
@@ -111,6 +123,11 @@ MODEL_MAPPING = {
     # MEDIUM MODELS (8B-20B) - H100 "medium" profile
     "eurollm-9b-instruct": {
         "id": "utter-project/EuroLLM-9B-Instruct",
+        "model_size": "medium",
+        "kwargs": {},
+    },
+    "eurollm-9b-instruct-2512": {
+        "id": "utter-project/EuroLLM-9B-Instruct-2512",
         "model_size": "medium",
         "kwargs": {},
     },
@@ -164,6 +181,11 @@ MODEL_MAPPING = {
         "model_size": "large",
         "kwargs": {},
     },
+    "eurollm-22b-instruct-2512": {
+        "id": "utter-project/EuroLLM-22B-Instruct-2512",
+        "model_size": "large",
+        "kwargs": {},
+    },
     "gemma-27b-instruct": {
         "id": "google/gemma-3-27b-it",
         "model_size": "large",
@@ -189,6 +211,11 @@ MODEL_MAPPING = {
     },
     "olmo-32b-instruct": {
         "id": "allenai/OLMo-2-0325-32B-Instruct",
+        "model_size": "large",
+        "kwargs": {},
+    },
+    "olmo-3.1-32b-instruct": {
+        "id": "allenai/Olmo-3.1-32B-Instruct",
         "model_size": "large",
         "kwargs": {},
     },
