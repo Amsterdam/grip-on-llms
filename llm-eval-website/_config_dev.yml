@@ -48,6 +48,10 @@ visible_models:
   - Qwen3-32B-AWQ
   - gemma-3-12b-it
   - gemma-3-27b-it
+  # - gemma-4-E4B-it
+  # - gemma-4-12B-it
+  # - gemma-4-26B-A4B-it
+  # - gemma-4-31B-it
   - SmolLM3-3B
   - fietje-2-instruct
   - GEITje-7B-ultra

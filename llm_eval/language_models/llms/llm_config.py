@@ -99,6 +99,15 @@ MODEL_MAPPING = {
         "model_size": "small",
         "kwargs": {},
     },
+    "gemma-4-e4b-instruct": {
+        "id": "google/gemma-4-E4B-it",
+        "model_size": "small",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
+    },
     # MEDIUM MODELS (8B-20B) - H100 "medium" profile
     "eurollm-9b-instruct": {
         "id": "utter-project/EuroLLM-9B-Instruct",
@@ -109,6 +118,15 @@ MODEL_MAPPING = {
         "id": "google/gemma-3-12b-it",
         "model_size": "medium",
         "kwargs": {},
+    },
+    "gemma-4-12b-instruct": {
+        "id": "google/gemma-4-12B-it",
+        "model_size": "medium",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     "gpt-oss-20b": {
         "id": "openai/gpt-oss-20b",
@@ -150,6 +168,24 @@ MODEL_MAPPING = {
         "id": "google/gemma-3-27b-it",
         "model_size": "large",
         "kwargs": {},
+    },
+    "gemma-4-26b-a4b-instruct": {
+        "id": "google/gemma-4-26B-A4B-it",
+        "model_size": "large",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
+    },
+    "gemma-4-31b-instruct": {
+        "id": "google/gemma-4-31B-it",
+        "model_size": "large",
+        "kwargs": {
+            "template": {
+                "enable_thinking": False,
+            }
+        },
     },
     "olmo-32b-instruct": {
         "id": "allenai/OLMo-2-0325-32B-Instruct",
