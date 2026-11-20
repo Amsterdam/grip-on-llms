@@ -23,9 +23,11 @@ class AzureLLM(BaseLLM):
         self._reset_credentials(api_endpoint, api_key, api_version)
 
     def _get_client(self):
+        # api_key holds an Entra ID token (see get_gpt_secrets), not a resource key.
+        # Sent as an api-key the endpoint rejects it with 401; it has to go as a bearer token.
         client = AzureOpenAI(
             azure_endpoint=self.api_endpoint,
-            api_key=self.api_key,
+            azure_ad_token=self.api_key,
             api_version=self.api_version,
         )
 
