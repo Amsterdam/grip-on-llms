@@ -80,7 +80,10 @@ class VLLMLlm(BaseLLM):
         loading_kwargs = self.model_config["kwargs"].get("loading", {})
         template_kwargs = self.model_config["kwargs"].get("template", {})
 
-        self.tokenizer = get_tokenizer(model_id)
+        # Format prompts with the repo's own (HF) chat template, as vLLM 0.11 did by default.
+        # vLLM 0.32 and transformers 5 default to mistral_common for mistralai/* repos,
+        # which drops the default system prompt and changes the prompt format.
+        self.tokenizer = get_tokenizer(model_id, tokenizer_mode="hf")
 
         # With tokenizer initialized, set all eos tokens and params
         self._set_eos_tokens()
